@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-  <h1>Draw on Map</h1>
+  <h1>Photovoltaic calculator</h1>
   <input id="searchInput" type="text" placeholder="Search for an address...">
   <div id="map"></div>
   <div id="actions">
@@ -106,15 +106,26 @@
     }
 
     function calculateArea() {
-      if (selectedShape instanceof google.maps.Polygon) {
-        var area = google.maps.geometry.spherical.computeArea(selectedShape.getPath());
-        document.getElementById('areaDisplay').innerHTML = 'Area: ' + area.toFixed(2) + ' square meters';
-      }
-        else if (selectedShape instanceof google.maps.Rectangle) {
-            var bounds = selectedShape.getBounds();
-            var area = google.maps.geometry.spherical.computeArea(bounds);
-            document.getElementById('areaDisplay').innerHTML = 'Area: ' + area.toFixed(2) + ' square meters';
+      area_string = "Plocha:" + '<br>';
+      sum = 0;
+      i = 0;
+      //for each shape in shapes
+      console.log(shapes[0]);
+      shapes.forEach(function(shape) {
+        i++;
+        if (shape instanceof google.maps.Polygon) {
+          var area = google.maps.geometry.spherical.computeArea(shape.getPath());
+          area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
+          sum += area;
         }
+        else if (shape instanceof google.maps.Rectangle) {
+          var bounds = shape.getBounds();
+          var area = google.maps.geometry.spherical.computeArea(shape.getBounds());
+          area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
+            sum += area;
+        }
+      });
+        document.getElementById("areaDisplay").innerHTML = area_string + "<br> Celkova plocha: " + sum.toFixed(2) + " m^2";
     }
 
     function searchBoxInit(map){
