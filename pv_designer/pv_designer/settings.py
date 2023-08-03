@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'web_pv_designer.apps.WebPvDesignerConfig',
+    'django.contrib.sites',  # Add this if it's not already there
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +59,7 @@ ROOT_URLCONF = 'pv_designer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'web_pv_designer', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,3 +126,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Set the SITE_ID (required for allauth)
+SITE_ID = 1
+
+# Specify the URL to redirect to after a successful login
+LOGIN_REDIRECT_URL = 'home'  # Replace 'home' with your desired URL name
+ACCOUNT_SIGNUP_REDIRECT_URL = 'home'  # Replace 'home' with your desired URL name
+
+ACCOUNT_FORMS = {
+    'signup': 'web_pv_designer.forms.CustomSignupForm',
+    'login': 'web_pv_designer.forms.CustomLoginForm',
+}
