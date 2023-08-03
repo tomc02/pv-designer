@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # Include allauth URLs
     path('', views.index, name='home'),
+    path('map/', views.map_view, name='map'),
 ]
