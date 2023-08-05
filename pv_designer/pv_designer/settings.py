@@ -143,3 +143,4 @@ ACCOUNT_FORMS = {
     'signup': 'web_pv_designer.forms.CustomSignupForm',
     'login': 'web_pv_designer.forms.CustomLoginForm',
 }
+AUTH_USER_MODEL = 'web_pv_designer.CustomUser'

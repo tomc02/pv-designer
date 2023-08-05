@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1>Solar PV System Calculator</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary mt-3" type="submit">Calculate</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
