@@ -1,11 +1,24 @@
+<!-- web_pv_designer/templates/account/logout.html -->
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Custom Logout Page</h2>
-  <p>Are you sure you want to log out?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-  </form>
-  <a href="{% url 'home' %}">Cancel</a>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-danger text-white">
+            <h2 class="mb-0">Logout</h2>
+          </div>
+          <div class="card-body">
+            <p class="lead">Are you sure you want to log out?</p>
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-block">Logout</button>
+            </form>
+            <a href="{% url 'home' %}" class="btn btn-secondary btn-block mt-3">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
