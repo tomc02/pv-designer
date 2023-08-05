@@ -26,7 +26,7 @@ class CustomLoginForm(LoginForm):
 class SolarPVCalculatorForm(forms.ModelForm):
     class Meta:
         model = SolarPVCalculator
-        fields = '__all__'
+        fields = ['installed_peak_power', 'system_loss', 'mounting_position', 'slope', 'azimuth', 'optimize_slope', 'optimize_slope_and_azimuth', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'latitude', 'longitude']
         widgets = {
             'installed_peak_power': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
@@ -39,5 +39,7 @@ class SolarPVCalculatorForm(forms.ModelForm):
             'pv_system_cost': forms.TextInput(attrs={'class': 'form-control'}),
             'interest': forms.TextInput(attrs={'class': 'form-control'}),
             'lifetime': forms.TextInput(attrs={'class': 'form-control'}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput()
         }
 

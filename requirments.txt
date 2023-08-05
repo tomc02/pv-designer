@@ -1,3 +1,5 @@
 Django
 requests
 django-allauth
+plotly
+

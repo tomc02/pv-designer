@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 class SolarPVCalculator(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     installed_peak_power = models.FloatField()
     system_loss = models.FloatField()
     mounting_position = models.CharField(max_length=20, choices=(
@@ -21,6 +22,8 @@ class SolarPVCalculator(models.Model):
     pv_system_cost = models.FloatField(blank=True, null=True)
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return f"Solar PV Calculator - ID: {self.id}"

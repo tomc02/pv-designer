@@ -1,16 +1,75 @@
+<!-- pv_calculator/templates/pv_calculator/index.html -->
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h1>Solar PV System Calculator</h1>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn btn-primary mt-3" type="submit">Calculate</button>
-            </form>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1>Solar PV System Calculator</h1>
+                <p>Latitude: {{ lat }}</p>
+                <p>Longitude: {{ long }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.installed_peak_power.id_for_label }}">Installed peak PV power [kWp]</label>
+                        {{ form.installed_peak_power }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.system_loss.id_for_label }}">System loss [%]</label>
+                        {{ form.system_loss }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.mounting_position.id_for_label }}">Mounting position:</label>
+                        {{ form.mounting_position }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.slope.id_for_label }}">Slope [°]</label>
+                        {{ form.slope }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.azimuth.id_for_label }}">Azimuth [°]</label>
+                        {{ form.azimuth }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
+                        {{ form.pv_electricity_price }}
+                    </div>
+                    {{ form.latitude }}
+                    {{ form.longitude }}
+                    <div id="pvElectricityPriceInputs" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)</label>
+                            {{ form.pv_system_cost }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.interest.id_for_label }}">Interest [%/year]</label>
+                            {{ form.interest }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]</label>
+                            {{ form.lifetime }}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-3" type="submit">Calculate</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        $(document).ready(function () {
+            $('#{{ form.latitude.auto_id }}').val({{ lat }});
+            $('#{{ form.longitude.auto_id }}').val({{ long }});
+        });
+        $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
+            if ($(this).prop('checked')) {
+                $('#pvElectricityPriceInputs').show();
+            } else {
+                $('#pvElectricityPriceInputs').hide();
+            }
+
+        });
+
+    </script>
 {% endblock %}

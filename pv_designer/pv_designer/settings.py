@@ -132,15 +132,15 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Set the SITE_ID (required for allauth)
 SITE_ID = 1
 
-# Specify the URL to redirect to after a successful login
-LOGIN_REDIRECT_URL = 'home'  # Replace 'home' with your desired URL name
-ACCOUNT_SIGNUP_REDIRECT_URL = 'home'  # Replace 'home' with your desired URL name
+LOGIN_REDIRECT_URL = 'home'
+ACCOUNT_SIGNUP_REDIRECT_URL = 'home'
+SIGNUP_REDIRECT_URL = 'home'
 
 ACCOUNT_FORMS = {
     'signup': 'web_pv_designer.forms.CustomSignupForm',
     'login': 'web_pv_designer.forms.CustomLoginForm',
 }
 AUTH_USER_MODEL = 'web_pv_designer.CustomUser'
+ALLOWED_HOSTS = ['*']
