@@ -2,4 +2,6 @@ Django
 requests
 django-allauth
 plotly
-
+pandas
+matplotlib
+reportlab

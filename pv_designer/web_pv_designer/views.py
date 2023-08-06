@@ -1,3 +1,6 @@
+import json
+
+import pandas as pd
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from allauth.account.forms import ChangePasswordForm, SetPasswordForm
@@ -14,37 +17,35 @@ def solar_pv_calculator(request):
         long = request.POST.get('long')
         form = SolarPVCalculatorForm(request.POST)
         if form.is_valid():
+            form.instance.user = request.user
             data = form.cleaned_data
-            calc = SolarPVCalculator.objects.create(
-                latitude=data['latitude'],
-                longitude=data['longitude'],
-                installed_peak_power=data['installed_peak_power'],
-                system_loss=data['system_loss'],
-                mounting_position=data['mounting_position'],
-                slope=data['slope'],
-                azimuth=data['azimuth'],
-                optimize_slope=data['optimize_slope'],
-                optimize_slope_and_azimuth=data['optimize_slope_and_azimuth'],
-                pv_electricity_price=data['pv_electricity_price'],
-                pv_system_cost=data['pv_system_cost'],
-                interest=data['interest'],
-                lifetime=data['lifetime'],
-                user=request.user
-            )
-            calc.save()
+            calculation = form.save(commit=False)
+            calculation.user = request.user
+            calculation.save()
             base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
+            print(data['pv_electricity_price'])
             params = {
                 'lat': data['latitude'],
                 'lon': data['longitude'],
                 'peakpower': data['installed_peak_power'],
                 'loss': data['system_loss'],
-                'components': 'true',
-                'format': 'json'
+                'mountingplace': data['mounting_position'] == 'option1' and 'free' or 'building',
+                'angle': data['slope'],
+                'aspect': data['azimuth'],
+                'pvprice': data['pv_system_cost'] == 'True' and '1' or '0',
+                'systemcost': data['pv_electricity_price'],
+                'interest': data['interest'],
+                'lifetime': data['lifetime'],
+                'components': '0',
+                'outputformat': 'json'
             }
-            result = requests.get(base_url, params=params)
-            with open('response.json', 'w') as f:
-                f.write(result.text)
-            return render(request, 'calculation_result.html', {'result': result})
+            response = requests.get(base_url, params=params)
+            print(response.text)
+            # save the response as a csv file
+            with open('response.json', 'wb') as f:
+                f.write(response.text.encode('utf-8'))
+
+            return render(request, 'calculation_result.html', {'result': response})
     else:
         form = SolarPVCalculatorForm()
         lat = 0
