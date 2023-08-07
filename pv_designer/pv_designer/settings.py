@@ -120,7 +120,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# Define the directory where static files will be collected during production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Define the directory where your app-specific static files are located
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'web_pv_designer/static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
