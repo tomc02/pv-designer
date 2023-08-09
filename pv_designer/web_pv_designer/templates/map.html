@@ -48,9 +48,14 @@
                 <div id="actions">
                     <button class="btn btn-danger mb-2" onclick="deleteShape()">Delete</button>
                     <button class="btn btn-success mb-2" onclick="calculateArea()">Calculate Area</button>
-                    <button class="btn btn-info mb-2" onclick="takeScreenshot()">Take Screenshot</button>
+                    <button class="btn btn-info mb-2" onclick="takeshot()">Take Screenshot</button>
                     <div id="areaDisplay"></div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="output" width="400" height="400"></canvas>
             </div>
         </div>
     </div>
@@ -254,6 +259,7 @@
                             icon: picture,
                             title: 'Panel position'
                         });
+                        markers.push(marker);
                     }
 
                 }
@@ -326,7 +332,20 @@
                 map.fitBounds(bounds);
             });
         }
+        function takeshot() {
+html2canvas(document.querySelector('#map')).then(function(canvas) {
+    // Convert canvas to a data URL
+    var dataUrl = canvas.toDataURL();
 
+    // Create a temporary link element
+    var downloadLink = document.createElement('a');
+    downloadLink.href = dataUrl;
+    downloadLink.download = 'screenshot.png'; // Specify the filename
+
+    // Trigger a click on the link to start the download
+    downloadLink.click();
+});
+        }
         function takeScreenshot() {
             // Set the center and zoom of the static image to match the current map view
             const center = map.getCenter();
@@ -348,7 +367,13 @@
                     staticMapUrl += `&path=fillcolor:0x00000033%7Ccolor:0x0000FF80%7C${path}`;
                 }
             });
+            // Add markers to the static image URL
+            markers.forEach(function (marker) {
+                const position = marker.getPosition();
+                // Marker must be pv panel picture
 
+                //staticMapUrl += `&markers=color:red%7Clabel:M%7C${position.lat()},${position.lng()}`;
+            });
             // Add the API key to the static map URL
             staticMapUrl += `&key=AIzaSyDvX9ndMncH71GBqL-w0wOW9tyPbhgXPlQ`;
 
