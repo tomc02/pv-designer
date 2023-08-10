@@ -7,6 +7,7 @@ from django.shortcuts import render
 from allauth.account.forms import ChangePasswordForm, SetPasswordForm
 from allauth.account.views import LogoutView
 from .forms import SolarPVCalculatorForm
+from .utils import rotate_pv_img
 import requests
 
 from .models import SolarPVCalculator
@@ -63,4 +64,7 @@ def map_view(request):
 def account_details(request):
     user = request.user
     return render(request, 'account/account_details.html', {'user': user})
-
+def rotate_img(request):
+    angle = request.GET.get('angle')  # Get parameter value from AJAX request
+    result = rotate_pv_img(angle)  # Call your Python function with the parameter
+    return JsonResponse({'result': result})

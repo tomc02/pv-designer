@@ -4,8 +4,11 @@
     <head>
         <title>Draw on Map</title>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvX9ndMncH71GBqL-w0wOW9tyPbhgXPlQ&libraries=drawing,places"></script>
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
         <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="{% static '/js/map_handler.js' %}"></script>
+        <script src="{% static '/js/map_utils.js' %}"></script>
+        <script src="{% static '/js/area_calculator.js' %}"></script>
         <style>
             #map {
                 height: 100%;
@@ -53,11 +56,6 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <canvas id="output" width="400" height="400"></canvas>
-            </div>
-        </div>
     </div>
     </div>
     <form id="pvCalculatorForm" method="post" action="{% url 'solar_pv_calculator' %}">
@@ -66,334 +64,11 @@
         <input type="hidden" name="long" id="longitudeField" value="{{ longitude }}">
         <button id="calculateButton" class="btn btn-primary mt-3" type="submit">Calculate Solar PV</button>
     </form>
+    </body>
     <script>
-        var map;
-        var drawingManager;
-        var selectedShape;
-        var shapes = [];
-        var panelWidth = 1.1;
-        var panelHeight = 2.1;
-        var markers = [];
-
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'),
-                {
-                    center: {lat: 50, lng: 14},
-                    zoom: 21,
-                    tilt: 0,
-                });
-
-            drawingManager = new google.maps.drawing.DrawingManager({
-                drawingControl: true,
-                drawingControlOptions: {
-                    position: google.maps.ControlPosition.TOP_CENTER,
-                    drawingModes: [
-                        google.maps.drawing.OverlayType.POLYGON,
-                        google.maps.drawing.OverlayType.RECTANGLE,
-                    ]
-                },
-                polygonOptions: {
-                    editable: true,
-                    draggable: true,
-                    strokeColor: '#0033ff',
-                },
-                rectangleOptions: {
-                    editable: true,
-                    draggable: true,
-                    strokeColor: '#0033ff',
-                }
-            });
-
-            drawingManager.setMap(map);
-
-            google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
-                var shape = event.overlay;
-                shapes.push(shape);
-                google.maps.event.addListener(shape, 'click', function () {
-                    selectShape(shape);
-                });
-                drawingManager.setDrawingMode(null);
-                selectShape(shape);
-            });
-
-            google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
-
-            google.maps.event.addListener(map, 'click', clearSelection);
-            searchBoxInit(map);
-            google.maps.event.addDomListener(document, 'keyup', function (e) {
-                var code = (e.keyCode ? e.keyCode : e.which);
-                if (code === 46) {
-                    deleteShape();
-                }
-            });
-        }
-
-        function clearSelection() {
-            if (selectedShape) {
-                selectedShape.setEditable(false);
-                selectedShape.setDraggable(false);
-                selectedShape = null;
-            }
-        }
-
-        function selectShape(shape) {
-            clearSelection();
-            selectedShape = shape;
-            shape.setEditable(true);
-            shape.setDraggable(true);
-        }
-
-        function deleteShape() {
-            if (selectedShape) {
-                selectedShape.setMap(null); // Remove shape from the map
-                var index = shapes.indexOf(selectedShape);
-                if (index !== -1) {
-                    shapes.splice(index, 1); // Remove shape from the shapes array
-                }
-                selectedShape = null;
-            }
-        }
-
-        function calculateArea() {
-            area_string = "Plocha:" + '<br>';
-            sum = 0;
-            i = 0;
-            //for each shape in shapes
-            console.log(shapes[0]);
-            shapes.forEach(function (shape) {
-                i++;
-                if (shape instanceof google.maps.Polygon) {
-                    var area = google.maps.geometry.spherical.computeArea(shape.getPath());
-                    area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
-                    sum += area;
-                } else if (shape instanceof google.maps.Rectangle) {
-                    var bounds = shape.getBounds();
-                    var area = google.maps.geometry.spherical.computeArea(shape.getBounds());
-                    area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
-                    sum += area;
-                }
-            });
-            document.getElementById("areaDisplay").innerHTML = area_string + "<br> Celkova plocha: " + sum.toFixed(2) + " m^2";
-            fillPolygon5(shapes[0])
-
-        }
-
-        function findPolygonCorners(points) {
-
-            points.sort(function (a, b) {
-                return a.lng() - b.lng();
-            });
-            if (points[0].lat() > points[1].lat()) {
-                leftTop = points[0];
-                leftBottom = points[1];
-            } else {
-                leftTop = points[1];
-                leftBottom = points[0];
-            }
-            if (points[2].lat() > points[3].lat()) {
-                rightTop = points[2];
-                rightBottom = points[3];
-            } else {
-                rightTop = points[3];
-                rightBottom = points[2];
-            }
-            return {
-                leftTop: leftTop,
-                rightTop: rightTop,
-                leftBottom: leftBottom,
-                rightBottom: rightBottom
-            };
-        }
-
-        function fillPolygon5(polygon) {
-            var cornerPoints = findPolygonCorners(polygon.getPath().getArray());
-            var polygon2 = new google.maps.Polygon({
-                paths: [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom],
-
-            });
-            var heading = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
-            console.log(cornerPoints.leftTop);
-            cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, heading);
-            heading = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
-            cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, heading);
-            var colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
-            var leftPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-            drawPoints(leftPoints);
-            for (var i = 0; i < 10; i++) {
-                cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, 180);
-                cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, 180);
-                leftPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-                drawPoints(leftPoints);
-            }
-
-            // Generate points between two given points
-            function generatePointsBetween(startPoint, endPoint, numPoints) {
-                var points = [];
-                for (var i = 1; i < numPoints; i++) {
-                    var fraction = i / numPoints;
-                    var lat = startPoint.lat() + fraction * (endPoint.lat() - startPoint.lat());
-                    var lng = startPoint.lng() + fraction * (endPoint.lng() - startPoint.lng());
-                    var point = new google.maps.LatLng(lat, lng);
-                    points.push(new google.maps.LatLng(lat, lng));
-
-                }
-                return points;
-            }
-            function drawPoints(points) {
-                for (var i = 0; i < points.length; i++) {
-                    var panelWidthPix = calculatePixelSize(map, panelWidth, cornerPoints.leftTop.lat());
-                    var panelHeightPix = calculatePixelSize(map, panelHeight, cornerPoints.leftTop.lat());
-                    console.log(panelWidthPix);
-                    console.log(panelHeightPix);
-                    var picture = {
-                        url: "{% static 'images/pv_panel.png' %}",
-                        scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
-                        anchor: new google.maps.Point(0, 5)
-
-                    };
-                    var inter = google.maps.geometry.poly.containsLocation(points[i], polygon2);
-                    if (inter) {
-                        var marker = new google.maps.Marker({
-                            position: points[i],
-                            map: map,
-                            icon: picture,
-                            title: 'Panel position'
-                        });
-                        markers.push(marker);
-                    }
-
-                }
-            }
-
-        }
-        function calculatePixelSize(map, meters, latitude) {
-            var metersPerPixel = (40075000 * Math.cos(latitude * Math.PI / 180)) / (256 * Math.pow(2, map.getZoom()));
-            return meters / metersPerPixel;
-        }
-
-        function searchBoxInit(map) {
-            // Create the search box and link it to the UI element.
-            const input = document.getElementById("searchInput");
-            const searchBox = new google.maps.places.SearchBox(input);
-
-            // Bias the SearchBox results towards current map's viewport.
-            map.addListener("bounds_changed", () => {
-                searchBox.setBounds(map.getBounds());
-            });
-            let markers = [];
-            // Listen for the event fired when the user selects a prediction and retrieve
-            // more details for that place.
-            searchBox.addListener("places_changed", () => {
-                const places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                    return;
-                }
-
-                // Clear out the old markers.
-                markers.forEach((marker) => {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                // For each place, get the icon, name and location.
-                const bounds = new google.maps.LatLngBounds();
-
-                places.forEach((place) => {
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    const icon = {
-                        url: place.icon,
-                        size: new google.maps.Size(71, 71),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(25, 25),
-                    };
-
-                    // Create a marker for each place.
-                    markers.push(
-                        new google.maps.Marker({
-                            map,
-                            icon,
-                            title: place.name,
-                            position: place.geometry.location,
-                        }),
-                    );
-                    if (place.geometry.viewport) {
-                        // Only geocodes have viewport.
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-        }
-        function takeshot() {
-html2canvas(document.querySelector('#map')).then(function(canvas) {
-    // Convert canvas to a data URL
-    var dataUrl = canvas.toDataURL();
-
-    // Create a temporary link element
-    var downloadLink = document.createElement('a');
-    downloadLink.href = dataUrl;
-    downloadLink.download = 'screenshot.png'; // Specify the filename
-
-    // Trigger a click on the link to start the download
-    downloadLink.click();
-});
-        }
-        function takeScreenshot() {
-            // Set the center and zoom of the static image to match the current map view
-            const center = map.getCenter();
-            const zoom = map.getZoom();
-
-            var mapContainer = $('#map');
-            var sizex = mapContainer.width();
-            var sizey = mapContainer.height();
-            // Construct the URL for the static image
-            let staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat()},${center.lng()}&zoom=${zoom}&size=${sizex}x${sizey}&maptype=satellite`;
-
-            // Add markers and shapes to the static image URL
-            shapes.forEach(function (shape) {
-                if (shape instanceof google.maps.Marker) {
-                    const position = shape.getPosition();
-                    staticMapUrl += `&markers=color:red%7Clabel:M%7C${position.lat()},${position.lng()}`;
-                } else if (shape instanceof google.maps.Polygon) {
-                    const path = encodePolygon(shape);
-                    staticMapUrl += `&path=fillcolor:0x00000033%7Ccolor:0x0000FF80%7C${path}`;
-                }
-            });
-            // Add markers to the static image URL
-            markers.forEach(function (marker) {
-                const position = marker.getPosition();
-                // Marker must be pv panel picture
-
-                //staticMapUrl += `&markers=color:red%7Clabel:M%7C${position.lat()},${position.lng()}`;
-            });
-            // Add the API key to the static map URL
-            staticMapUrl += `&key=AIzaSyDvX9ndMncH71GBqL-w0wOW9tyPbhgXPlQ`;
-
-            // Display the static map URL for debugging purposes
-            console.log(staticMapUrl);
-        }
-
-        function encodePolygon(polygon) {
-            var path = polygon.getPath().getArray().map(point => `${point.lat()},${point.lng()}`).join('|');
-            const firstPoint = polygon.getPath().getAt(0);
-            const lastPoint = polygon.getPath().getAt(polygon.getPath().getLength() - 1);
-            if (!firstPoint.equals(lastPoint)) {
-                // Add the first point at the end to close the polygon
-                path += `|${firstPoint.lat()},${firstPoint.lng()}`;
-            }
-            return encodeURIComponent(path);
-        }
-
+        var pvPanelImg = '{% static "images/pv_panel_rotated.png" %}';
+        var rotateImgUrl = '{% url "rotate_img" %}';
         initMap();
-
         $('#calculateButton').on('click', function (event) {
             event.preventDefault(); // Prevent the default form submission
             const center = map.getCenter();
@@ -404,8 +79,8 @@ html2canvas(document.querySelector('#map')).then(function(canvas) {
             $('#pvCalculatorForm').submit();
         });
 
+
     </script>
-    </body>
     </html>
 
 {% endblock %}

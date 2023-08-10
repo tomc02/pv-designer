@@ -26,4 +26,5 @@ urlpatterns = [
     path('map/', views.map_view, name='map'),
     path('accounts/details/', views.account_details, name='account_details'),
     path('solar_pv_calculator/', views.solar_pv_calculator, name='solar_pv_calculator'),
+    path('rotate_img/', views.rotate_img, name='rotate_img'),
 ]
