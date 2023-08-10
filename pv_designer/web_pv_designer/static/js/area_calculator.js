@@ -1,3 +1,4 @@
+var shapesData = [];
 function calculateArea() {
     let area_string = "Plocha:" + '<br>';
     let sum = 0;
@@ -6,10 +7,12 @@ function calculateArea() {
     shapes.forEach(function (shape) {
         i++;
         if (shape instanceof google.maps.Polygon) {
-            fillPolygon(shape)
+            const panelsCount = fillPolygon(shape)
             var area = google.maps.geometry.spherical.computeArea(shape.getPath());
             area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
             sum += area;
+            const shapeData = {'type': 'polygon', 'area': area, 'panelsCount': panelsCount};
+            shapesData.push(shapeData);
         }
     });
     document.getElementById("areaDisplay").innerHTML = area_string + "<br> Celkova plocha: " + sum.toFixed(2) + " m^2";
@@ -63,14 +66,14 @@ function fillPolygon(polygon) {
     var topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
 
     rotateImage(0)
-    drawPoints(topPoints, rotatedPolygon);
+    let panelsCount =  drawPoints(topPoints, rotatedPolygon);
     for (var i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, 180);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, 180);
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-        drawPoints(topPoints, rotatedPolygon);
+        panelsCount += drawPoints(topPoints, rotatedPolygon);
     }
-
+    return panelsCount;
 }
 
 function generatePointsBetween(startPoint, endPoint, numPoints) {
@@ -85,6 +88,7 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
 }
 
 function drawPoints(points, polygon) {
+    let panelCount = 0;
     for (let i = 0; i < points.length; i++) {
         const leftTop = polygon.getPath().getAt(0);
         const panelWidthPix = calculatePixelSize(map, panelWidth, leftTop.lat());
@@ -101,9 +105,11 @@ function drawPoints(points, polygon) {
                 position: points[i], map: map, icon: picture, title: 'Panel position'
             });
             markers.push(marker);
+            panelCount++;
         }
 
     }
+    return panelCount;
 }
 
 function calculatePixelSize(map, meters, latitude) {

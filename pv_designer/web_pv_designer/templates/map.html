@@ -9,6 +9,7 @@
         <script src="{% static '/js/map_handler.js' %}"></script>
         <script src="{% static '/js/map_utils.js' %}"></script>
         <script src="{% static '/js/area_calculator.js' %}"></script>
+        <script src="{% static '/js/utils_other.js' %}"></script>
         <style>
             #map {
                 height: 100%;
@@ -58,28 +59,16 @@
         </div>
     </div>
     </div>
-    <form id="pvCalculatorForm" method="post" action="{% url 'solar_pv_calculator' %}">
-        {% csrf_token %}
-        <input type="hidden" name="lat" id="latitudeField" value="{{ latitude }}">
-        <input type="hidden" name="long" id="longitudeField" value="{{ longitude }}">
-        <button id="calculateButton" class="btn btn-primary mt-3" type="submit">Calculate Solar PV</button>
-    </form>
+    <button id="calculateButton" class="btn btn-primary mt-3" onclick="moveToForm()">Calculate Solar PV</button>
     </body>
     <script>
         var pvPanelImg = '{% static "images/pv_panel_rotated.png" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
+        var ajaxUrl = '{% url "ajax_endpoint" %}';
+        var dataToSend = {};
+        var formUrl = "{% url 'solar_pv_calculator' %}";
+        var csrfToken = '{{ csrf_token }}';
         initMap();
-        $('#calculateButton').on('click', function (event) {
-            event.preventDefault(); // Prevent the default form submission
-            const center = map.getCenter();
-            const currentLatitude = center.lat();
-            const currentLongitude = center.lng();
-            $('#latitudeField').val(currentLatitude);
-            $('#longitudeField').val(currentLongitude);
-            $('#pvCalculatorForm').submit();
-        });
-
-
     </script>
     </html>
 

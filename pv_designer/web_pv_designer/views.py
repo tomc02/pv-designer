@@ -53,18 +53,48 @@ def solar_pv_calculator(request):
         lat = 0
         long = 0
     return render(request, 'solar_pv_calculator.html', {'form': form, 'lat': lat, 'long': long})
+
+
 def index(request):
     return render(request, 'home.html')
+
+
 def map_view(request):
     latitude = 50
     longitude = 14
     return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude})
 
+
 @login_required
 def account_details(request):
     user = request.user
     return render(request, 'account/account_details.html', {'user': user})
+
+
 def rotate_img(request):
     angle = request.GET.get('angle')  # Get parameter value from AJAX request
     result = rotate_pv_img(angle)  # Call your Python function with the parameter
     return JsonResponse({'result': result})
+
+
+def ajax_endpoint(request):
+    if request.method == "POST":
+        custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
+        data_from_js = request.POST.get("data", "")
+        response_data = {"message": "Data received and processed in backend"}
+        print(data_from_js)
+
+        try:
+            parsed_data = json.loads(data_from_js)  # Parse the JSON data
+            lat = parsed_data['lat']
+            lng = parsed_data['lng']
+            shapes = parsed_data['shapes']
+            print(shapes)
+
+            # Save data to the database
+
+        except json.JSONDecodeError as e:
+            return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
+
+        return JsonResponse(response_data)
+    return JsonResponse({"error": "Invalid request method"})
