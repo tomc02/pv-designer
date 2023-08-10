@@ -1,13 +1,19 @@
 var shapesData = [];
 function calculateArea() {
+    clearSelection();
+    markers.forEach(function (marker) {
+        marker.setMap(null);
+    });
+    markers = [];
     let area_string = "Plocha:" + '<br>';
     let sum = 0;
     let i = 0;
-    console.log(shapes[0]);
-    shapes.forEach(function (shape) {
+    let panelsCount = 0;
+    console.log(shapes);
+    shapes.forEach(function (shape, index) {
         i++;
         if (shape instanceof google.maps.Polygon) {
-            const panelsCount = fillPolygon(shape)
+            panelsCount = fillPolygon(shape, index);
             var area = google.maps.geometry.spherical.computeArea(shape.getPath());
             area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
             sum += area;
@@ -51,11 +57,10 @@ function findPolygonCorners(points, rotate) {
     };
 }
 
-function fillPolygon(polygon) {
+function fillPolygon(polygon, index) {
     const cornerPoints = findPolygonCorners(polygon.getPath().getArray(), true);
-    let rotatedPolygon = new google.maps.Polygon({
+    var rotatedPolygon = new google.maps.Polygon({
         paths: [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom],
-
     });
     let heading = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, heading);
@@ -71,7 +76,12 @@ function fillPolygon(polygon) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, 180);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, 180);
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-        panelsCount += drawPoints(topPoints, rotatedPolygon);
+        if(panelsCount > 0){
+            panelsCount += drawPoints(topPoints, rotatedPolygon, true);
+        } else{
+            panelsCount = drawPoints(topPoints, rotatedPolygon, false);
+        }
+
     }
     return panelsCount;
 }
@@ -87,7 +97,7 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon) {
+function drawPoints(points, polygon, notFirstLine = false) {
     let panelCount = 0;
     for (let i = 0; i < points.length; i++) {
         const leftTop = polygon.getPath().getAt(0);
@@ -99,10 +109,21 @@ function drawPoints(points, polygon) {
             anchor: new google.maps.Point(0, 5)
 
         };
-        const intersect = google.maps.geometry.poly.containsLocation(points[i], polygon);
-        if (intersect) {
+        let panelLeftTop = points[i];
+        let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, panelWidth, 90);
+        let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, panelHeight, 180);
+        let isLeftTop = google.maps.geometry.poly.containsLocation(panelLeftTop, polygon);
+        let isRightBottom = google.maps.geometry.poly.containsLocation(panelRightBottom, polygon);
+        let isRightTop = true;
+        if (notFirstLine) {
+            isRightTop = google.maps.geometry.poly.containsLocation(panelRightTop, polygon);
+        }
+        if (isLeftTop && isRightBottom && isRightTop) {
             const marker = new google.maps.Marker({
-                position: points[i], map: map, icon: picture, title: 'Panel position'
+                position: points[i],
+                map: map,
+                icon: picture,
+                title: 'Panel position'
             });
             markers.push(marker);
             panelCount++;
@@ -122,4 +143,9 @@ function rotateImage(angle) {
         url: rotateImgUrl,
         data: {'angle': angle},
     });
+}
+
+function cropPolygonPV(polygon){
+    const points = polygon.getPath().getArray();
+    points[3] = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelWidth, heading);
 }

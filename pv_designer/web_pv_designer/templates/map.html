@@ -62,7 +62,7 @@
     <button id="calculateButton" class="btn btn-primary mt-3" onclick="moveToForm()">Calculate Solar PV</button>
     </body>
     <script>
-        var pvPanelImg = '{% static "images/pv_panel_rotated.png" %}';
+        var pvPanelImg = '{% static "images/pv_panel.png" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
         var dataToSend = {};
