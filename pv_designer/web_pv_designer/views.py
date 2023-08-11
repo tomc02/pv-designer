@@ -98,3 +98,4 @@ def ajax_endpoint(request):
 
         return JsonResponse(response_data)
     return JsonResponse({"error": "Invalid request method"})
+

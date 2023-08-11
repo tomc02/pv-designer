@@ -58,10 +58,10 @@ function findPolygonCorners(points, rotate) {
 }
 
 function fillPolygon(polygon, index) {
-    const cornerPoints = findPolygonCorners(polygon.getPath().getArray(), true);
-    var rotatedPolygon = new google.maps.Polygon({
-        paths: [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom],
-    });
+    const cornerPoints = findPolygonCorners(shapes[index].getPath().getArray(), true);
+    shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
+    polygon = shapes[index];
+
     let heading = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, heading);
     heading = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
@@ -71,18 +71,19 @@ function fillPolygon(polygon, index) {
     var topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
 
     rotateImage(0)
-    let panelsCount =  drawPoints(topPoints, rotatedPolygon);
+    let panelsCount =  drawPoints(topPoints, polygon);
     for (var i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, 180);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, 180);
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if(panelsCount > 0){
-            panelsCount += drawPoints(topPoints, rotatedPolygon, true);
+            panelsCount += drawPoints(topPoints, polygon, true);
         } else{
-            panelsCount = drawPoints(topPoints, rotatedPolygon, false);
+            panelsCount = drawPoints(topPoints, polygon, false);
         }
 
     }
+    console.log(panelsCount);
     return panelsCount;
 }
 
@@ -106,7 +107,7 @@ function drawPoints(points, polygon, notFirstLine = false) {
         const picture = {
             url: pvPanelImg,
             scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
-            anchor: new google.maps.Point(0, 5)
+            anchor: new google.maps.Point(0, 0)
 
         };
         let panelLeftTop = points[i];
@@ -143,9 +144,4 @@ function rotateImage(angle) {
         url: rotateImgUrl,
         data: {'angle': angle},
     });
-}
-
-function cropPolygonPV(polygon){
-    const points = polygon.getPath().getArray();
-    points[3] = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelWidth, heading);
 }

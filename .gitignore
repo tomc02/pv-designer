@@ -1,5 +1,6 @@
 .idea/
 myvenv/
+pv_designer/myvenv/
 pv_designer/pv_designer/__pycache__/
 pv_designer/web_pv_designer/__pycache__/
 pv_designer/web_pv_designer/migrations/__pycache__/

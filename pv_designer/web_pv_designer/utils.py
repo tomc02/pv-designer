@@ -1,5 +1,4 @@
 import os
-
 from PIL import Image, ImageOps
 
 def rotate_pv_img(angle):
