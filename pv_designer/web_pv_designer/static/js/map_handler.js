@@ -57,7 +57,11 @@ function selectShape(shape) {
     shape.setEditable(true);
     shape.setDraggable(true);
 }
-
+function rotateSelectedShape() {
+    if (selectedShape) {
+      selectedShape = rotatePolygon(selectedShape);
+    }
+}
 function deleteShape() {
     if (selectedShape) {
         selectedShape.setMap(null); // Remove shape from the map

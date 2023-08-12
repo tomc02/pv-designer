@@ -1,3 +1,4 @@
+import base64
 import json
 
 import pandas as pd
@@ -9,6 +10,8 @@ from allauth.account.views import LogoutView
 from .forms import SolarPVCalculatorForm
 from .utils import rotate_pv_img
 import requests
+from django.views.decorators.csrf import csrf_exempt
+
 
 from .models import SolarPVCalculator
 
@@ -76,20 +79,23 @@ def rotate_img(request):
     result = rotate_pv_img(angle)  # Call your Python function with the parameter
     return JsonResponse({'result': result})
 
-
+@csrf_exempt
 def ajax_endpoint(request):
     if request.method == "POST":
         custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
         data_from_js = request.POST.get("data", "")
         response_data = {"message": "Data received and processed in backend"}
-        print(data_from_js)
-
         try:
             parsed_data = json.loads(data_from_js)  # Parse the JSON data
             lat = parsed_data['lat']
             lng = parsed_data['lng']
             shapes = parsed_data['shapes']
             print(shapes)
+            imageUrl = parsed_data['imageUrl']
+            imageUrl = imageUrl.replace('data:image/png;base64,', '')
+            save_path = './web_pv_designer/pdf_sources/'
+            with open(save_path + 'pv_image.png', "wb") as fh:
+                fh.write(base64.decodebytes(imageUrl.encode()))
 
             # Save data to the database
 

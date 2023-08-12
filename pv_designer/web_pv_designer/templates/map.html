@@ -53,6 +53,7 @@
                     <button class="btn btn-danger mb-2" onclick="deleteShape()">Delete</button>
                     <button class="btn btn-success mb-2" onclick="calculateArea()">Calculate Area</button>
                     <button class="btn btn-info mb-2" onclick="getMapPicture()">Take Screenshot</button>
+                    <button class="btn btn-info mb-2" onclick="rotateSelectedShape()">Rotate</button>
                     <div id="areaDisplay"></div>
                 </div>
             </div>
@@ -63,6 +64,7 @@
     </div>
     </div>
     <button id="calculateButton" class="btn btn-primary mt-3" onclick="moveToForm()">Calculate Solar PV</button>
+
     </body>
     <script>
         var pvPanelImg = '{% static "images/pv_panel.png" %}';
@@ -70,7 +72,7 @@
         var ajaxUrl = '{% url "ajax_endpoint" %}';
         var dataToSend = {};
         var formUrl = "{% url 'solar_pv_calculator' %}";
-        var csrfToken = '{{ csrf_token }}';
+        var csrfToken = "{{ csrf_token  }}";
         initMap();
     </script>
     </html>

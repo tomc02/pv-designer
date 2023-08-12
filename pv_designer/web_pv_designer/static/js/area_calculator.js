@@ -13,7 +13,7 @@ function calculateArea() {
     shapes.forEach(function (shape, index) {
         i++;
         if (shape instanceof google.maps.Polygon) {
-            panelsCount = fillPolygon(shape, index);
+            panelsCount = fillPolygon(index);
             var area = google.maps.geometry.spherical.computeArea(shape.getPath());
             area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
             sum += area;
@@ -56,8 +56,15 @@ function findPolygonCorners(points, rotate) {
         leftTop: leftTop, rightTop: rightTop, leftBottom: leftBottom, rightBottom: rightBottom
     };
 }
+function rotatePolygon(polygon) {
+    // rotate polygon
+    const cornerPoints = findPolygonCorners(polygon.getPath().getArray(), false);
+    console.log("rotatePolygon");
+    polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom,cornerPoints.leftTop]);
+    return polygon;
+}
 
-function fillPolygon(polygon, index) {
+function fillPolygon(index) {
     const cornerPoints = findPolygonCorners(shapes[index].getPath().getArray(), true);
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     polygon = shapes[index];

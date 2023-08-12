@@ -1,4 +1,6 @@
+var imageUrl;
 function sendData(dataToSend, url, customHeader, csrf_token) {
+    console.log(csrf_token);
     $.ajax({
         url: url,
         method: "POST",
@@ -14,15 +16,29 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
 }
 
 function moveToForm() {
-    dataToSend = {
+    const dataToSend = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
-        'zoom': map.getZoom(),
         'shapes': shapesData,
     };
-    dataToSend = JSON.stringify(dataToSend);
-    sendData(dataToSend, ajaxUrl, 'Map-Data', csrfToken);
-    window.location.href = formUrl + '?mapData=' + dataToSend;
+    let dataToSave = {
+        'lat': map.getCenter().lat(),
+        'lng': map.getCenter().lng(),
+        'shapesData': shapesData,
+        'shapes': convertShapesToJSON(shapes),
+        'imageUrl': imageUrl,
+    };
+    dataToSave = JSON.stringify(dataToSave);
+    sendData(dataToSave, ajaxUrl, 'Map-Data', csrfToken);
+    window.location.href = formUrl + '?mapData=' + JSON.stringify(dataToSend);
+}
+
+function convertShapesToJSON(shapes) {
+    let shapesJSON = [];
+    shapes.forEach(function (shape) {
+        shapesJSON.push(shape.getPath().getArray());
+    });
+    return shapesJSON;
 }
 
 function parseMapData() {
@@ -56,7 +72,7 @@ function getMapPicture() {
             //add the screenshot to the page
             document.body.appendChild(canvas);
             //save the screenshot
-            console.log(canvas.toDataURL());
+            imageUrl = canvas.toDataURL();
         });
     }, 200);
 }
