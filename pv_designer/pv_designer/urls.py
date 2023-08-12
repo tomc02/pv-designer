@@ -28,4 +28,5 @@ urlpatterns = [
     path('solar_pv_calculator/', views.solar_pv_calculator, name='solar_pv_calculator'),
     path('rotate_img/', views.rotate_img, name='rotate_img'),
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
+    path('calculation_result/', views.calculation_result, name='calculation_result'),
 ]

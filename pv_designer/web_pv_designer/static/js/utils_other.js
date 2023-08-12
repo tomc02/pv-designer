@@ -1,6 +1,5 @@
 var imageUrl;
 function sendData(dataToSend, url, customHeader, csrf_token) {
-    console.log(csrf_token);
     $.ajax({
         url: url,
         method: "POST",
@@ -16,21 +15,23 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
 }
 
 function moveToForm() {
+    getMapPicture();
+    setTimeout(function () {
     const dataToSend = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
-        'shapes': shapesData,
+        'shapesData': shapesData,
     };
-    let dataToSave = {
+    const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
         'shapesData': shapesData,
         'shapes': convertShapesToJSON(shapes),
         'imageUrl': imageUrl,
     };
-    dataToSave = JSON.stringify(dataToSave);
-    sendData(dataToSave, ajaxUrl, 'Map-Data', csrfToken);
+    sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
     window.location.href = formUrl + '?mapData=' + JSON.stringify(dataToSend);
+    }, 800);
 }
 
 function convertShapesToJSON(shapes) {
@@ -57,8 +58,8 @@ function getPower(shapes, kwPerPanel){
 }
 
 function getMapPicture() {
-    //hide the map controls (zoom, street view, drawing manager, etc.)
-    map.setOptions({zoomControl: false, streetViewControl: false, mapTypeControl: false, fullscreenControl: false});
+    // lock map moving
+    map.setOptions({zoomControl: false, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, draggable: false, scrollwheel: false, disableDoubleClickZoom: true});
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
     setTimeout(function () {
@@ -67,12 +68,7 @@ function getMapPicture() {
             backgroundColor: null,
             useCORS: true
         }).then(canvas => {
-            //show the map controls again
-            map.setOptions({zoomControl: true, streetViewControl: true, mapTypeControl: true});
-            //add the screenshot to the page
-            document.body.appendChild(canvas);
-            //save the screenshot
             imageUrl = canvas.toDataURL();
         });
-    }, 200);
+    }, 100);
 }
