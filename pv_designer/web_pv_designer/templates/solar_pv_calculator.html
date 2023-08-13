@@ -60,16 +60,12 @@
     </div>
 
     <script>
+       // get map_data from response
+         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
+        console.log('data', mapData);
+
+
         $(document).ready(function () {
-            let mapData = parseMapData();
-            $('#latp').append(mapData.lat);
-            $('#lngp').append(mapData.lng);
-            const power = getPower(mapData.shapesData, 0.4);
-            console.log('power:' + power);
-            $('#{{ form.installed_peak_power.auto_id }}').val(power);
-            $('#{{ form.system_loss.auto_id }}').val(14);
-            $('#{{ form.latitude.auto_id }}').val(mapData.lat);
-            $('#{{ form.longitude.auto_id }}').val(mapData.lng);
         });
         $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
             if ($(this).prop('checked')) {

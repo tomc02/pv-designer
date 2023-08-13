@@ -1,23 +1,19 @@
-import base64
 import json
-import os
 
-import pandas as pd
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
-from allauth.account.forms import ChangePasswordForm, SetPasswordForm
-from allauth.account.views import LogoutView
+from django.shortcuts import render, redirect
 from .forms import SolarPVCalculatorForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from .models import SolarPVCalculator, MapData
 
-
-from .models import SolarPVCalculator
 lat_global = 50
 lon_global = 14
-def solar_pv_calculator(request):
+
+
+def solar_pv_calculator(request, *args, **kwargs):
     if request.method == 'POST':
         form = SolarPVCalculatorForm(request.POST)
         if form.is_valid():
@@ -25,6 +21,8 @@ def solar_pv_calculator(request):
             data = form.cleaned_data
             calculation = form.save(commit=False)
             calculation.user = request.user
+            # find the map data in the database by the latitude and longitude
+
             calculation.save()
             base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
             print(data)
@@ -50,6 +48,15 @@ def solar_pv_calculator(request):
                 f.write(response.text.encode('utf-8'))
 
             return calculation_result(request)
+    elif request.method == 'GET':
+        form = SolarPVCalculatorForm()
+        id = request.GET.get('id')
+        map_data = MapData.objects.get(id=id)
+        map_data = map_data.to_JSON()
+        map_data = json.dumps(map_data)
+        print(map_data)
+        return render(request, 'solar_pv_calculator.html', {'form': form, 'map_data': map_data})
+
     else:
         form = SolarPVCalculatorForm()
     return render(request, 'solar_pv_calculator.html', {'form': form})
@@ -76,6 +83,7 @@ def rotate_img(request):
     result = rotate_pv_img(angle)
     return JsonResponse({'result': result})
 
+
 @csrf_exempt
 def ajax_endpoint(request):
     if request.method == "POST":
@@ -83,10 +91,17 @@ def ajax_endpoint(request):
         data_from_js = request.POST.get("data", "")
         response_msg = {"message": "Data received and processed in backend"}
         if custom_header_value == "Map-Data":
-            return process_map_data(data_from_js, response_msg)
+            result = process_map_data(data_from_js)
+            if result is not JsonResponse:
+                # show solar pv calculator page
+                return JsonResponse({'message': 'Data saved', 'id': result})
+            else:
+                return result
         else:
             return JsonResponse(response_msg)
     return JsonResponse({"error": "Invalid request method"})
+
+
 
 def calculation_result(request):
     save_path = './web_pv_designer/pdf_sources/'
@@ -95,4 +110,4 @@ def calculation_result(request):
         return render(request, 'calculation_result.html')
     else:
         pass
-        #something went wrong
+        # something went wrong

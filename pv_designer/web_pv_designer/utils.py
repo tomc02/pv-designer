@@ -1,12 +1,13 @@
 import base64
-import math
 import os
-from PIL import Image, ImageOps
+from PIL import Image
 import json
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import JsonResponse
+from .models import MapData
+
 
 def rotate_pv_img(angle):
     original_image_path = '/static/images/pv_panel.png'
@@ -26,6 +27,7 @@ def rotate_pv_img(angle):
 
     rotated_image.save(file_path + rotated_image_path)
 
+
 def create_pdf_report(path_to_source):
     with open(path_to_source + 'response.json', 'r') as json_file:
         data = json.load(json_file)
@@ -36,11 +38,11 @@ def create_pdf_report(path_to_source):
     location_data = data['inputs']['location']
 
     months = [entry['month'] for entry in monthly_data]
-    E_d_values = [entry['E_d'] for entry in monthly_data]
-    H_i_m_values = [entry['H(i)_m'] for entry in monthly_data]
+    e_d_values = [entry['E_d'] for entry in monthly_data]
+    h_i_m_values = [entry['H(i)_m'] for entry in monthly_data]
 
     plt.figure(figsize=(10, 4))
-    plt.bar(months, E_d_values, color='skyblue', label='Energy Production')
+    plt.bar(months, e_d_values, color='skyblue', label='Energy Production')
     plt.xlabel('Month')
     plt.ylabel('Average daily energy production (kWh/d)')
     plt.title('Monthly Energy Production')
@@ -53,7 +55,7 @@ def create_pdf_report(path_to_source):
     plt.close()
 
     plt.figure(figsize=(10, 4))
-    plt.bar(months, H_i_m_values, color='lightgreen', label='Global Irradiation')
+    plt.bar(months, h_i_m_values, color='lightgreen', label='Global Irradiation')
     plt.xlabel('Month')
     plt.ylabel('Average monthly global irradiation (kWh/m²/mo)')
     plt.title('Monthly Global Irradiation')
@@ -109,24 +111,24 @@ def create_pdf_report(path_to_source):
 
     return True
 
-def process_map_data(data, response_msg):
+
+def process_map_data(data):
     try:
         parsed_data = json.loads(data)
-        lat = parsed_data['lat']
-        lon = parsed_data['lng']
-        shapes = parsed_data['shapes']
-        print(shapes)
-        imageUrl = parsed_data['imageUrl']
-        imageUrl = imageUrl.replace('data:image/png;base64,', '')
+
+        image_url = parsed_data['imageUrl']
+        image_url = image_url.replace('data:image/png;base64,', '')
         save_path = './web_pv_designer/pdf_sources/'
         with open(save_path + 'pv_image.png', "wb") as fh:
-            fh.write(base64.decodebytes(imageUrl.encode()))
+            fh.write(base64.decodebytes(image_url.encode()))
         im = Image.open(save_path + 'pv_image.png')
         width, height = im.size
         im = im.crop((0, 0, width, height - 15))
         im.save(save_path + 'pv_image.png')
         # Save data to the database
-
+        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
+                           areasData=parsed_data['shapesData'])
+        map_data.save()
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
-    return JsonResponse(response_msg)
+    return map_data.id

@@ -10,18 +10,13 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         },
         success: function (response) {
             console.log(response);
+            window.location.href = formUrl + '?id=' + response.id;
         }
     });
 }
-
 function moveToForm() {
     getMapPicture();
     setTimeout(function () {
-    const dataToSend = {
-        'lat': map.getCenter().lat(),
-        'lng': map.getCenter().lng(),
-        'shapesData': shapesData,
-    };
     const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
@@ -30,8 +25,8 @@ function moveToForm() {
         'imageUrl': imageUrl,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
-    window.location.href = formUrl + '?mapData=' + JSON.stringify(dataToSend);
-    }, 800);
+    }, 1000);
+
 }
 
 function convertShapesToJSON(shapes) {
