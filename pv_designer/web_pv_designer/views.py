@@ -13,7 +13,7 @@ lat_global = 50
 lon_global = 14
 
 
-def solar_pv_calculator(request, *args, **kwargs):
+def solar_pv_calculator(request):
     if request.method == 'POST':
         form = SolarPVCalculatorForm(request.POST)
         if form.is_valid():
@@ -22,10 +22,8 @@ def solar_pv_calculator(request, *args, **kwargs):
             calculation = form.save(commit=False)
             calculation.user = request.user
             # find the map data in the database by the latitude and longitude
-
             calculation.save()
             base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
-            print(data)
             params = {
                 'lat': data['latitude'],
                 'lon': data['longitude'],

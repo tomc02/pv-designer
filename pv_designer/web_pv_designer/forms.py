@@ -32,7 +32,7 @@ class SolarPVCalculatorForm(forms.ModelForm):
         model = SolarPVCalculator
         fields = ['installed_peak_power', 'system_loss', 'mounting_position', 'slope', 'azimuth', 'optimize_slope',
                   'optimize_slope_and_azimuth', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime',
-                  'latitude', 'longitude']
+                  'latitude', 'longitude', 'map_data']
         widgets = {
             'installed_peak_power': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
@@ -46,5 +46,6 @@ class SolarPVCalculatorForm(forms.ModelForm):
             'interest': forms.TextInput(attrs={'class': 'form-control'}),
             'lifetime': forms.TextInput(attrs={'class': 'form-control'}),
             'latitude': forms.HiddenInput(),
-            'longitude': forms.HiddenInput()
+            'longitude': forms.HiddenInput(),
+            'map_data': forms.HiddenInput()
         }

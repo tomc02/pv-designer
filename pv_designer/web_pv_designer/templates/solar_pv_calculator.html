@@ -35,6 +35,7 @@
                         <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
                         {{ form.pv_electricity_price }}
                     </div>
+                    {{ form.map_data }}
                     {{ form.latitude }}
                     {{ form.longitude }}
                     <div id="pvElectricityPriceInputs" style="display:none;">
@@ -60,10 +61,16 @@
     </div>
 
     <script>
-       // get map_data from response
-         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
+        // get map_data from response
+        var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         console.log('data', mapData);
-
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        $('#{{ form.map_data.auto_id }}').val(id);
+        $('#{{ form.latitude.auto_id }}').val(mapData.latitude);
+        $('#{{ form.longitude.auto_id }}').val(mapData.longitude);
+        $('#latp').append(mapData.latitude);
+        $('#lngp').append(mapData.longitude);
 
         $(document).ready(function () {
         });
