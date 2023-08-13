@@ -112,13 +112,17 @@ def create_pdf_report(path_to_source):
     return True
 
 
-def process_map_data(data):
+def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
-
+        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
+                           areasData=parsed_data['shapesData'])
+        saved_data = map_data.save()
         image_url = parsed_data['imageUrl']
         image_url = image_url.replace('data:image/png;base64,', '')
-        save_path = './web_pv_designer/pdf_sources/'
+        save_path = './web_pv_designer/pdf_sources/'+user_id+'/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
         with open(save_path + 'pv_image.png', "wb") as fh:
             fh.write(base64.decodebytes(image_url.encode()))
         im = Image.open(save_path + 'pv_image.png')
@@ -126,9 +130,6 @@ def process_map_data(data):
         im = im.crop((0, 0, width, height - 15))
         im.save(save_path + 'pv_image.png')
         # Save data to the database
-        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                           areasData=parsed_data['shapesData'])
-        map_data.save()
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
     return map_data.id

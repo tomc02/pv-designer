@@ -42,10 +42,9 @@ def solar_pv_calculator(request):
             response = requests.get(base_url, params=params)
             print(response.text)
             # save the response as a csv file
-            with open('./web_pv_designer/pdf_sources/response.json', 'wb') as f:
+            with open('./web_pv_designer/pdf_sources/' + str(request.user.id) + '/response.json', 'wb') as f:
                 f.write(response.text.encode('utf-8'))
-
-            return calculation_result(request)
+            return redirect('calculation_result')
     elif request.method == 'GET':
         form = SolarPVCalculatorForm()
         id = request.GET.get('id')
@@ -89,7 +88,7 @@ def ajax_endpoint(request):
         data_from_js = request.POST.get("data", "")
         response_msg = {"message": "Data received and processed in backend"}
         if custom_header_value == "Map-Data":
-            result = process_map_data(data_from_js)
+            result = process_map_data(data_from_js, str(request.user.id))
             if result is not JsonResponse:
                 # show solar pv calculator page
                 return JsonResponse({'message': 'Data saved', 'id': result})
@@ -100,9 +99,8 @@ def ajax_endpoint(request):
     return JsonResponse({"error": "Invalid request method"})
 
 
-
 def calculation_result(request):
-    save_path = './web_pv_designer/pdf_sources/'
+    save_path = './web_pv_designer/pdf_sources/'+str(request.user.id)+'/'
     pdf_created = create_pdf_report(save_path)
     if pdf_created:
         return render(request, 'calculation_result.html')

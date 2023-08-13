@@ -1,4 +1,4 @@
-var imageUrl;
+var imageUrl = null;
 function sendData(dataToSend, url, customHeader, csrf_token) {
     $.ajax({
         url: url,
@@ -15,8 +15,6 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
     });
 }
 function moveToForm() {
-    getMapPicture();
-    setTimeout(function () {
     const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
@@ -25,8 +23,6 @@ function moveToForm() {
         'imageUrl': imageUrl,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
-    }, 1000);
-
 }
 
 function convertShapesToJSON(shapes) {
@@ -64,6 +60,7 @@ function getMapPicture() {
             useCORS: true
         }).then(canvas => {
             imageUrl = canvas.toDataURL();
+            moveToForm();
         });
-    }, 100);
+    }, 500);
 }
