@@ -76,8 +76,6 @@
         $('#latp').append(mapData.latitude);
         $('#lngp').append(mapData.longitude);
 
-        $(document).ready(function () {
-        });
         $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
             if ($(this).prop('checked')) {
                 $('#pvElectricityPriceInputs').show();

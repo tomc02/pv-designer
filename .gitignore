@@ -4,5 +4,7 @@ pv_designer/myvenv/
 pv_designer/pv_designer/__pycache__/
 pv_designer/web_pv_designer/__pycache__/
 pv_designer/web_pv_designer/migrations/__pycache__/
+__pycache__/
+web_pv_designer/pdf_sources/1/
 
 

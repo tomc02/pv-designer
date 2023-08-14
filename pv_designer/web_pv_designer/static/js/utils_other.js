@@ -33,19 +33,12 @@ function convertShapesToJSON(shapes) {
     return shapesJSON;
 }
 
-function parseMapData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const mapDataParam = urlParams.get('mapData');
-    const mapData = JSON.parse(mapDataParam);
-    console.log(mapData);
-    return mapData;
-}
 function getPower(shapes, kwPerPanel){
     let panelsCount = 0;
     shapes.forEach(function (shape) {
         panelsCount += shape.panelsCount;
     });
-    return panelsCount * kwPerPanel;
+    return Math.round(panelsCount * kwPerPanel, 2);
 }
 
 function getMapPicture() {
@@ -54,7 +47,6 @@ function getMapPicture() {
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
     setTimeout(function () {
-        //take the screenshot
         html2canvas(document.querySelector('#map'), {
             backgroundColor: null,
             useCORS: true
@@ -62,5 +54,5 @@ function getMapPicture() {
             imageUrl = canvas.toDataURL();
             moveToForm();
         });
-    }, 500);
+    }, 800);
 }

@@ -10,24 +10,6 @@
         <script src="{% static '/js/map_utils.js' %}"></script>
         <script src="{% static '/js/area_calculator.js' %}"></script>
         <script src="{% static '/js/utils_other.js' %}"></script>
-        <style>
-            #map {
-                height: 100%;
-                min-height: 600px;
-                width: 100%;
-            }
-
-            #actions {
-                margin-top: 10px;
-            }
-
-            #searchInput {
-                width: 100%;
-                max-width: 300px;
-                padding: 5px;
-                margin-bottom: 10px;
-            }
-        </style>
     </head>
     <body>
     <div class="container mt-5">
@@ -70,9 +52,10 @@
         var pvPanelImg = '{% static "images/pv_panel.png" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
-        var dataToSend = {};
         var formUrl = "{% url 'solar_pv_calculator' %}";
         var csrfToken = "{{ csrf_token  }}";
+        var latitude = parseFloat("{{ latitude }}");
+        var longitude = parseFloat("{{ longitude }}");
         initMap();
     </script>
     </html>

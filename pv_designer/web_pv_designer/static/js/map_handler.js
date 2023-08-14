@@ -8,7 +8,7 @@ var markers = [];
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 50, lng: 14}, zoom: 21, tilt: 0,
+        center: {lat: latitude, lng: longitude}, zoom: 17, tilt: 0,
     });
 
     drawingManager = new google.maps.drawing.DrawingManager({
@@ -22,7 +22,7 @@ function initMap() {
     drawingManager.setMap(map);
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
-        var shape = event.overlay;
+        const shape = event.overlay;
         shapes.push(shape);
         google.maps.event.addListener(shape, 'click', function () {
             selectShape(shape);
@@ -36,7 +36,7 @@ function initMap() {
     google.maps.event.addListener(map, 'click', clearSelection);
     searchBoxInit(map);
     google.maps.event.addDomListener(document, 'keyup', function (e) {
-        var code = (e.keyCode ? e.keyCode : e.which);
+        const code = (e.keyCode ? e.keyCode : e.which);
         if (code === 46) {
             deleteShape();
         }
@@ -65,7 +65,7 @@ function rotateSelectedShape() {
 function deleteShape() {
     if (selectedShape) {
         selectedShape.setMap(null); // Remove shape from the map
-        var index = shapes.indexOf(selectedShape);
+        const index = shapes.indexOf(selectedShape);
         if (index !== -1) {
             shapes.splice(index, 1); // Remove shape from the shapes array
         }

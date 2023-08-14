@@ -1,12 +1,57 @@
 import base64
 import os
-from PIL import Image
 import json
 import matplotlib.pyplot as plt
+from PIL import Image
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import JsonResponse
 from .models import MapData
+
+
+def process_map_data(data, user_id):
+    try:
+        parsed_data = json.loads(data)
+        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
+                           areasData=parsed_data['shapesData'])
+        saved_data = map_data.save()
+        save_map_img(parsed_data['imageUrl'], user_id)
+        # Save data to the database
+    except json.JSONDecodeError as e:
+        return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
+    return map_data.id
+
+
+def save_map_img(image_url, user_id):
+    image_url = image_url.replace('data:image/png;base64,', '')
+    save_path = './web_pv_designer/pdf_sources/' + user_id + '/'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    with open(save_path + 'pv_image.png', "wb") as fh:
+        fh.write(base64.decodebytes(image_url.encode()))
+    im = Image.open(save_path + 'pv_image.png')
+    width, height = im.size
+    im = im.crop((0, 0, width, height - 15))
+    im.save(save_path + 'pv_image.png')
+
+
+def set_params(data):
+    params = {
+        'lat': data['latitude'],
+        'lon': data['longitude'],
+        'peakpower': data['installed_peak_power'],
+        'loss': data['system_loss'],
+        'mountingplace': data['mounting_position'] == 'option1' and 'free' or 'building',
+        'angle': data['slope'],
+        'aspect': data['azimuth'],
+        'pvprice': data['pv_system_cost'] == 'True' and '1' or '0',
+        'systemcost': data['pv_electricity_price'],
+        'interest': data['interest'],
+        'lifetime': data['lifetime'],
+        'components': '0',
+        'outputformat': 'json'
+    }
+    return params
 
 
 def rotate_pv_img(angle):
@@ -110,26 +155,3 @@ def create_pdf_report(path_to_source):
     print(f"Report generated and saved as {pdf_file}")
 
     return True
-
-
-def process_map_data(data, user_id):
-    try:
-        parsed_data = json.loads(data)
-        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                           areasData=parsed_data['shapesData'])
-        saved_data = map_data.save()
-        image_url = parsed_data['imageUrl']
-        image_url = image_url.replace('data:image/png;base64,', '')
-        save_path = './web_pv_designer/pdf_sources/'+user_id+'/'
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        with open(save_path + 'pv_image.png', "wb") as fh:
-            fh.write(base64.decodebytes(image_url.encode()))
-        im = Image.open(save_path + 'pv_image.png')
-        width, height = im.size
-        im = im.crop((0, 0, width, height - 15))
-        im.save(save_path + 'pv_image.png')
-        # Save data to the database
-    except json.JSONDecodeError as e:
-        return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
-    return map_data.id
