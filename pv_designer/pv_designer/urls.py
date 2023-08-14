@@ -29,4 +29,5 @@ urlpatterns = [
     path('rotate_img/', views.rotate_img, name='rotate_img'),
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
     path('calculation_result/', views.calculation_result, name='calculation_result'),
+    path('calculations/', views.calculations_list, name='calculations'),
 ]

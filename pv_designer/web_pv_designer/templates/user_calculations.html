@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>My Calculations</h1>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Power</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for record in records %}
+                <tr>
+                    <td>{{ record.created_at }}</td>
+                    <td>{{ record.installed_peak_power }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

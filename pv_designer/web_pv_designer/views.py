@@ -82,3 +82,9 @@ def calculation_result(request):
     else:
         pass
         # something went wrong
+
+
+def calculations_list(request):
+    records = SolarPVCalculator.objects.filter(user=request.user)
+    context = {'records': records}
+    return render(request, 'user_calculations.html', context)
