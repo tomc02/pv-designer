@@ -15,6 +15,7 @@
                 <tr>
                     <td>{{ record.created_at }}</td>
                     <td>{{ record.installed_peak_power }}</td>
+                    <td><a href="{% url 'map' %}?record_id={{ record.map_data.id }}" class="btn btn-primary">Edit</a></td>
                 </tr>
             {% endfor %}
             </tbody>

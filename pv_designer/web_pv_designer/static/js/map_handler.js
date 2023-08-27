@@ -7,9 +7,7 @@ var panelHeight = 2.1;
 var markers = [];
 
 function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: latitude, lng: longitude}, zoom: 17, tilt: 0,
-    });
+    map = loadMapData();
 
     drawingManager = new google.maps.drawing.DrawingManager({
         drawingControl: true, drawingControlOptions: {

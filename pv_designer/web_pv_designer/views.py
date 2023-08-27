@@ -2,7 +2,7 @@ import json
 import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SolarPVCalculatorForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params
 from django.views.decorators.csrf import csrf_exempt
@@ -40,9 +40,16 @@ def index(request):
 
 
 def map_view(request):
+    record_id = request.GET.get('record_id')  # Get the record ID query parameter
+    if record_id:
+        map_data = get_object_or_404(MapData, id=record_id).to_JSON()
+        latitude = map_data['latitude']
+        longitude = map_data['longitude']
+        map_data = json.dumps(map_data)
+        return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': map_data})
     latitude = 49.83137
     longitude = 18.16086
-    return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude})
+    return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': {}})
 
 
 @login_required

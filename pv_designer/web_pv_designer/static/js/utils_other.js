@@ -56,3 +56,16 @@ function getMapPicture() {
         });
     }, 800);
 }
+
+function loadMapData(){
+    if (mapData.latitude && mapData.longitude) {
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: 17, tilt: 0,
+        });
+    } else {
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0,
+        });
+    }
+    return map;
+}
