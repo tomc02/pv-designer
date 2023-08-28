@@ -45,6 +45,7 @@ def map_view(request):
         map_data = get_object_or_404(MapData, id=record_id).to_JSON()
         latitude = map_data['latitude']
         longitude = map_data['longitude']
+        print(map_data)
         map_data = json.dumps(map_data)
         return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': map_data})
     latitude = 49.83137

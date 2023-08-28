@@ -12,8 +12,17 @@ from .models import MapData
 def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
-        map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                           areasData=parsed_data['shapesData'])
+        if parsed_data['mapDataID'] != '':
+            map_data = MapData.objects.get(id=parsed_data['mapDataID'])
+            map_data.latitude = parsed_data['lat']
+            map_data.longitude = parsed_data['lng']
+            map_data.areas = parsed_data['shapes']
+            map_data.areasData = parsed_data['shapesData']
+            map_data.zoom = parsed_data['zoom']
+            map_data.save()
+        else:
+            map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
+                           areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'])
         saved_data = map_data.save()
         save_map_img(parsed_data['imageUrl'], user_id)
         # Save data to the database

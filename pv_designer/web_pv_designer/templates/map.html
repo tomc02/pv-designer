@@ -57,7 +57,6 @@
         var latitude = parseFloat("{{ latitude }}");
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
-        loadMapData();
         initMap();
     </script>
     </html>

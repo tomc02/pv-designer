@@ -13,6 +13,7 @@ class MapData(models.Model):
     longitude = models.FloatField()
     areas = models.JSONField()
     areasData = models.JSONField()
+    zoom = models.IntegerField()
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
@@ -23,6 +24,7 @@ class MapData(models.Model):
             'longitude': self.longitude,
             'areas': self.areas,
             'areasData': self.areasData,
+            'zoom': self.zoom,
         }
 
 class SolarPVCalculator(models.Model):

@@ -1,4 +1,6 @@
 var imageUrl = null;
+var mapDataLoaded = false;
+
 function sendData(dataToSend, url, customHeader, csrf_token) {
     $.ajax({
         url: url,
@@ -14,13 +16,20 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         }
     });
 }
+
 function moveToForm() {
+    let mapDataID = '';
+    if (mapDataLoaded){
+        mapDataID = mapData.id;
+    }
     const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
         'shapesData': shapesData,
         'shapes': convertShapesToJSON(shapes),
         'imageUrl': imageUrl,
+        'zoom': map.zoom,
+        'mapDataID': mapDataID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
 }
@@ -33,7 +42,7 @@ function convertShapesToJSON(shapes) {
     return shapesJSON;
 }
 
-function getPower(shapes, kwPerPanel){
+function getPower(shapes, kwPerPanel) {
     let panelsCount = 0;
     shapes.forEach(function (shape) {
         panelsCount += shape.panelsCount;
@@ -43,7 +52,15 @@ function getPower(shapes, kwPerPanel){
 
 function getMapPicture() {
     // lock map moving
-    map.setOptions({zoomControl: false, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, draggable: false, scrollwheel: false, disableDoubleClickZoom: true});
+    map.setOptions({
+        zoomControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+        draggable: false,
+        scrollwheel: false,
+        disableDoubleClickZoom: true
+    });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
     setTimeout(function () {
@@ -57,14 +74,28 @@ function getMapPicture() {
     }, 800);
 }
 
-function loadMapData(){
+function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
+        console.log(mapData);
         map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: 17, tilt: 0,
+            center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0,
         });
+        map.setMapTypeId('satellite');
+        mapData.areas.forEach(function (area) {
+            polygon = new google.maps.Polygon({
+                paths: area,
+                strokeColor: '#0033ff',
+                draggable: true,
+                clickable: true,
+                editable: true,
+            });
+            polygon.setMap(map);
+            shapes.push(polygon);
+        });
+        mapDataLoaded = true;
     } else {
         map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0,
+            center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0,
         });
     }
     return map;

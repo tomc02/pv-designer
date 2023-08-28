@@ -8,7 +8,6 @@ var markers = [];
 
 function initMap() {
     map = loadMapData();
-
     drawingManager = new google.maps.drawing.DrawingManager({
         drawingControl: true, drawingControlOptions: {
             position: google.maps.ControlPosition.TOP_CENTER, drawingModes: [google.maps.drawing.OverlayType.POLYGON,]
