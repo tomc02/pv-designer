@@ -7,6 +7,7 @@ from .forms import SolarPVCalculatorForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params
 from django.views.decorators.csrf import csrf_exempt
 from .models import SolarPVCalculator, MapData
+from django.views.static import serve
 
 def solar_pv_calculator(request):
     if request.method == 'POST':
@@ -96,3 +97,4 @@ def calculations_list(request):
     records = SolarPVCalculator.objects.filter(user=request.user)
     context = {'records': records}
     return render(request, 'user_calculations.html', context)
+

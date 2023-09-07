@@ -49,7 +49,7 @@
 
     </body>
     <script>
-        var pvPanelImg = '{% static "images/pv_panel.png" %}';
+        var pvPanelImg = '{% static "images/pv_panel_rotated.png" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
         var formUrl = "{% url 'solar_pv_calculator' %}";
@@ -58,6 +58,10 @@
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         initMap();
+        function getPvImgUrl(){
+            const currentTime = new Date().getTime();
+            return '{% static "images/pv_panel_rotated.png" %}?v=' + currentTime;
+        }
     </script>
     </html>
 

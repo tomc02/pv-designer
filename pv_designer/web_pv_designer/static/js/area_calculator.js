@@ -1,4 +1,5 @@
 var shapesData = [];
+
 function calculateArea() {
     clearSelection();
     markers.forEach(function (marker) {
@@ -10,6 +11,7 @@ function calculateArea() {
     let i = 0;
     let panelsCount = 0;
     console.log(shapes);
+    shapesData = [];
     shapes.forEach(function (shape, index) {
         i++;
         if (shape instanceof google.maps.Polygon) {
@@ -56,11 +58,12 @@ function findPolygonCorners(points, rotate) {
         leftTop: leftTop, rightTop: rightTop, leftBottom: leftBottom, rightBottom: rightBottom
     };
 }
+
 function rotatePolygon(polygon) {
     // rotate polygon
     const cornerPoints = findPolygonCorners(polygon.getPath().getArray(), false);
     console.log("rotatePolygon");
-    polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom,cornerPoints.leftTop]);
+    polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
     return polygon;
 }
 
@@ -69,24 +72,27 @@ function fillPolygon(index) {
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     polygon = shapes[index];
 
-    let heading = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
-    cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, heading);
-    heading = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
-    cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, heading);
+    let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
+    const angle = 90 - headingLTR;
+    rotateImage(angle);
+    cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
+    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
+    cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
+    console.log("headingLTR: " + headingLTR);
+    console.log("headingRTL: " + headingRTL);
 
     var colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
     var topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
 
-    rotateImage(0)
-    let panelsCount =  drawPoints(topPoints, polygon);
+    let panelsCount = drawPoints(topPoints, polygon, false, angle);
     for (var i = 0; i < 10; i++) {
-        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, 180);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, 180);
+        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
+        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-        if(panelsCount > 0){
-            panelsCount += drawPoints(topPoints, polygon, true);
-        } else{
-            panelsCount = drawPoints(topPoints, polygon, false);
+        if (panelsCount > 0) {
+            panelsCount += drawPoints(topPoints, polygon, true, angle);
+        } else {
+            panelsCount = drawPoints(topPoints, polygon, false, angle);
         }
 
     }
@@ -105,14 +111,17 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon, notFirstLine = false) {
+function drawPoints(points, polygon, notFirstLine = false, angle) {
+    const imgUrl = getPvImgUrl();
+    console.log(imgUrl)
     let panelCount = 0;
     for (let i = 0; i < points.length; i++) {
         const leftTop = polygon.getPath().getAt(0);
-        const panelWidthPix = calculatePixelSize(map, panelWidth, leftTop.lat());
-        const panelHeightPix = calculatePixelSize(map, panelHeight, leftTop.lat());
+        const offset = Math.abs(angle)/ 100;
+        const panelWidthPix = calculatePixelSize(map, panelWidth + offset, leftTop.lat());
+        const panelHeightPix = calculatePixelSize(map, panelHeight + offset, leftTop.lat());
         const picture = {
-            url: pvPanelImg,
+            url: imgUrl,
             scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
             anchor: new google.maps.Point(0, 0)
 
