@@ -83,6 +83,8 @@ function fillPolygon(index) {
     for (let i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
+        let azimuth = 180 - (headingLTR + 90);
+        console.log('azimuth: ' + azimuth)
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if (panelsCount > 0) {
             panelsCount += drawPoints(topPoints, polygon, true);
