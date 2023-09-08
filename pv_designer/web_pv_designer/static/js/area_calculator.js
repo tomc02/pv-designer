@@ -5,6 +5,13 @@ var panelWidthRotated = 0;
 var panelHeightRotated = 0;
 let pvPanelUrl;
 
+class areaData {
+    constructor(panelsCount, azimuth) {
+        this.panelsCount = panelsCount;
+        this.azimuth = azimuth;
+    }
+}
+
 function calculateArea() {
     clearSelection();
     clearMarkers();
@@ -14,9 +21,14 @@ function calculateArea() {
     shapesData = [];
     shapes.forEach(function (shape, index) {
         i++;
-        panelsCount = fillPolygon(index);
+        const polygon = fillPolygon(index);
         const area = google.maps.geometry.spherical.computeArea(shape.getPath());
-        const shapeData = {'type': 'polygon', 'area': area, 'panelsCount': panelsCount};
+        const shapeData = {
+            'type': 'polygon',
+            'area': area,
+            'panelsCount': polygon.panelsCount,
+            'azimuth': polygon.azimuth
+        };
         shapesData.push(shapeData);
     });
     // lock map zoom
@@ -73,28 +85,26 @@ function fillPolygon(index) {
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
-    console.log("headingLTR: " + headingLTR);
-    console.log("headingRTL: " + headingRTL);
+    let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
+    console.log('azimuth: ' + azimuth)
+    const headingRTD = headingLTR + 90;
 
     const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
     let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-
-    let panelsCount = drawPoints(topPoints, polygon, false);
+    let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD);
     for (let i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
-        let azimuth = 180 - (headingLTR + 90);
         console.log('azimuth: ' + azimuth)
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true);
+            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false);
+            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD);
         }
 
     }
-    console.log(panelsCount);
-    return panelsCount;
+    return new areaData(panelsCount, azimuth);
 }
 
 function generatePointsBetween(startPoint, endPoint, numPoints) {
@@ -108,21 +118,12 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon, notFirstLine = false) {
-    const imgUrl = pvPanelUrl;
-    console.log(imgUrl)
+function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD){
     let panelCount = 0;
+    const leftTop = polygon.getPath().getAt(0);
+    const picture = getMarkerPicture(leftTop,pvPanelUrl);
     for (let i = 0; i < points.length; i++) {
-        const leftTop = polygon.getPath().getAt(0);
-        const panelWidthPix = calculatePixelSize(map, panelWidthRotated, leftTop.lat());
-        const panelHeightPix = calculatePixelSize(map, panelHeightRotated, leftTop.lat());
-        const picture = {
-            url: imgUrl,
-            scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
-            anchor: new google.maps.Point(0, 0)
-
-        };
-        if (isPanelInPolygon(points[i], polygon, notFirstLine)) {
+        if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
             putMarker(points[i], picture);
             panelCount++;
         }
@@ -141,7 +142,7 @@ function rotateImage(angle) {
         url: rotateImgUrl,
         data: {'angle': angle},
     });
-    let offset = Math.abs(angle) / 100;
+    let offset = Math.abs(angle) / 80;
     let offsetHeight = offset;
     if (angle < 45 && angle > -45) {
         if (offset > 0.1) {
