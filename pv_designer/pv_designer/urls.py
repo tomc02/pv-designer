@@ -30,4 +30,5 @@ urlpatterns = [
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
     path('calculation_result/', views.calculation_result, name='calculation_result'),
     path('calculations/', views.calculations_list, name='calculations'),
+    path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
 ]

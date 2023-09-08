@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-
+import requests
 import matplotlib.pyplot as plt
 from PIL import Image
 from django.http import JsonResponse
@@ -118,3 +118,12 @@ def create_pdf_report(path_to_source):
     print(f"Report generated and saved as {pdf_file}")
 
     return True
+
+def get_pvgis_response(params):
+    base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
+    response = requests.get(base_url, params=params)
+    return response
+
+def save_response(response, user_id):
+    with open('./web_pv_designer/pdf_sources/' + str(user_id) + '/response.json', 'wb') as f:
+        f.write(response.text.encode('utf-8'))

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SolarPVCalculatorForm
-from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params
+from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response
 from django.views.decorators.csrf import csrf_exempt
 from .models import SolarPVCalculator, MapData
 from django.views.static import serve
@@ -18,11 +18,8 @@ def solar_pv_calculator(request):
             calculation = form.save(commit=False)
             calculation.user = request.user
             calculation.save()
-            base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
             params = set_params(data)
-            response = requests.get(base_url, params=params)
-            with open('./web_pv_designer/pdf_sources/' + str(request.user.id) + '/response.json', 'wb') as f:
-                f.write(response.text.encode('utf-8'))
+            save_response(get_pvgis_response(params), request.user.id)
             return redirect('calculation_result')
     elif request.method == 'GET':
         form = SolarPVCalculatorForm()
@@ -99,3 +96,15 @@ def calculations_list(request):
     context = {'records': records}
     return render(request, 'user_calculations.html', context)
 
+
+def get_pdf_result(request):
+    if request.method == 'GET':
+        #get the id of the calculation
+        calculation_id = request.GET.get('calculation_id')
+        #get the calculation object
+        calculation = SolarPVCalculator.objects.get(id=calculation_id)
+        print(calculation.latitude)
+        params = set_params(calculation.to_JSON())
+        save_response(get_pvgis_response(params), request.user.id)
+        return redirect('calculation_result')
+    return render(request, 'calculation_result.html')

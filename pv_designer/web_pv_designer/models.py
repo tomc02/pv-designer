@@ -50,3 +50,19 @@ class SolarPVCalculator(models.Model):
     def __str__(self):
         return f"Solar PV Calculator - ID: {self.id}"
 
+    def to_JSON(self):
+        return {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'installed_peak_power': self.installed_peak_power,
+            'system_loss': self.system_loss,
+            'mounting_position': self.mounting_position,
+            'slope': self.slope,
+            'azimuth': self.azimuth,
+            'pv_electricity_price': self.pv_electricity_price,
+            'pv_system_cost': self.pv_system_cost,
+            'interest': self.interest,
+            'lifetime': self.lifetime,
+        }
+
+
