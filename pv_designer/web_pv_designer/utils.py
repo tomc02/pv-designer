@@ -1,11 +1,13 @@
 import base64
-import os
 import json
+import os
+
 import matplotlib.pyplot as plt
 from PIL import Image
+from django.http import JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from django.http import JsonResponse
+
 from .models import MapData
 
 
@@ -22,7 +24,7 @@ def process_map_data(data, user_id):
             map_data.save()
         else:
             map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                           areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'])
+                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'])
         saved_data = map_data.save()
         save_map_img(parsed_data['imageUrl'], user_id)
         # Save data to the database
@@ -63,9 +65,7 @@ def set_params(data):
     return params
 
 
-def rotate_pv_img(angle):
-    original_image_path = '/static/images/pv_panel.png'
-    rotated_image_path = '/static/images/pv_panel_rotated.png'
+def rotate_pv_img(angle, original_image_path, rotated_image_path):
     file_path = os.path.dirname(os.path.relpath(__file__))
     original_image = Image.open(file_path + original_image_path).convert("RGBA")
 

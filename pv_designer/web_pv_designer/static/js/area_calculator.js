@@ -3,6 +3,7 @@ var panelWidth = 1.1;
 var panelHeight = 2.1;
 var panelWidthRotated = 0;
 var panelHeightRotated = 0;
+let pvPanelUrl;
 
 function calculateArea() {
     clearSelection();
@@ -68,7 +69,7 @@ function fillPolygon(index) {
 
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     const angle = 90 - headingLTR;
-    rotateImage(angle);
+    pvPanelUrl = rotateImage(angle);
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
@@ -106,7 +107,7 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
 }
 
 function drawPoints(points, polygon, notFirstLine = false) {
-    const imgUrl = getPvImgUrl();
+    const imgUrl = pvPanelUrl;
     console.log(imgUrl)
     let panelCount = 0;
     for (let i = 0; i < points.length; i++) {
@@ -151,4 +152,5 @@ function rotateImage(angle) {
         panelWidthRotated = panelHeight + offset;
         panelHeightRotated = panelWidth + offset
     }
+    return getPvImgUrl();
 }

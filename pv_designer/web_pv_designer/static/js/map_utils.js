@@ -16,14 +16,26 @@ function putMarker(markerPosition, markerIcon) {
         selectMarker(marker);
     });
 }
+function getMarkerPicture(position, imgUrl){
+    const panelWidthPix = calculatePixelSize(map, panelWidthRotated, position.lat());
+    const panelHeightPix = calculatePixelSize(map, panelHeightRotated, position.lat());
+    return {
+        url: imgUrl,
+        scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
+        anchor: new google.maps.Point(0, 0)
+
+    };
+}
 function selectMarker(marker){
     clearMarkerSelection();
     selectedMarker = marker;
     marker.setDraggable(true);
+    marker.setIcon(getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl()));
 }
 function clearMarkerSelection(){
     if (selectedMarker) {
         selectedMarker.setDraggable(false);
+        selectedMarker.setIcon(getMarkerPicture(selectedMarker.getPosition(), getPvImgUrl()));
         selectedMarker = null;
     }
 }

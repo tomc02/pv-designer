@@ -63,6 +63,8 @@ function getMapPicture() {
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
+    clearSelection();
+    clearMarkerSelection();
     setTimeout(function () {
         html2canvas(document.querySelector('#map'), {
             backgroundColor: null,
@@ -104,4 +106,8 @@ function loadMapData() {
 function getPvImgUrl() {
     const currentTime = new Date().getTime();
     return pvPanelImg + '?v=' + currentTime;
+}
+function getPvImgSelectedUrl() {
+    const currentTime = new Date().getTime();
+    return pvPanelSelectedImg + '?v=' + currentTime;
 }
