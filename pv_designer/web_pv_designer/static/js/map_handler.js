@@ -2,8 +2,6 @@ var map;
 var drawingManager;
 var selectedShape;
 var shapes = [];
-var panelWidth = 1.1;
-var panelHeight = 2.1;
 var markers = [];
 
 function initMap() {
@@ -30,7 +28,11 @@ function initMap() {
 
     google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
 
-    google.maps.event.addListener(map, 'click', clearSelection);
+    google.maps.event.addListener(map, 'click', function (){
+        clearSelection();
+        clearMarkerSelection();
+    });
+
     searchBoxInit(map);
     google.maps.event.addDomListener(document, 'keyup', function (e) {
         const code = (e.keyCode ? e.keyCode : e.which);

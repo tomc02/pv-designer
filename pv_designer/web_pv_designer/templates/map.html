@@ -32,7 +32,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div id="actions">
-                    <button class="btn btn-danger mb-2" onclick="deleteShape()">Delete</button>
+                    <button class="btn btn-danger mb-2" onclick="deleteMarker()">Delete</button>
                     <button class="btn btn-success mb-2" onclick="calculateArea()">Calculate Area</button>
                     <button class="btn btn-info mb-2" onclick="getMapPicture()">Take Screenshot</button>
                     <button class="btn btn-info mb-2" onclick="rotateSelectedShape()">Rotate</button>
@@ -58,10 +58,6 @@
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         initMap();
-        function getPvImgUrl(){
-            const currentTime = new Date().getTime();
-            return '{% static "images/pv_panel_rotated.png" %}?v=' + currentTime;
-        }
     </script>
     </html>
 

@@ -1,5 +1,5 @@
-var imageUrl = null;
-var mapDataLoaded = false;
+let imageUrl = null;
+let mapDataLoaded = false;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
     $.ajax({
@@ -19,7 +19,7 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
 
 function moveToForm() {
     let mapDataID = '';
-    if (mapDataLoaded){
+    if (mapDataLoaded) {
         mapDataID = mapData.id;
     }
     const dataToSave = {
@@ -59,7 +59,7 @@ function getMapPicture() {
         fullscreenControl: false,
         draggable: false,
         scrollwheel: false,
-        disableDoubleClickZoom: true
+        disableDoubleClickZoom: true,
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
@@ -99,4 +99,9 @@ function loadMapData() {
         });
     }
     return map;
+}
+
+function getPvImgUrl() {
+    const currentTime = new Date().getTime();
+    return pvPanelImg + '?v=' + currentTime;
 }

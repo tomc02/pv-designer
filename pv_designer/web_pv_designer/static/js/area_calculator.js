@@ -1,29 +1,23 @@
 var shapesData = [];
+var panelWidth = 1.1;
+var panelHeight = 2.1;
+var panelWidthRotated = 0;
+var panelHeightRotated = 0;
 
 function calculateArea() {
     clearSelection();
-    markers.forEach(function (marker) {
-        marker.setMap(null);
-    });
-    markers = [];
-    let area_string = "Plocha:" + '<br>';
-    let sum = 0;
+    clearMarkers();
     let i = 0;
     let panelsCount = 0;
     console.log(shapes);
     shapesData = [];
     shapes.forEach(function (shape, index) {
         i++;
-        if (shape instanceof google.maps.Polygon) {
-            panelsCount = fillPolygon(index);
-            var area = google.maps.geometry.spherical.computeArea(shape.getPath());
-            area_string += i + ': ' + area.toFixed(2) + " m^2" + '<br>';
-            sum += area;
-            const shapeData = {'type': 'polygon', 'area': area, 'panelsCount': panelsCount};
-            shapesData.push(shapeData);
-        }
+        panelsCount = fillPolygon(index);
+        const area = google.maps.geometry.spherical.computeArea(shape.getPath());
+        const shapeData = {'type': 'polygon', 'area': area, 'panelsCount': panelsCount};
+        shapesData.push(shapeData);
     });
-    document.getElementById("areaDisplay").innerHTML = area_string + "<br> Celkova plocha: " + sum.toFixed(2) + " m^2";
     // lock map zoom
     map.setOptions({zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
 }
@@ -70,7 +64,7 @@ function rotatePolygon(polygon) {
 function fillPolygon(index) {
     const cornerPoints = findPolygonCorners(shapes[index].getPath().getArray(), true);
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
-    polygon = shapes[index];
+    let polygon = shapes[index];
 
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     const angle = 90 - headingLTR;
@@ -81,18 +75,18 @@ function fillPolygon(index) {
     console.log("headingLTR: " + headingLTR);
     console.log("headingRTL: " + headingRTL);
 
-    var colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
-    var topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
+    const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
+    let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
 
-    let panelsCount = drawPoints(topPoints, polygon, false, angle);
-    for (var i = 0; i < 10; i++) {
+    let panelsCount = drawPoints(topPoints, polygon, false);
+    for (let i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true, angle);
+            panelsCount += drawPoints(topPoints, polygon, true);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false, angle);
+            panelsCount = drawPoints(topPoints, polygon, false);
         }
 
     }
@@ -111,41 +105,24 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon, notFirstLine = false, angle) {
+function drawPoints(points, polygon, notFirstLine = false) {
     const imgUrl = getPvImgUrl();
     console.log(imgUrl)
     let panelCount = 0;
     for (let i = 0; i < points.length; i++) {
         const leftTop = polygon.getPath().getAt(0);
-        const offset = Math.abs(angle)/ 100;
-        const panelWidthPix = calculatePixelSize(map, panelWidth + offset, leftTop.lat());
-        const panelHeightPix = calculatePixelSize(map, panelHeight + offset, leftTop.lat());
+        const panelWidthPix = calculatePixelSize(map, panelWidthRotated, leftTop.lat());
+        const panelHeightPix = calculatePixelSize(map, panelHeightRotated, leftTop.lat());
         const picture = {
             url: imgUrl,
             scaledSize: new google.maps.Size(panelWidthPix, panelHeightPix),
             anchor: new google.maps.Point(0, 0)
 
         };
-        let panelLeftTop = points[i];
-        let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, panelWidth, 90);
-        let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, panelHeight, 180);
-        let isLeftTop = google.maps.geometry.poly.containsLocation(panelLeftTop, polygon);
-        let isRightBottom = google.maps.geometry.poly.containsLocation(panelRightBottom, polygon);
-        let isRightTop = true;
-        if (notFirstLine) {
-            isRightTop = google.maps.geometry.poly.containsLocation(panelRightTop, polygon);
-        }
-        if (isLeftTop && isRightBottom && isRightTop) {
-            const marker = new google.maps.Marker({
-                position: points[i],
-                map: map,
-                icon: picture,
-                title: 'Panel position'
-            });
-            markers.push(marker);
+        if (isPanelInPolygon(points[i], polygon, notFirstLine)) {
+            putMarker(points[i], picture);
             panelCount++;
         }
-
     }
     return panelCount;
 }
@@ -156,8 +133,22 @@ function calculatePixelSize(map, meters, latitude) {
 }
 
 function rotateImage(angle) {
+    console.log(angle)
     $.ajax({
         url: rotateImgUrl,
         data: {'angle': angle},
     });
+    let offset = Math.abs(angle) / 100;
+    let offsetHeight = offset;
+    if (angle < 45 && angle > -45) {
+        if (offset > 0.1) {
+            offsetHeight -= 0.1;
+        }
+        panelWidthRotated = panelWidth + offset;
+        panelHeightRotated = panelHeight + offsetHeight
+    } else {
+        offset = (90 - Math.abs(angle)) / 100;
+        panelWidthRotated = panelHeight + offset;
+        panelHeightRotated = panelWidth + offset
+    }
 }
