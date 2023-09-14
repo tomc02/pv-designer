@@ -1,8 +1,9 @@
 import base64
 import json
 import os
-import requests
+
 import matplotlib.pyplot as plt
+import requests
 from PIL import Image
 from django.http import JsonResponse
 from reportlab.lib.pagesizes import letter
@@ -21,21 +22,23 @@ def process_map_data(data, user_id):
             map_data.areas = parsed_data['shapes']
             map_data.areasData = parsed_data['shapesData']
             map_data.zoom = parsed_data['zoom']
+            map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.save()
         else:
+            last_map_data = MapData.objects.last()
+            img_path = save_map_img(parsed_data['imageUrl'], user_id, last_map_data.id + 1)
             map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'])
-        saved_data = map_data.save()
-        save_map_img(parsed_data['imageUrl'], user_id)
-        # Save data to the database
+                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path)
+            map_data.save()
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
     return map_data.id
 
 
-def save_map_img(image_url, user_id):
+def save_map_img(image_url, user_id, db_id=None):
     image_url = image_url.replace('data:image/png;base64,', '')
     save_path = './web_pv_designer/pdf_sources/' + user_id + '/'
+    db_path = './media/map_images/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     with open(save_path + 'pv_image.png', "wb") as fh:
@@ -44,6 +47,16 @@ def save_map_img(image_url, user_id):
     width, height = im.size
     im = im.crop((0, 0, width, height - 15))
     im.save(save_path + 'pv_image.png')
+    if db_id is not None:
+        db_path = db_path + str(db_id) + '.png'
+        im.save(db_path)
+        return 'map_images/' + str(db_id) + '.png'
+
+
+def load_map_img(user_id):
+    load_path = './web_pv_designer/pdf_sources/' + user_id + '/'
+    im = Image.open(load_path + 'pv_image.png')
+    return im
 
 
 def set_params(data):
@@ -119,10 +132,12 @@ def create_pdf_report(path_to_source):
 
     return True
 
+
 def get_pvgis_response(params):
     base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
     response = requests.get(base_url, params=params)
     return response
+
 
 def save_response(response, user_id):
     with open('./web_pv_designer/pdf_sources/' + str(user_id) + '/response.json', 'wb') as f:

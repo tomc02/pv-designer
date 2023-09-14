@@ -14,6 +14,7 @@ class MapData(models.Model):
     areas = models.JSONField()
     areasData = models.JSONField()
     zoom = models.IntegerField()
+    map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 

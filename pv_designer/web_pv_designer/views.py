@@ -99,12 +99,16 @@ def calculations_list(request):
 
 def get_pdf_result(request):
     if request.method == 'GET':
-        #get the id of the calculation
         calculation_id = request.GET.get('calculation_id')
-        #get the calculation object
         calculation = SolarPVCalculator.objects.get(id=calculation_id)
-        print(calculation.latitude)
         params = set_params(calculation.to_JSON())
         save_response(get_pvgis_response(params), request.user.id)
+        # load map image and save it to pdf_sources folder
+        map_data = MapData.objects.get(id=calculation.map_data.id)
+        image = map_data.map_image
+        print(image)
+        image_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/' + 'pv_image.png'
+        with open(image_path, 'wb') as f:
+            f.write(image.file.read())
         return redirect('calculation_result')
     return render(request, 'calculation_result.html')
