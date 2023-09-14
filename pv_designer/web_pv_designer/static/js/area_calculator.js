@@ -121,10 +121,11 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
 function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD){
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
-    const picture = getMarkerPicture(leftTop,pvPanelUrl);
+    const angle = Math.abs(90 - headingLTR);
+    const picture = getMarkerPicture(leftTop,pvPanelUrl, angle);
     for (let i = 0; i < points.length; i++) {
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            putMarker(points[i], picture);
+            putMarker(points[i], picture, angle);
             panelCount++;
         }
     }
@@ -142,18 +143,5 @@ function rotateImage(angle) {
         url: rotateImgUrl,
         data: {'angle': angle},
     });
-    let offset = Math.abs(angle) / 80;
-    let offsetHeight = offset;
-    if (angle < 45 && angle > -45) {
-        if (offset > 0.1) {
-            offsetHeight -= 0.1;
-        }
-        panelWidthRotated = panelWidth + offset;
-        panelHeightRotated = panelHeight + offsetHeight
-    } else {
-        offset = (90 - Math.abs(angle)) / 100;
-        panelWidthRotated = panelHeight + offset;
-        panelHeightRotated = panelWidth + offset
-    }
     return getPvImgUrl();
 }
