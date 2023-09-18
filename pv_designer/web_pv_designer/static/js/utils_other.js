@@ -60,6 +60,7 @@ function getMapPicture() {
         draggable: false,
         scrollwheel: false,
         disableDoubleClickZoom: true,
+
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
@@ -80,7 +81,7 @@ function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
         console.log(mapData);
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0,
+            center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0, rotateControl: false,
         });
         map.setMapTypeId('satellite');
         mapData.areas.forEach(function (area) {
@@ -97,17 +98,18 @@ function loadMapData() {
         mapDataLoaded = true;
     } else {
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0,
+            center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0, rotateControl: false,
         });
     }
     return map;
 }
 
-function getPvImgUrl() {
+function getPvImgUrl(angle) {
     const currentTime = new Date().getTime();
-    return pvPanelImg + '?v=' + currentTime;
+    return pvPanelImg + angle + '.png' + '?v=' + currentTime;
 }
-function getPvImgSelectedUrl() {
+function getPvImgSelectedUrl(angle) {
+    console.log('getPvImgSelectedUrl' + angle);
     const currentTime = new Date().getTime();
-    return pvPanelSelectedImg + '?v=' + currentTime;
+    return pvPanelSelectedImg + angle + '.png' + '?v=' + currentTime;
 }

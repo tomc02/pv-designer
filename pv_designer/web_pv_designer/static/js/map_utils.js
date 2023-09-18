@@ -24,14 +24,24 @@ function putMarker(markerPosition, markerIcon, angle) {
 }
 
 function getMarkerPicture(position, imgUrl, angle) {
+    const angleAbs = Math.abs(angle);
     const panelWidthPix = calculatePixelSize(map, panelWidth, position.lat());
     const panelHeightPix = calculatePixelSize(map, panelHeight, position.lat());
-    const bx = panelWidthPix * Math.cos(angle * Math.PI / 180) + panelHeightPix * Math.sin(angle * Math.PI / 180);
-    const by = panelWidthPix * Math.sin(angle * Math.PI / 180) + panelHeightPix * Math.cos(angle * Math.PI / 180);
+    const rotatedPanelWidth = panelWidthPix * Math.cos(angleAbs * Math.PI / 180) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+    const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + panelHeightPix * Math.cos(angleAbs * Math.PI / 180);
+    let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
+    let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+
+    console.log('angle: ' + angle + ' angleABS: ' + angleAbs);
+    if (angle > 0) {
+        anchorX = 0;
+    } else {
+        anchorY = 0;
+    }
     return {
         url: imgUrl,
-        scaledSize: new google.maps.Size(bx, by),
-        anchor: new google.maps.Point(0, 0),
+        scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
+        anchor: new google.maps.Point(anchorX, anchorY),
     };
 }
 
@@ -39,14 +49,14 @@ function selectMarker(marker) {
     clearMarkerSelection();
     selectedMarker = marker;
     marker.setDraggable(true);
-    console.log(marker.title);
-    marker.setIcon(getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(), marker.title));
+    console.log('title:' + marker.title);
+    marker.setIcon(getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(marker.title), marker.title));
 }
 
 function clearMarkerSelection() {
     if (selectedMarker) {
         selectedMarker.setDraggable(false);
-        selectedMarker.setIcon(getMarkerPicture(selectedMarker.getPosition(), getPvImgUrl(), selectedMarker.title));
+        selectedMarker.setIcon(getMarkerPicture(selectedMarker.getPosition(), getPvImgUrl(selectedMarker.title), selectedMarker.title));
         selectedMarker = null;
     }
 }

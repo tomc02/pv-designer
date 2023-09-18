@@ -59,8 +59,8 @@ def account_details(request):
 
 def rotate_img(request):
     angle = request.GET.get('angle')
-    result = rotate_pv_img(angle,'/static/images/pv_panel.png', '/static/images/pv_panel_rotated.png')
-    result = rotate_pv_img(angle, '/static/images/pv_panel_selected.png', '/static/images/pv_panel_selected_rotated.png')
+    result = rotate_pv_img(angle,'/static/images/pv_panel.png', '/static/images/pv_panel_rotated')
+    result = rotate_pv_img(angle, '/static/images/pv_panel_selected.png', '/static/images/pv_panel_selected_rotated')
     return JsonResponse({'result': result})
 
 

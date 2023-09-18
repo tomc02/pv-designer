@@ -14,6 +14,7 @@ from .models import MapData
 
 def process_map_data(data, user_id):
     try:
+        delete_rotated_images()
         parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
             map_data = MapData.objects.get(id=parsed_data['mapDataID'])
@@ -85,7 +86,16 @@ def rotate_pv_img(angle, original_image_path, rotated_image_path):
     rotation_angle = float(angle)
     rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)
 
-    rotated_image.save(file_path + rotated_image_path)
+    rotated_image.save(file_path + rotated_image_path + angle + '.png')
+
+def delete_rotated_images():
+    file_path = os.path.dirname(os.path.relpath(__file__))
+    dir_path = file_path + '/static/images/'
+    for file in os.listdir(dir_path):
+        if file.startswith('pv_panel_rotated'):
+            os.remove(dir_path + file)
+        if file.startswith('pv_panel_selected_rotated'):
+            os.remove(dir_path + file)
 
 
 def create_pdf_report(path_to_source):
