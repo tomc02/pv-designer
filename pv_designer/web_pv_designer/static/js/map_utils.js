@@ -77,6 +77,30 @@ function loadMapData() {
             center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0, rotateControl: false,
         });
     }
+
+    /* create delete button
+    <button className="btn btn-danger" onClick="deleteShape()">
+                            <i className="bi bi-trash"></i>
+                        </button> */
+
+    const deleteButton = document.createElement('button');
+    deleteButton.id = 'markerDeleteButton';
+    deleteButton.classList.add('btn', 'btn-danger');
+    deleteButton.addEventListener('click', function () {
+        let selectedMarkerKey = Object.keys(markers).find(key => markers[key].includes(selectedMarker));
+        deleteMarker(selectedMarkerKey);
+        deleteButton.style.display = 'none';
+    });
+    // add padding to the button
+    deleteButton.style.marginRight = '10px';
+    const deleteButtonIcon = document.createElement('i');
+    deleteButtonIcon.classList.add('bi', 'bi-trash');
+    deleteButton.appendChild(deleteButtonIcon);
+
+    // Add the custom button to the map
+    map.controls[google.maps.ControlPosition.RIGHT].push(deleteButton);
+    deleteButton.style.display = 'none';
+
     clearHighlight();
     return map;
 }

@@ -48,11 +48,40 @@ function deleteShape() {
     }
 }
 
-function fillAreaWithPanels(){
-    if(selectedShape){
+function fillAreaWithPanels() {
+    if (selectedShape) {
+        const index = shapes.indexOf(selectedShape);
+        clearMarkers(index);
         const data = fillPolygon(shapes.indexOf(selectedShape));
-        const index = shapes.indexOf(selectedShape) + 1;
-        const p = document.getElementById("panelCount" + index);
-        p.textContent= data.panelsCount;
+        const area = google.maps.geometry.spherical.computeArea(selectedShape.getPath());
+        const p = document.getElementById("panelCount" + (index + 1));
+        p.textContent = data.panelsCount;
+        const a = document.getElementById("azimuth" + (index + 1));
+        a.textContent = data.azimuth;
     }
+}
+
+function prepareAreasData(){
+    for (let i = 0; i < shapes.length; i++) {
+        const shape = shapes[i];
+        const area = google.maps.geometry.spherical.computeArea(shape.getPath());
+        const panelCount = document.getElementById("panelCount" + (i + 1)).textContent;
+        const azimuth = document.getElementById("azimuth" + (i + 1)).textContent;
+        let slope = document.getElementById("slope" + (i + 1)).textContent;
+        const title = document.getElementById("title" + (i + 1)).textContent;
+        console.log('slope: ' + title);
+        if(slope === ''){
+            slope = 0;
+        }
+        const shapeData = {
+            'type': 'polygon',
+            'area': area,
+            'panelsCount': panelCount,
+            'azimuth': azimuth,
+            'slope': slope,
+            'title': title,
+        };
+        console.log(shapeData);
+        shapesData.push(shapeData);
+        }
 }

@@ -7,11 +7,12 @@ function addControlPanel() {
     newSubpanel.innerHTML = `
                 <div class="card" onclick="highlightControlPanel(this)">
                     <div class="card-body">
-                        <h5 class="card-title" ondblclick="makeTitleEditable(this)">Area ${areaIndex}</h5>
+                        <h5 class="card-title" ondblclick="makeTitleEditable(this)" id="title${areaIndex}">Area ${areaIndex}</h5>
                         <p>Panels: <span id="panelCount${areaIndex}">0</span></p>
+                        <p>Azimth: <span id="azimuth${areaIndex}">0</span></p>
                         <div class="input-group mt-3" style="padding-bottom: 10px">
                             <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
-                            <input class="form-control" type="number" min="0" max="90" id="roofSlopeInput" placeholder="Enter slope">
+                            <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)">
                         </div>
                         <button class="btn btn-primary" onclick="fillAreaWithPanels()">Fill with panels</button>
                         <button class="btn btn-primary" onclick="rotateSelectedShape()">Rotate polygon</button>
@@ -86,4 +87,12 @@ function makeTitleEditable(titleElement) {
         titleElement.contentEditable = false;
         titleElement.classList.remove("editable-title");
     });
+}
+
+function refreshPanelsCount(){
+    // refresh panels count on the control panel
+    for (let i = 0; i < shapes.length; i++) {
+        const p = document.getElementById("panelCount" + (i + 1));
+        p.textContent = markers[i].length;
+    }
 }

@@ -1,14 +1,16 @@
-var markers = [];
+var markers = {'0' : [], '1' : [], '2' : [], '3' : []}
 let selectedMarker;
 
-function clearMarkers() {
-    markers.forEach(function (marker) {
-        marker.setMap(null);
-    });
-    markers = [];
+function clearMarkers(areaIndex) {
+    if (markers[areaIndex] !== undefined) {
+        markers[areaIndex].forEach(function (marker) {
+            marker.setMap(null);
+        });
+        markers[areaIndex] = [];
+    }
 }
 
-function putMarker(markerPosition, markerIcon, angle) {
+function putMarker(markerPosition, markerIcon, angle, areaIndex) {
     angle = angle + '';
     setTimeout(function () {
         const marker = new google.maps.Marker({
@@ -17,7 +19,8 @@ function putMarker(markerPosition, markerIcon, angle) {
             icon: markerIcon,
             title: angle,
         });
-        markers.push(marker);
+        console.log('putMarker' + areaIndex);
+        markers[areaIndex].push(marker );
         google.maps.event.addListener(marker, 'click', function () {
             selectMarker(marker);
         });
@@ -46,12 +49,13 @@ function getMarkerPicture(position, imgUrl, angle) {
     };
 }
 
-function selectMarker(marker) {
+function selectMarker(marker, areaIndex) {
     clearMarkerSelection();
     selectedMarker = marker;
     marker.setDraggable(true);
     console.log('title:' + marker.title);
     marker.setIcon(getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(marker.title), marker.title));
+    document.getElementById('markerDeleteButton').style.display = 'block';
 }
 
 function clearMarkerSelection() {
@@ -62,13 +66,14 @@ function clearMarkerSelection() {
     }
 }
 
-function deleteMarker() {
+function deleteMarker(areaIndex) {
     if (selectedMarker) {
         selectedMarker.setMap(null); // Remove shape from the map
-        const index = markers.indexOf(selectedMarker);
+        const index = markers[areaIndex].indexOf(selectedMarker);
         if (index !== -1) {
-            markers.splice(index, 1); // Remove shape from the shapes array
+            markers[areaIndex].splice(index, 1); // Remove shape from the shapes array
         }
         selectedMarker = null;
+        refreshPanelsCount();
     }
 }

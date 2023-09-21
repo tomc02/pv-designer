@@ -18,6 +18,7 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
 }
 
 function moveToForm() {
+    prepareAreasData();
     let mapDataID = '';
     if (mapDataLoaded) {
         mapDataID = mapData.id;

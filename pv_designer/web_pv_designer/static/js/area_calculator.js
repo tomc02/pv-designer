@@ -91,16 +91,16 @@ function fillPolygon(index) {
 
     const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
     let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-    let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl);
+    let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
     for (let i = 0; i < 10; i++) {
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
         console.log('azimuth: ' + azimuth)
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD, pvPanelUrl);
+            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD, pvPanelUrl, index);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl);
+            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
         }
 
     }
@@ -118,14 +118,14 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD, pvPanelUrl){
+function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD, pvPanelUrl, polygonIndex){
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
     const angle = 90 - headingLTR;
     const picture = getMarkerPicture(leftTop,pvPanelUrl, angle);
     for (let i = 0; i < points.length; i++) {
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            putMarker(points[i], picture, angle);
+            putMarker(points[i], picture, angle, polygonIndex);
             panelCount++;
         }
     }
