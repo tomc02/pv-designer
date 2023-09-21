@@ -18,18 +18,24 @@ function initMap() {
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
         const shape = event.overlay;
-        shapes.push(shape);
-        google.maps.event.addListener(shape, 'click', function () {
+        if (shapes.length < 4) {
+            addSubpanel();
+            shapes.push(shape);
+            google.maps.event.addListener(shape, 'click', function () {
+                selectShape(shape);
+            });
+            drawingManager.setDrawingMode(null);
             selectShape(shape);
-        });
-        drawingManager.setDrawingMode(null);
-        selectShape(shape);
+        } else {
+            shape.setMap(null);
+            alert('You can draw only 4 areas');
+        }
     });
 
     google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
 
     google.maps.event.addListener(map, 'click', function (){
-        clearSelection();
+        clearSelectionH();
         clearMarkerSelection();
     });
 
@@ -49,10 +55,20 @@ function clearSelection() {
         selectedShape = null;
     }
 }
+function clearSelectionH() {
+    if (selectedShape) {
+        selectedShape.setEditable(false);
+        selectedShape.setDraggable(false);
+        selectedShape = null;
+        clearHighlight();
+    }
+}
 
 function selectShape(shape) {
     clearSelection();
     selectedShape = shape;
+    const index = shapes.indexOf(shape);
+    selectSubpanel(index);
     shape.setEditable(true);
     shape.setDraggable(true);
 }
@@ -65,6 +81,7 @@ function deleteShape() {
     if (selectedShape) {
         selectedShape.setMap(null); // Remove shape from the map
         const index = shapes.indexOf(selectedShape);
+        deleteSubpanel(index);
         if (index !== -1) {
             shapes.splice(index, 1); // Remove shape from the shapes array
         }

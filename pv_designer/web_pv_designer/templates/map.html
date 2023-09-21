@@ -29,6 +29,10 @@
                 <div id="map"></div>
             </div>
         </div>
+        <div class="row" style="padding-top: 10px" id="areaControlPanels">
+
+
+        </div>
         <div class="row">
             <div class="col-md-6">
                 <div id="actions">
@@ -59,6 +63,8 @@
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         initMap();
+
+
     </script>
     </html>
 

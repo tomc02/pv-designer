@@ -1,6 +1,6 @@
 var shapesData = [];
-var panelWidth = 1.1;
-var panelHeight = 2.1;
+var panelWidth = 1.15;
+var panelHeight = 1.75;
 var panelWidthRotated = 0;
 var panelHeightRotated = 0;
 
