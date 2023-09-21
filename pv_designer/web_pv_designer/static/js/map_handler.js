@@ -1,8 +1,5 @@
 var map;
 var drawingManager;
-var selectedShape;
-var shapes = [];
-var markers = [];
 
 function initMap() {
     map = loadMapData();
@@ -18,24 +15,30 @@ function initMap() {
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
         const shape = event.overlay;
-        if (shapes.length < 4) {
-            addSubpanel();
-            shapes.push(shape);
-            google.maps.event.addListener(shape, 'click', function () {
+        // if shape has 4 points
+        if (shape.getPath().getLength() === 4) {
+            if (shapes.length < 4) {
+                addControlPanel();
+                shapes.push(shape);
+                google.maps.event.addListener(shape, 'click', function () {
+                    selectShape(shape);
+                });
+                drawingManager.setDrawingMode(null);
                 selectShape(shape);
-            });
-            drawingManager.setDrawingMode(null);
-            selectShape(shape);
+            } else {
+                shape.setMap(null);
+                alert('You can draw only 4 areas');
+            }
         } else {
             shape.setMap(null);
-            alert('You can draw only 4 areas');
+            alert('You can draw only rectangles');
         }
     });
 
     google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
 
-    google.maps.event.addListener(map, 'click', function (){
-        clearSelectionH();
+    google.maps.event.addListener(map, 'click', function () {
+        clearSelectionAndHighlight();
         clearMarkerSelection();
     });
 
@@ -46,47 +49,6 @@ function initMap() {
             deleteShape();
         }
     });
-}
-
-function clearSelection() {
-    if (selectedShape) {
-        selectedShape.setEditable(false);
-        selectedShape.setDraggable(false);
-        selectedShape = null;
-    }
-}
-function clearSelectionH() {
-    if (selectedShape) {
-        selectedShape.setEditable(false);
-        selectedShape.setDraggable(false);
-        selectedShape = null;
-        clearHighlight();
-    }
-}
-
-function selectShape(shape) {
-    clearSelection();
-    selectedShape = shape;
-    const index = shapes.indexOf(shape);
-    selectSubpanel(index);
-    shape.setEditable(true);
-    shape.setDraggable(true);
-}
-function rotateSelectedShape() {
-    if (selectedShape) {
-      selectedShape = rotatePolygon(selectedShape);
-    }
-}
-function deleteShape() {
-    if (selectedShape) {
-        selectedShape.setMap(null); // Remove shape from the map
-        const index = shapes.indexOf(selectedShape);
-        deleteSubpanel(index);
-        if (index !== -1) {
-            shapes.splice(index, 1); // Remove shape from the shapes array
-        }
-        selectedShape = null;
-    }
 }
 
 function searchBoxInit(map) {

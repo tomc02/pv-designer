@@ -10,6 +10,9 @@
         <script src="{% static '/js/map_utils.js' %}"></script>
         <script src="{% static '/js/area_calculator.js' %}"></script>
         <script src="{% static '/js/utils_other.js' %}"></script>
+        <script src="{% static '/js/control_panel_handler.js' %}"></script>
+        <script src="{% static '/js/markers_handler.js' %}"></script>
+        <script src="{% static '/js/shapes_handler.js' %}"></script>
     </head>
     <body>
     <div class="container mt-5">
@@ -30,8 +33,6 @@
             </div>
         </div>
         <div class="row" style="padding-top: 10px" id="areaControlPanels">
-
-
         </div>
         <div class="row">
             <div class="col-md-6">
@@ -63,8 +64,6 @@
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         initMap();
-
-
     </script>
     </html>
 
