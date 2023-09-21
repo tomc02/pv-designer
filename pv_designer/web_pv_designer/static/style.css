@@ -29,3 +29,7 @@
             background-color: transparent;
             font-weight: bold;
         }
+.panel-info {
+        display: flex;
+        justify-content: space-between;
+    }

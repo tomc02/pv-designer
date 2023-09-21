@@ -24,6 +24,7 @@ function getPvImgSelectedUrl(angle) {
 }
 
 function getMapPicture() {
+    enableTab();
     // lock map moving
     map.setOptions({
         zoomControl: false,

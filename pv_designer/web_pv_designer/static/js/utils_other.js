@@ -12,7 +12,7 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         },
         success: function (response) {
             console.log(response);
-            window.location.href = formUrl + '?id=' + response.id;
+            //window.location.href = formUrl + '?id=' + response.id;
         }
     });
 }
@@ -51,5 +51,23 @@ function getPower(shapes, kwPerPanel) {
     return Math.round(panelsCount * kwPerPanel, 2);
 }
 
+function enableTab() {
+    /* enable tab2-tab
+
+        <ul class="nav nav-tabs" id="myTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab"
+                   aria-controls="tab1" aria-selected="true">Map</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link disabled" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
+                   aria-selected="false" aria-disabled="true" >Other data</a>
+            </li>
+        </ul>
+    */
+    const tab2 = document.getElementById('tab2-tab');
+    tab2.classList.remove('disabled');
+    tab2.removeAttribute('aria-disabled');
+}
 
 
