@@ -1,4 +1,4 @@
-var markers = {'0' : [], '1' : [], '2' : [], '3' : []}
+var markers = {'0': [], '1': [], '2': [], '3': []}
 let selectedMarker;
 
 function clearMarkers(areaIndex) {
@@ -20,22 +20,23 @@ function putMarker(markerPosition, markerIcon, angle, areaIndex) {
             title: angle,
         });
         console.log('putMarker' + areaIndex);
-        markers[areaIndex].push(marker );
+        markers[areaIndex].push(marker);
         google.maps.event.addListener(marker, 'click', function () {
             selectMarker(marker);
         });
-    }, 200);
+    }, 100);
 }
 
 function getMarkerPicture(position, imgUrl, angle) {
     const angleAbs = Math.abs(angle);
     const panelWidthPix = calculatePixelSize(map, panelWidth, position.lat());
     const panelHeightPix = calculatePixelSize(map, panelHeight, position.lat());
-    const rotatedPanelWidth = panelWidthPix * Math.cos(angleAbs * Math.PI / 180) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-    const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + panelHeightPix * Math.cos(angleAbs * Math.PI / 180);
+    const rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+    const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
+    
     let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
     let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-
+    console.warn(anchorX + ' ' + anchorY);
     console.log('angle: ' + angle + ' angleABS: ' + angleAbs);
     if (angle > 0) {
         anchorX = 0;

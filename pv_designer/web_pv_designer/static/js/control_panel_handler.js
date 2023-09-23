@@ -11,9 +11,9 @@ function addControlPanel() {
                         <div class="panel-info">
                             <p>Panels: <span id="panelCount${areaIndex}">0</span></p>
                             <div class="form-check form-switch" style="display: flex; justify-content: space-between;">
-    <input class="form-check-input" type="checkbox" id="orientationSwitch${areaIndex}" onchange="toggleOrientation(this)" style="order: 2;">
-    <label class="form-check-label" for="orientationSwitch${areaIndex}" style="order: 1; margin-right: 50px;">Horizontal</label>
-</div>
+                            <input class="form-check-input" type="checkbox" id="orientationSwitch${areaIndex}" onchange="toggleOrientation(this)" style="order: 2;">
+                            <label class="form-check-label" for="orientationSwitch${areaIndex}" style="order: 1; margin-right: 50px;">Horizontal</label>
+                            </div>
                         </div>
                         <p>Azimuth: <span id="azimuth${areaIndex}">0</span></p>
                         <div class="input-group mt-3" style="padding-bottom: 10px">

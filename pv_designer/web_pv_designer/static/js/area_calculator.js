@@ -3,6 +3,7 @@ var panelWidth = 1.15;
 var panelHeight = 1.75;
 var panelWidthRotated = 0;
 var panelHeightRotated = 0;
+var shapesFiled = [];
 
 class areaData {
     constructor(panelsCount, azimuth) {
@@ -34,56 +35,76 @@ function calculateArea() {
     map.setOptions({zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
 }
 
-function findPolygonCorners(points, rotate) {
-    let leftTop, leftBottom, rightTop, rightBottom;
-    if (rotate) {
-        points.sort(function (a, b) {
-            return a.lng() - b.lng();
-        });
-        if (points[0].lat() > points[1].lat()) {
-            leftTop = points[0];
-            leftBottom = points[1];
-        } else {
-            leftTop = points[1];
-            leftBottom = points[0];
-        }
-        if (points[2].lat() > points[3].lat()) {
-            rightTop = points[2];
-            rightBottom = points[3];
-        } else {
-            rightTop = points[3];
-            rightBottom = points[2];
-        }
-    } else {
-        leftTop = points[0];
-        rightTop = points[1];
-        rightBottom = points[2];
-        leftBottom = points[3];
-    }
-    return {
-        leftTop: leftTop, rightTop: rightTop, leftBottom: leftBottom, rightBottom: rightBottom
-    };
-}
-
 function rotatePolygon(polygon) {
-    // rotate polygon
-    const cornerPoints = findPolygonCorners(polygon.getPath().getArray(), false);
-    console.log("rotatePolygon");
+    const cornerPoints = getCornerPoints(polygon);
     polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
     return polygon;
 }
 
+function analyzePolygonPoints(polygon) {
+    const polygonCoords = polygon.getPath().getArray();
+
+    let centroidLat = 0;
+    let centroidLng = 0;
+    for (let i = 0; i < polygonCoords.length; i++) {
+        centroidLat += polygonCoords[i].lat();
+        centroidLng += polygonCoords[i].lng();
+    }
+    centroidLat /= polygonCoords.length;
+    centroidLng /= polygonCoords.length;
+
+    let leftTop = polygonCoords[0];
+    let rightTop = polygonCoords[0];
+    let leftBottom = polygonCoords[0];
+    let rightBottom = polygonCoords[0];
+
+    for (let i = 1; i < polygonCoords.length; i++) {
+        const point = polygonCoords[i];
+
+        if (point.lat() > centroidLat && point.lng() < centroidLng) {
+            leftTop = point;
+        } else if (point.lat() > centroidLat && point.lng() > centroidLng) {
+            rightTop = point;
+        } else if (point.lat() < centroidLat && point.lng() < centroidLng) {
+            leftBottom = point;
+        } else if (point.lat() < centroidLat && point.lng() > centroidLng) {
+            rightBottom = point;
+        }
+    }
+    return {
+        leftTop,
+        rightTop,
+        leftBottom,
+        rightBottom,
+    };
+}
+
+function getCornerPoints(polugon) {
+    return {
+        leftTop: polugon.getPath().getAt(0),
+        rightTop: polugon.getPath().getAt(1),
+        rightBottom: polugon.getPath().getAt(2),
+        leftBottom: polugon.getPath().getAt(3),
+    }
+}
+
 function fillPolygon(index) {
-    const cornerPoints = findPolygonCorners(shapes[index].getPath().getArray(), false);
+    let cornerPoints;
+    if (!shapesFiled.includes(index)) {
+        cornerPoints = analyzePolygonPoints(shapes[index]);
+        shapesFiled.push(index);
+    } else {
+        cornerPoints = getCornerPoints(shapes[index]);
+    }
+
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     let polygon = shapes[index];
-
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
+    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     const angle = 90 - headingLTR;
     const pvPanelUrl = rotateImage(angle);
     console.log('url: ' + pvPanelUrl);
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
-    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
     let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
     console.log('azimuth: ' + azimuth)
@@ -118,11 +139,11 @@ function generatePointsBetween(startPoint, endPoint, numPoints) {
     return points;
 }
 
-function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD, pvPanelUrl, polygonIndex){
+function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD, pvPanelUrl, polygonIndex) {
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
     const angle = 90 - headingLTR;
-    const picture = getMarkerPicture(leftTop,pvPanelUrl, angle);
+    const picture = getMarkerPicture(leftTop, pvPanelUrl, angle);
     for (let i = 0; i < points.length; i++) {
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
             putMarker(points[i], picture, angle, polygonIndex);
