@@ -33,7 +33,7 @@ function getMarkerPicture(position, imgUrl, angle) {
     const panelHeightPix = calculatePixelSize(map, panelHeight, position.lat());
     const rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
     const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
-    
+
     let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
     let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
     console.warn(anchorX + ' ' + anchorY);

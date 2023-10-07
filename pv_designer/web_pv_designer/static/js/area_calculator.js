@@ -41,36 +41,26 @@ function rotatePolygon(polygon) {
     return polygon;
 }
 
-function analyzePolygonPoints(polygon) {
-    const polygonCoords = polygon.getPath().getArray();
-
-    let centroidLat = 0;
-    let centroidLng = 0;
-    for (let i = 0; i < polygonCoords.length; i++) {
-        centroidLat += polygonCoords[i].lat();
-        centroidLng += polygonCoords[i].lng();
+function sortCorners(corners) {
+    if (corners.length !== 4) {
+        console.error('Expected exactly 4 corners');
+        return;
     }
-    centroidLat /= polygonCoords.length;
-    centroidLng /= polygonCoords.length;
+    let leftTop;
+    let rightTop;
+    let leftBottom;
+    let rightBottom;
 
-    let leftTop = polygonCoords[0];
-    let rightTop = polygonCoords[0];
-    let leftBottom = polygonCoords[0];
-    let rightBottom = polygonCoords[0];
+    corners.sort((a, b) => a.lat() - b.lat()); // Sort by latitude
 
-    for (let i = 1; i < polygonCoords.length; i++) {
-        const point = polygonCoords[i];
+    const bottomCorners = corners.slice(0, 2).sort((a, b) => a.lng() - b.lng());
+    const topCorners = corners.slice(2).sort((a, b) => a.lng() - b.lng());
 
-        if (point.lat() > centroidLat && point.lng() < centroidLng) {
-            leftTop = point;
-        } else if (point.lat() > centroidLat && point.lng() > centroidLng) {
-            rightTop = point;
-        } else if (point.lat() < centroidLat && point.lng() < centroidLng) {
-            leftBottom = point;
-        } else if (point.lat() < centroidLat && point.lng() > centroidLng) {
-            rightBottom = point;
-        }
-    }
+    leftBottom = bottomCorners[0];
+    rightBottom = bottomCorners[1];
+    leftTop = topCorners[0];
+    rightTop = topCorners[1];
+
     return {
         leftTop,
         rightTop,
@@ -88,14 +78,51 @@ function getCornerPoints(polugon) {
     }
 }
 
+function calculateSlopeDimensions(corners, slopeDegrees) {
+    let leftTop;
+    let rightTop;
+    let leftBottom;
+    let rightBottom;
+
+    leftBottom = corners.leftBottom;
+    rightBottom = corners.rightBottom;
+    leftTop = corners.leftTop;
+    rightTop = corners.rightTop;
+
+    const topToBottomLeft = google.maps.geometry.spherical.computeDistanceBetween(leftTop, leftBottom);
+    const topToBottomRight = google.maps.geometry.spherical.computeDistanceBetween(rightTop, rightBottom);
+    slopeDegrees = 90 - slopeDegrees;
+    const hypotenuseLeft = topToBottomLeft / Math.sin(slopeDegrees * Math.PI / 180);
+    const hypotenuseRight = topToBottomRight / Math.sin(slopeDegrees * Math.PI / 180);
+
+    leftBottom = google.maps.geometry.spherical.computeOffset(leftTop, hypotenuseLeft, google.maps.geometry.spherical.computeHeading(leftTop, leftBottom));
+    rightBottom = google.maps.geometry.spherical.computeOffset(rightTop, hypotenuseRight, google.maps.geometry.spherical.computeHeading(rightTop, rightBottom));
+
+    return {
+        leftTop,
+        rightTop,
+        leftBottom,
+        rightBottom,
+    };
+}
+function recalculatePanelHeight(slopeDegrees ){
+    slopeDegrees = 90- slopeDegrees;
+    console.log('panelHeight: ' + panelHeight);
+    let newH = panelHeight * Math.sin(slopeDegrees * Math.PI / 180);
+    console.log('newH: ' + newH);
+    panelHeight = newH;
+}
+
 function fillPolygon(index) {
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
-        cornerPoints = analyzePolygonPoints(shapes[index]);
+        cornerPoints = sortCorners(shapes[index].getPath().getArray());
+        //cornerPoints = calculateSlopeDimensions(cornerPoints, 55);
         shapesFiled.push(index);
     } else {
         cornerPoints = getCornerPoints(shapes[index]);
     }
+    recalculatePanelHeight(55);
 
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     let polygon = shapes[index];

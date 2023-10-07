@@ -33,3 +33,7 @@
         display: flex;
         justify-content: space-between;
     }
+
+.container {
+        max-width: 80vw; /* Adjust this value as needed */
+    }
