@@ -20,9 +20,9 @@ function addControlPanel() {
                             <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
                             <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)">
                         </div>
-                        <button class="btn btn-primary" onclick="fillAreaWithPanels()">Fill with panels</button>
-                        <button class="btn btn-primary" onclick="rotateSelectedShape()">Rotate polygon</button>
-                        <button class="btn btn-danger" onclick="deleteShape()">
+                        <button class="btn btn-primary" onclick="shapesHandler.fillAreaWithPanels()">Fill with panels</button>
+                        <button class="btn btn-primary" onclick="shapesHandler.rotateSelectedShape()">Rotate polygon</button>
+                        <button class="btn btn-danger" onclick="shapesHandler.deleteShape()">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -39,7 +39,7 @@ function toggleOrientation(switchElement) {
 }
 
 function deleteControlPanel(index) {
-    clearSelection();
+    shapesHandler.clearSelection();
     const subpanelsContainer = document.getElementById("areaControlPanels");
     const subpanels = subpanelsContainer.querySelectorAll(".col-md.subpanel");
 
@@ -65,7 +65,7 @@ function highlightControlPanel(panel) {
     });
     const index = Array.from(allPanels).indexOf(panel);
     if (index >= 0) {
-        selectShape(shapes[index]);
+        shapesHandler.selectShape(shapesHandler.shapes[index]);
     }
 }
 

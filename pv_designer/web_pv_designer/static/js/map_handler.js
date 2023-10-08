@@ -19,12 +19,12 @@ function initMap() {
         if (shape.getPath().getLength() === 4) {
             if (shapes.length < 4) {
                 addControlPanel();
-                shapes.push(shape);
+                shapesHandler.addShape(shape);
                 google.maps.event.addListener(shape, 'click', function () {
-                    selectShape(shape);
+                    shapesHandler.selectShape(shape);
                 });
                 drawingManager.setDrawingMode(null);
-                selectShape(shape);
+                shapesHandler.selectShape(shape);
             } else {
                 shape.setMap(null);
                 alert('You can draw only 4 areas');
@@ -35,10 +35,10 @@ function initMap() {
         }
     });
 
-    google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
+    google.maps.event.addListener(drawingManager, 'drawingmode_changed', shapesHandler.clearSelection);
 
     google.maps.event.addListener(map, 'click', function () {
-        clearSelectionAndHighlight();
+        shapesHandler.clearSelectionAndHighlight();
         markerHandler.clearMarkerSelection();
     });
 
@@ -46,7 +46,7 @@ function initMap() {
     google.maps.event.addDomListener(document, 'keyup', function (e) {
         const code = (e.keyCode ? e.keyCode : e.which);
         if (code === 46) {
-            deleteShape();
+            shapesHandler.deleteShape();
         }
     });
 }

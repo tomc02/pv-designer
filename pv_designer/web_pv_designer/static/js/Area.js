@@ -90,5 +90,3 @@ class Area {
         return shapesData;
     }
 }
-
-const shapeManager = new ShapeManager();

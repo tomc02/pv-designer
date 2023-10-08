@@ -2,6 +2,7 @@ class ShapesHandler {
     constructor() {
         this.selectedShape = null;
         this.shapes = [];
+        this.shapesObjects = [];
         this.shapesCount = 0;
         this.panelH = 1.75;
         this.panelW = 1;
@@ -10,7 +11,8 @@ class ShapesHandler {
     addShape(shape) {
         const index = this.shapes.length;
         const newShape = new Shape(shape, index, this.panelH, this.panelW);
-        this.shapes.push(newShape);
+        this.shapesObjects.push(newShape);
+        this.shapes.push(shape);
     }
     clearSelection() {
         if (this.selectedShape) {
@@ -28,15 +30,10 @@ class ShapesHandler {
     }
 
     selectShape(shape) {
-        let index = -1;
         this.clearSelection();
-        for (let i = 0; i < this.shapes.length; i++) {
-            if (this.shapes[i].isSameShape(shape)) {
-                this.selectedShape = this.shapes[i];
-                index = i;
-                break;
-            }
-        }
+        const index = this.shapes.indexOf(shape);
+        console.log('index: ' + index);
+        this.selectedShape = this.shapesObjects[index];
         selectControlPanel(index);
         this.selectedShape.selectShape();
     }
@@ -50,11 +47,13 @@ class ShapesHandler {
     deleteShape() {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
-                this.selectedShape.setMap(null);
-                const index = this.shapes.indexOf(this.selectedShape);
+                this.selectedShape.deleteShape();
+                const index = this.shapesObjects.indexOf(this.selectedShape);
+                console.log('index: ' + index);
                 deleteControlPanel(index); // You should define the deleteControlPanel function elsewhere.
                 if (index !== -1) {
                     this.shapes.splice(index, 1);
+                    this.shapesObjects.splice(index, 1);
                     markerHandler.clearMarkers(index);
                 }
                 this.selectedShape = null;

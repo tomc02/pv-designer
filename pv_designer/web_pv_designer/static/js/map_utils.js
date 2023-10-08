@@ -39,7 +39,7 @@ function getMapPicture() {
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
-    clearSelection();
+    shapesHandler.clearSelection();
     markerHandler.clearMarkerSelection();
     setTimeout(function () {
         html2canvas(document.querySelector('#map'), {
@@ -68,9 +68,9 @@ function loadMapData() {
             });
             polygon.setMap(map);
             google.maps.event.addListener(polygon, 'click', function () {
-                selectShape(polygon);
+                shapesHandler.selectShape(polygon);
             });
-            shapes.push(polygon);
+            shapesHandler.addShape(polygon);
             addControlPanel();
         });
         mapDataLoaded = true;
