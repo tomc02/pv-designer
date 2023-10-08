@@ -47,8 +47,6 @@ function deleteControlPanel(index) {
         subpanels[index].remove();
     }
 }
-
-
 function highlightControlPanel(panel) {
     const allPanels = document.querySelectorAll(".card");
     allPanels.forEach((p) => {
@@ -102,7 +100,7 @@ function makeTitleEditable(titleElement) {
 
 function refreshPanelsCount() {
     // refresh panels count on the control panel
-    for (let i = 0; i < shapes.length; i++) {
+    for (let i = 0; i < shapesHandler.shapesCount; i++) {
         const p = document.getElementById("panelCount" + (i + 1));
         p.textContent = markerHandler.markers[i].length;
     }

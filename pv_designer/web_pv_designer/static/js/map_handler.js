@@ -17,7 +17,7 @@ function initMap() {
         const shape = event.overlay;
         // if shape has 4 points
         if (shape.getPath().getLength() === 4) {
-            if (shapes.length < 4) {
+            if (shapesHandler.shapesCount < 4) {
                 addControlPanel();
                 shapesHandler.addShape(shape);
                 google.maps.event.addListener(shape, 'click', function () {

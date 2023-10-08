@@ -1,4 +1,4 @@
-class MarkerHandler {
+class MarkersHandler {
     constructor() {
         this.markers = { '0': [], '1': [], '2': [], '3': [] };
         this.selectedMarker = null;
@@ -10,6 +10,11 @@ class MarkerHandler {
                 marker.setMap(null);
             });
             this.markers[areaIndex] = [];
+        }
+
+        for (let i = areaIndex + 1; i < 4; i++) {
+            this.markers[i - 1] = this.markers[i];
+            this.markers[i] = [];
         }
     }
 
@@ -30,10 +35,10 @@ class MarkerHandler {
         }, 100);
     }
 
-    getMarkerPicture(position, imgUrl, angle) {
+    getMarkerPicture(position, imgUrl, angle, index) {
         const angleAbs = Math.abs(angle);
-        const panelWidthPix = calculatePixelSize(map, panelWidth, position.lat());
-        const panelHeightPix = calculatePixelSize(map, panelHeight, position.lat());
+        const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(index), position.lat());
+        const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(index), position.lat());
         const rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
         const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
 
@@ -54,11 +59,14 @@ class MarkerHandler {
     }
 
     selectMarker(marker) {
+        // get index of marker in markers array
+        const areaIndex = Object.keys(this.markers).find(key => this.markers[key].includes(marker));
+        console.log('areaIndex: ' + areaIndex);
         this.clearMarkerSelection();
         this.selectedMarker = marker;
         marker.setDraggable(true);
         console.log('title:' + marker.title);
-        marker.setIcon(this.getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(marker.title), marker.title));
+        marker.setIcon(this.getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(marker.title), marker.title), areaIndex);
         document.getElementById('markerDeleteButton').style.display = 'block';
     }
 
@@ -83,4 +91,4 @@ class MarkerHandler {
     }
 }
 
-const markerHandler = new MarkerHandler();
+const markerHandler = new MarkersHandler();

@@ -93,16 +93,16 @@ function recalculatePanelHeight(slopeDegrees ){
 function fillPolygon(index) {
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
-        cornerPoints = sortCorners(shapes[index].getPath().getArray());
+        cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         //cornerPoints = calculateSlopeDimensions(cornerPoints, 55);
         shapesFiled.push(index);
     } else {
-        cornerPoints = getCornerPoints(shapes[index]);
+        cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     }
     //recalculatePanelHeight(55);
 
-    shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
-    let polygon = shapes[index];
+    shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
+    let polygon = shapesHandler.getShape(index);
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     const angle = 90 - headingLTR;
@@ -147,7 +147,7 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
     const angle = 90 - headingLTR;
-    const picture = markerHandler.getMarkerPicture(leftTop, pvPanelUrl, angle);
+    const picture = markerHandler.getMarkerPicture(leftTop, pvPanelUrl, angle, polygonIndex);
     for (let i = 0; i < points.length; i++) {
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
             markerHandler.putMarker(points[i], picture, angle, polygonIndex);

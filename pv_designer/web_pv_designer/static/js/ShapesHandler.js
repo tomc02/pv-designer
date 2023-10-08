@@ -7,12 +7,27 @@ class ShapesHandler {
         this.panelH = 1.75;
         this.panelW = 1;
     }
-
+    getShape(index) {
+        console.log('getShape: ' + index)
+        return this.shapesObjects[index].getShape();
+    }
+    setPath(index, path) {
+        this.shapesObjects[index].setPath(path);
+    }
+    getPanelHeight(index) {
+        console.log('getPanelHeight: ' + index)
+        return this.shapesObjects[index].panelHeight;
+    }
+    getPanelWidth(index) {
+        console.log('getPanelWidth: ' + index)
+        return this.shapesObjects[index].panelWidth;
+    }
     addShape(shape) {
         const index = this.shapes.length;
         const newShape = new Shape(shape, index, this.panelH, this.panelW);
         this.shapesObjects.push(newShape);
         this.shapes.push(shape);
+        this.shapesCount++;
     }
     clearSelection() {
         if (this.selectedShape) {
@@ -31,16 +46,19 @@ class ShapesHandler {
 
     selectShape(shape) {
         this.clearSelection();
-        const index = this.shapes.indexOf(shape);
-        console.log('index: ' + index);
-        this.selectedShape = this.shapesObjects[index];
-        selectControlPanel(index);
-        this.selectedShape.selectShape();
+        for (let i = 0; i < this.shapesObjects.length; i++) {
+            const s = this.shapesObjects[i];
+            if (s.isSameShape(shape)) {
+                this.selectedShape = s;
+                selectControlPanel(i);
+                this.selectedShape.selectShape();
+            }
+        }
     }
 
     rotateSelectedShape() {
         if (this.selectedShape) {
-            this.selectedShape = rotatePolygon(this.selectedShape); // You should define the rotatePolygon function elsewhere.
+            this.selectedShape.rotateSelectedShape();
         }
     }
 
@@ -50,11 +68,12 @@ class ShapesHandler {
                 this.selectedShape.deleteShape();
                 const index = this.shapesObjects.indexOf(this.selectedShape);
                 console.log('index: ' + index);
-                deleteControlPanel(index); // You should define the deleteControlPanel function elsewhere.
+                deleteControlPanel(index);
                 if (index !== -1) {
                     this.shapes.splice(index, 1);
                     this.shapesObjects.splice(index, 1);
                     markerHandler.clearMarkers(index);
+                    this.shapesCount--;
                 }
                 this.selectedShape = null;
             }
@@ -63,10 +82,11 @@ class ShapesHandler {
 
     fillAreaWithPanels() {
         if (this.selectedShape) {
-            const index = this.shapes.indexOf(this.selectedShape);
-            markerHandler.clearMarkers(index); // You should define the markerHandler object elsewhere.
-            const data = fillPolygon(this.shapes.indexOf(this.selectedShape)); // You should define the fillPolygon function elsewhere.
-            const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getPath());
+            const index = this.shapesObjects.indexOf(this.selectedShape);
+            markerHandler.clearMarkers(index);
+            const data = fillPolygon(index);
+            console.log('index: ' + index);
+            const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
             const p = document.getElementById("panelCount" + (index + 1));
             p.textContent = data.panelsCount;
             const a = document.getElementById("azimuth" + (index + 1));

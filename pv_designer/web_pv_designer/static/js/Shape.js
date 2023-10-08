@@ -9,14 +9,18 @@ class Shape {
 
     rotateSelectedShape() {
         if (this.isSelected) {
-            this.shape = rotatePolygon(this.shape); // You should define the rotatePolygon function elsewhere.
+            this.shape = rotatePolygon(this.shape);
         }
     }
-
+    getShape() {
+        return this.shape;
+    }
+    setPath(path) {
+        this.shape.setPath(path);
+    }
     deleteShape() {
         if (this.isSelected) {
             this.shape.setMap(null);
-            selectedShape = null;
             delete this;
         }
     }
