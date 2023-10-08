@@ -12,29 +12,6 @@ class areaData {
     }
 }
 
-function calculateArea() {
-    clearSelection();
-    clearMarkers();
-    let i = 0;
-    let panelsCount = 0;
-    console.log(shapes);
-    shapesData = [];
-    shapes.forEach(function (shape, index) {
-        i++;
-        const polygon = fillPolygon(index);
-        const area = google.maps.geometry.spherical.computeArea(shape.getPath());
-        const shapeData = {
-            'type': 'polygon',
-            'area': area,
-            'panelsCount': polygon.panelsCount,
-            'azimuth': polygon.azimuth
-        };
-        shapesData.push(shapeData);
-    });
-    // lock map zoom
-    map.setOptions({zoomControl: false, scrollwheel: false, disableDoubleClickZoom: true});
-}
-
 function rotatePolygon(polygon) {
     const cornerPoints = getCornerPoints(polygon);
     polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
@@ -122,7 +99,7 @@ function fillPolygon(index) {
     } else {
         cornerPoints = getCornerPoints(shapes[index]);
     }
-    recalculatePanelHeight(55);
+    //recalculatePanelHeight(55);
 
     shapes[index].setPath([cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     let polygon = shapes[index];
@@ -170,10 +147,10 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
     const angle = 90 - headingLTR;
-    const picture = getMarkerPicture(leftTop, pvPanelUrl, angle);
+    const picture = markerHandler.getMarkerPicture(leftTop, pvPanelUrl, angle);
     for (let i = 0; i < points.length; i++) {
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            putMarker(points[i], picture, angle, polygonIndex);
+            markerHandler.putMarker(points[i], picture, angle, polygonIndex);
             panelCount++;
         }
     }

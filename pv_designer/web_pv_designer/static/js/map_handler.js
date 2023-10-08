@@ -39,7 +39,7 @@ function initMap() {
 
     google.maps.event.addListener(map, 'click', function () {
         clearSelectionAndHighlight();
-        clearMarkerSelection();
+        markerHandler.clearMarkerSelection();
     });
 
     searchBoxInit(map);

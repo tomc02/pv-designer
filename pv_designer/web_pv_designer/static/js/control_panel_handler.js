@@ -104,6 +104,6 @@ function refreshPanelsCount() {
     // refresh panels count on the control panel
     for (let i = 0; i < shapes.length; i++) {
         const p = document.getElementById("panelCount" + (i + 1));
-        p.textContent = markers[i].length;
+        p.textContent = markerHandler.markers[i].length;
     }
 }

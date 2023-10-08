@@ -11,8 +11,10 @@
         <script src="{% static '/js/area_calculator.js' %}"></script>
         <script src="{% static '/js/utils_other.js' %}"></script>
         <script src="{% static '/js/control_panel_handler.js' %}"></script>
-        <script src="{% static '/js/markers_handler.js' %}"></script>
+        <script src="{% static '/js/markerHandler.js' %}"></script>
         <script src="{% static '/js/shapes_handler.js' %}"></script>
+        <script src="{% static '/js/ShapesHandler.js' %}"></script>
+        <script src="{% static '/js/Shape.js' %}"></script>
     </head>
     <body>
     <div class="container mt-5">
@@ -50,7 +52,6 @@
                 </div>
                 <div class="row">
                         <div id="actions" class="d-flex justify-content-end">
-                            <button class="btn btn-danger mb-2" onclick="deleteMarker()">Delete</button>
                             <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
                             <!--<button class="btn btn-info mb-2" onclick="getMapPicture()">Take Screenshot</button>
                             <button class="btn btn-info mb-2" onclick="rotateSelectedShape()">Rotate</button>-->

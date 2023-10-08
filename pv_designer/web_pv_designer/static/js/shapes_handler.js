@@ -42,6 +42,7 @@ function deleteShape() {
             deleteControlPanel(index);
             if (index !== -1) {
                 shapes.splice(index, 1); // Remove shape from the shapes array
+                markerHandler.clearMarkers(index);
             }
             selectedShape = null;
         }
@@ -51,7 +52,7 @@ function deleteShape() {
 function fillAreaWithPanels() {
     if (selectedShape) {
         const index = shapes.indexOf(selectedShape);
-        clearMarkers(index);
+        markerHandler.clearMarkers(index);
         const data = fillPolygon(shapes.indexOf(selectedShape));
         const area = google.maps.geometry.spherical.computeArea(selectedShape.getPath());
         const p = document.getElementById("panelCount" + (index + 1));

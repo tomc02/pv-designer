@@ -19,7 +19,6 @@ function putMarker(markerPosition, markerIcon, angle, areaIndex) {
             icon: markerIcon,
             title: angle,
         });
-        console.log('putMarker' + areaIndex);
         markers[areaIndex].push(marker);
         google.maps.event.addListener(marker, 'click', function () {
             selectMarker(marker);

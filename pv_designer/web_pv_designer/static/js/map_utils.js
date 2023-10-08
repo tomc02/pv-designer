@@ -40,7 +40,7 @@ function getMapPicture() {
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
     clearSelection();
-    clearMarkerSelection();
+    markerHandler.clearMarkerSelection();
     setTimeout(function () {
         html2canvas(document.querySelector('#map'), {
             backgroundColor: null,
@@ -89,8 +89,8 @@ function loadMapData() {
     deleteButton.id = 'markerDeleteButton';
     deleteButton.classList.add('btn', 'btn-danger');
     deleteButton.addEventListener('click', function () {
-        let selectedMarkerKey = Object.keys(markers).find(key => markers[key].includes(selectedMarker));
-        deleteMarker(selectedMarkerKey);
+        let selectedMarkerKey = Object.keys(markerHandler.markers).find(key => markerHandler.markers[key].includes(markerHandler.selectedMarker));
+        markerHandler.deleteMarker(selectedMarkerKey);
         deleteButton.style.display = 'none';
     });
     // add padding to the button
