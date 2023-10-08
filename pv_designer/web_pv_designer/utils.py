@@ -1,5 +1,6 @@
 import base64
 import json
+import math
 import os
 
 import matplotlib.pyplot as plt
@@ -79,9 +80,14 @@ def set_params(data):
     return params
 
 
-def rotate_pv_img(angle, original_image_path, rotated_image_path):
+def rotate_pv_img(angle,slope, original_image_path, rotated_image_path):
     file_path = os.path.dirname(os.path.relpath(__file__))
     original_image = Image.open(file_path + original_image_path).convert("RGBA")
+    width, height = original_image.size
+    slope = 90 - float(slope)
+    new_height = height * math.sin(math.radians(slope))
+    original_image = original_image.resize((width, int(new_height)))
+    print(height, new_height)
 
     rotation_angle = float(angle)
     rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)

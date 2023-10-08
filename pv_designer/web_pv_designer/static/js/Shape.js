@@ -5,6 +5,8 @@ class Shape {
         this.index = index;
         this.panelHeight = panelHeight;
         this.panelWidth = panelWidth;
+        this.panelCount = 0;
+        this.azimuth = 0;
     }
 
     rotateSelectedShape() {
