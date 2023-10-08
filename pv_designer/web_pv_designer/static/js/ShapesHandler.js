@@ -1,27 +1,38 @@
 class ShapesHandler {
     constructor() {
         this.selectedShape = null;
+        this.selectedShapeIndex = null;
         this.shapes = [];
         this.shapesObjects = [];
         this.shapesCount = 0;
         this.panelH = 1.75;
-        this.panelW = 1;
+        this.panelW = 1.15;
     }
+
     getShape(index) {
         console.log('getShape: ' + index)
         return this.shapesObjects[index].getShape();
     }
+
     setPath(index, path) {
         this.shapesObjects[index].setPath(path);
     }
-    getPanelHeight(index) {
+
+    getPanelHeight(index = this.selectedShapeIndex) {
         console.log('getPanelHeight: ' + index)
         return this.shapesObjects[index].panelHeight;
     }
-    getPanelWidth(index) {
+
+    getPanelWidth(index = this.selectedShapeIndex) {
         console.log('getPanelWidth: ' + index)
         return this.shapesObjects[index].panelWidth;
     }
+
+    recalculatePanelHeight(index, slope) {
+        slope = 90 - slope;
+        this.shapesObjects[index].panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
+    }
+
     addShape(shape) {
         const index = this.shapes.length;
         const newShape = new Shape(shape, index, this.panelH, this.panelW);
@@ -29,10 +40,12 @@ class ShapesHandler {
         this.shapes.push(shape);
         this.shapesCount++;
     }
+
     clearSelection() {
         if (this.selectedShape) {
             this.selectedShape.clearSelection();
             this.selectedShape = null;
+            this.selectedShapeIndex = null;
         }
     }
 
@@ -40,10 +53,14 @@ class ShapesHandler {
         if (this.selectedShape) {
             this.selectedShape.clearSelection();
             this.selectedShape = null;
+            this.selectedShapeIndex = null;
             clearHighlight();
         }
     }
-
+    selectShapeByIndex(index) {
+        const shape = this.shapesObjects[index].getShape();
+        this.selectShape(shape);
+    }
     selectShape(shape) {
         this.clearSelection();
         for (let i = 0; i < this.shapesObjects.length; i++) {
@@ -52,6 +69,7 @@ class ShapesHandler {
                 this.selectedShape = s;
                 selectControlPanel(i);
                 this.selectedShape.selectShape();
+                this.selectedShapeIndex = i;
             }
         }
     }
@@ -65,31 +83,27 @@ class ShapesHandler {
     deleteShape() {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
+                const index = this.selectedShapeIndex;
                 this.selectedShape.deleteShape();
-                const index = this.shapesObjects.indexOf(this.selectedShape);
-                console.log('index: ' + index);
                 deleteControlPanel(index);
-                if (index !== -1) {
-                    this.shapes.splice(index, 1);
-                    this.shapesObjects.splice(index, 1);
-                    markerHandler.clearMarkers(index);
-                    this.shapesCount--;
-                }
+                markerHandler.clearMarkers(index);
+                this.shapes.splice(index, 1);
+                this.shapesObjects.splice(index, 1);
+                this.shapesCount--;
                 this.selectedShape = null;
+                this.selectedShapeIndex = null;
             }
         }
     }
 
     fillAreaWithPanels() {
         if (this.selectedShape) {
-            const index = this.shapesObjects.indexOf(this.selectedShape);
-            markerHandler.clearMarkers(index);
-            const data = fillPolygon(index);
-            console.log('index: ' + index);
+            markerHandler.clearMarkers(this.selectedShapeIndex);
+            const data = fillPolygon(this.selectedShapeIndex);
             const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
-            const p = document.getElementById("panelCount" + (index + 1));
+            const p = document.getElementById("panelCount" + (this.selectedShapeIndex + 1));
             p.textContent = data.panelsCount;
-            const a = document.getElementById("azimuth" + (index + 1));
+            const a = document.getElementById("azimuth" + (this.selectedShapeIndex + 1));
             a.textContent = data.azimuth;
         }
     }

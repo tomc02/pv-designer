@@ -21,7 +21,6 @@ class Shape {
     deleteShape() {
         if (this.isSelected) {
             this.shape.setMap(null);
-            delete this;
         }
     }
 

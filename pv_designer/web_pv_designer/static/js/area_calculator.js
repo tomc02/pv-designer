@@ -1,8 +1,4 @@
 var shapesData = [];
-var panelWidth = 1.15;
-var panelHeight = 1.75;
-var panelWidthRotated = 0;
-var panelHeightRotated = 0;
 var shapesFiled = [];
 
 class areaData {
@@ -82,13 +78,6 @@ function calculateSlopeDimensions(corners, slopeDegrees) {
         rightBottom,
     };
 }
-function recalculatePanelHeight(slopeDegrees ){
-    slopeDegrees = 90- slopeDegrees;
-    console.log('panelHeight: ' + panelHeight);
-    let newH = panelHeight * Math.sin(slopeDegrees * Math.PI / 180);
-    console.log('newH: ' + newH);
-    panelHeight = newH;
-}
 
 function fillPolygon(index) {
     let cornerPoints;
@@ -99,7 +88,7 @@ function fillPolygon(index) {
     } else {
         cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     }
-    //recalculatePanelHeight(55);
+    shapesHandler.recalculatePanelHeight(index, 55);
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     let polygon = shapesHandler.getShape(index);
@@ -114,12 +103,12 @@ function fillPolygon(index) {
     console.log('azimuth: ' + azimuth)
     const headingRTD = headingLTR + 90;
 
-    const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
+    const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
     let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
     let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
     for (let i = 0; i < 10; i++) {
-        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
+        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, shapesHandler.getPanelHeight(index), headingLTR + 90);
+        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, shapesHandler.getPanelHeight(index), headingRTL - 90);
         console.log('azimuth: ' + azimuth)
         topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         if (panelsCount > 0) {

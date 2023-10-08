@@ -1,8 +1,8 @@
 function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD) {
     let panelLeftTop = leftTop;
     console.log(headingLTR, headingRTD);
-    let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, panelWidth, headingLTR);
-    let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, panelHeight, headingRTD);
+    let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, shapesHandler.getPanelWidth(), headingLTR);
+    let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, shapesHandler.getPanelHeight(), headingRTD);
     let isLeftTop = google.maps.geometry.poly.containsLocation(panelLeftTop, polygon);
     let isRightBottom = google.maps.geometry.poly.containsLocation(panelRightBottom, polygon);
     let isRightTop = true;
