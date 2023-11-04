@@ -7,6 +7,7 @@ class Shape {
         this.panelWidth = panelWidth;
         this.panelCount = 0;
         this.azimuth = 0;
+        this.slope = 0;
     }
 
     rotateSelectedShape() {
@@ -42,6 +43,14 @@ class Shape {
 
     isSameShape(shape) {
         return this.shape === shape;
+    }
+
+    setSlope(slope) {
+        this.slope = slope;
+    }
+
+    getSlope() {
+        return this.slope;
     }
 
 }

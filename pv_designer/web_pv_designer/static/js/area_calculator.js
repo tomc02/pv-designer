@@ -88,14 +88,14 @@ function fillPolygon(index) {
     } else {
         cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     }
-    shapesHandler.recalculatePanelHeight(index, 35);
+    shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
     let polygon = shapesHandler.getShape(index);
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     const angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, 35);
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
     console.log('url: ' + pvPanelUrl);
     cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
     cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);

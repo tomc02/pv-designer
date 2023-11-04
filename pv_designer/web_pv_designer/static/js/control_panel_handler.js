@@ -18,7 +18,7 @@ function addControlPanel() {
                         <p>Azimuth: <span id="azimuth${areaIndex}">0</span></p>
                         <div class="input-group mt-3" style="padding-bottom: 10px">
                             <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
-                            <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)">
+                            <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)" onchange="updateAreaSlope(this)">
                         </div>
                         <button class="btn btn-primary" onclick="shapesHandler.fillAreaWithPanels()">Fill with panels</button>
                         <button class="btn btn-primary" onclick="shapesHandler.rotateSelectedShape()">Rotate polygon</button>
@@ -103,5 +103,15 @@ function refreshPanelsCount() {
     for (let i = 0; i < shapesHandler.shapesCount; i++) {
         const p = document.getElementById("panelCount" + (i + 1));
         p.textContent = markerHandler.markers[i].length;
+    }
+}
+
+function updateAreaSlope(slopeInput) {
+    const slope = slopeInput.value;
+    console.log('slope: ' + slope + 'index' + index);
+    const shape = shapesHandler.selectedShape;
+    shape.setSlope(slope);
+    if (shape.panelsCount > 0) {
+       shapesHandler.fillAreaWithPanels();
     }
 }

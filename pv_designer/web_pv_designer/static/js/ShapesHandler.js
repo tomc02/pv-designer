@@ -5,8 +5,12 @@ class ShapesHandler {
         this.shapes = [];
         this.shapesObjects = [];
         this.shapesCount = 0;
-        this.panelH = 1.75;
+        this.panelH = 2.0;
         this.panelW = 1.15;
+    }
+
+    getShapeObject(index) {
+        return this.shapesObjects[index];
     }
 
     getShape(index) {
@@ -57,10 +61,12 @@ class ShapesHandler {
             clearHighlight();
         }
     }
+
     selectShapeByIndex(index) {
         const shape = this.shapesObjects[index].getShape();
         this.selectShape(shape);
     }
+
     selectShape(shape) {
         this.clearSelection();
         for (let i = 0; i < this.shapesObjects.length; i++) {
@@ -84,9 +90,9 @@ class ShapesHandler {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
                 const index = this.selectedShapeIndex;
+                markerHandler.clearMarkers(index);
                 this.selectedShape.deleteShape();
                 deleteControlPanel(index);
-                markerHandler.clearMarkers(index);
                 this.shapes.splice(index, 1);
                 this.shapesObjects.splice(index, 1);
                 this.shapesCount--;
@@ -105,6 +111,9 @@ class ShapesHandler {
             p.textContent = data.panelsCount;
             const a = document.getElementById("azimuth" + (this.selectedShapeIndex + 1));
             a.textContent = data.azimuth;
+            const shape = this.selectedShape;
+            shape.panelsCount = data.panelsCount;
+            shape.azimuth = data.azimuth;
         }
     }
 
@@ -134,6 +143,7 @@ class ShapesHandler {
         }
         return shapesData;
     }
+
 }
 
 const shapesHandler = new ShapesHandler();
