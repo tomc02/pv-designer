@@ -27,7 +27,7 @@ function moveToForm() {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
         'shapesData': shapesData,
-        'shapes': convertShapesToJSON(shapes),
+        'shapes': convertShapesToJSON(shapesHandler.shapesObjects),
         'imageUrl': imageUrl,
         'zoom': map.zoom,
         'mapDataID': mapDataID,
@@ -38,7 +38,7 @@ function moveToForm() {
 function convertShapesToJSON(shapes) {
     let shapesJSON = [];
     shapes.forEach(function (shape) {
-        shapesJSON.push(shape.getPath().getArray());
+        shapesJSON.push(shape.getShape().getPath().getArray());
     });
     return shapesJSON;
 }

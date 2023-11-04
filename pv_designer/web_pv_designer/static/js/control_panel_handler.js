@@ -108,7 +108,6 @@ function refreshPanelsCount() {
 
 function updateAreaSlope(slopeInput) {
     const slope = slopeInput.value;
-    console.log('slope: ' + slope + 'index' + index);
     const shape = shapesHandler.selectedShape;
     shape.setSlope(slope);
     if (shape.panelsCount > 0) {
