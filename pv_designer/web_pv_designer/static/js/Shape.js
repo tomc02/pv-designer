@@ -8,6 +8,7 @@ class Shape {
         this.panelCount = 0;
         this.azimuth = 0;
         this.slope = 0;
+        this.mountingType = 'roof';
     }
 
     rotateSelectedShape() {
@@ -47,6 +48,10 @@ class Shape {
 
     setSlope(slope) {
         this.slope = slope;
+    }
+
+    setMountingPosition(position) {
+        this.mountingType = position;
     }
 
     getSlope() {

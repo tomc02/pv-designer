@@ -16,12 +16,19 @@ function addControlPanel() {
                             </div>
                         </div>
                         <p>Azimuth: <span id="azimuth${areaIndex}">0</span></p>
-                        <div class="input-group mt-3" style="padding-bottom: 10px">
+                        <div class="input-group mt-3">
                             <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
                             <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)" onchange="updateAreaSlope(this)">
                         </div>
+                         <div class="input-group mt-3" style="padding-bottom: 10px">
+                            <label class="input-group-text" for="roofSlopeInput">Mounting position</label>
+                            <select class="form-select" id="mountingPosition${areaIndex}" onchange="updateMountingPosition(this)">
+                                <option value="0">Roof added</option>
+                                <option value="1">Free standing</option>
+                            </select>
+                        </div>
                         <button class="btn btn-primary" onclick="shapesHandler.fillAreaWithPanels()">Fill with panels</button>
-                        <button class="btn btn-primary" onclick="shapesHandler.rotateSelectedShape()">Rotate polygon</button>
+                        <button class="btn btn-primary" onclick="shapesHandler.rotateSelectedShape()">Rotate</button>
                         <button class="btn btn-danger" onclick="shapesHandler.deleteShape()">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -113,4 +120,16 @@ function updateAreaSlope(slopeInput) {
     if (shape.panelsCount > 0) {
        shapesHandler.fillAreaWithPanels();
     }
+}
+
+function updateMountingPosition(positionInput) {
+    const position = positionInput.value;
+    const shape = shapesHandler.selectedShape;
+    if (position === '0') {
+        shape.setMountingPosition('roof');
+    }
+    else if (position === '1') {
+        shape.setMountingPosition('free-standing');
+    }
+    console.log(shape.mountingType);
 }

@@ -73,7 +73,7 @@
         console.log('id', id);
         console.log('lat', mapData.latitude);
         console.log('lng', mapData.longitude);
-        const power = getPower(mapData.areasData,0.4);
+        const power = getPower(mapData.areasData, 0.4);
         $('#{{ form.installed_peak_power.auto_id }}').val(power);
         $('#{{ form.system_loss.auto_id }}').val(14);
         $('#latp').append(mapData.latitude);

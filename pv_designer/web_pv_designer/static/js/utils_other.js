@@ -26,7 +26,7 @@ function moveToForm() {
     const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
-        'shapesData': shapesData,
+        'shapesData': shapesHandler.prepareAreasData(),
         'shapes': convertShapesToJSON(shapesHandler.shapesObjects),
         'imageUrl': imageUrl,
         'zoom': map.zoom,
