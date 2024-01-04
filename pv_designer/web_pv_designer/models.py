@@ -66,4 +66,15 @@ class SolarPVCalculator(models.Model):
             'lifetime': self.lifetime,
         }
 
+class PVPowerPlant(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    panel_power = models.FloatField()
+    system_loss = models.FloatField()
+    pv_electricity_price = models.BooleanField(default=False)
+    pv_system_cost = models.FloatField(blank=True, null=True)
+    interest = models.FloatField(blank=True, null=True)
+    lifetime = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    map_data = models.ForeignKey(MapData, on_delete=models.CASCADE, null=True)
+
 

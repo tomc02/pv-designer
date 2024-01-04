@@ -1,7 +1,7 @@
 from allauth.account.forms import SignupForm, LoginForm
 from django import forms
 
-from .models import SolarPVCalculator
+from .models import SolarPVCalculator, PVPowerPlant
 
 
 class CustomSignupForm(SignupForm):
@@ -48,4 +48,17 @@ class SolarPVCalculatorForm(forms.ModelForm):
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
             'map_data': forms.HiddenInput()
+        }
+
+class SolarPanelForm(forms.ModelForm):
+    class Meta:
+        model = PVPowerPlant
+        fields = ['panel_power', 'system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime']
+        widgets = {
+            'panel_power': forms.TextInput(attrs={'class': 'form-control'}),
+            'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
+            'pv_electricity_price': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'pv_system_cost': forms.TextInput(attrs={'class': 'form-control'}),
+            'interest': forms.TextInput(attrs={'class': 'form-control'}),
+            'lifetime': forms.TextInput(attrs={'class': 'form-control'}),
         }

@@ -3,12 +3,26 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import SolarPVCalculatorForm
+from .forms import SolarPVCalculatorForm, SolarPanelForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response
 from django.views.decorators.csrf import csrf_exempt
 from .models import SolarPVCalculator, MapData
 from django.views.static import serve
 
+def start_page(request):
+    if request.method == 'POST':
+        form = SolarPanelForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            form.instance.user = request.user
+            form.save()
+            return redirect('map')
+        else:
+            print(form.errors)
+    else:
+        form = SolarPanelForm()
+
+    return render(request, 'start_page.html', {'form': form})
 def solar_pv_calculator(request):
     if request.method == 'POST':
         form = SolarPVCalculatorForm(request.POST)

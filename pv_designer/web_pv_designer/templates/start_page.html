@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1>Solar PV System Calculator</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.panel_power.id_for_label }}">Panel power [W]</label>
+                        {{ form.panel_power }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.system_loss.id_for_label }}">System loss [%]</label>
+                        {{ form.system_loss }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
+                        {{ form.pv_electricity_price }}
+                    </div>
+                    <div id="pvElectricityPriceInputs" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)</label>
+                            {{ form.pv_system_cost }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.interest.id_for_label }}">Interest [%/year]</label>
+                            {{ form.interest }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]</label>
+                            {{ form.lifetime }}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-3" type="submit">Continue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+    $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
+            if ($(this).prop('checked')) {
+                $('#pvElectricityPriceInputs').show();
+            } else {
+                $('#pvElectricityPriceInputs').hide();
+            }
+
+        });
+    </script>
+{% endblock %}
