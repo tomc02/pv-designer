@@ -10,13 +10,14 @@ from django.http import JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-from .models import MapData
+from .models import MapData, PVPowerPlant, Area
 
 
 def process_map_data(data, user_id):
     try:
         delete_rotated_images()
         parsed_data = json.loads(data)
+        print('ID:' + parsed_data['mapDataID'])
         if parsed_data['mapDataID'] != '':
             map_data = MapData.objects.get(id=parsed_data['mapDataID'])
             map_data.latitude = parsed_data['lat']
@@ -28,14 +29,39 @@ def process_map_data(data, user_id):
             map_data.save()
         else:
             last_map_data = MapData.objects.last()
-            img_path = save_map_img(parsed_data['imageUrl'], user_id, last_map_data.id + 1)
+            if last_map_data is None:
+                id = 0
+            else:
+                id = last_map_data.id
+            img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
+            power_plant = PVPowerPlant.objects.get(id=parsed_data['instanceID'])
             map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path)
-            map_data.save()
+                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
+                               pv_power_plant=power_plant)
+            saved_data = map_data.save()
+            parse_areas_data(parsed_data['shapesData'], map_data)
+
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
     return map_data.id
 
+
+def parse_areas_data(areas_data_list, map_data):
+    print(areas_data_list)
+    areas = []
+    for area in areas_data_list:
+        area_instance = Area(
+            panels_count=area['panelsCount'],
+            installed_peak_power=500.0,
+            mounting_position=area['mountingType'] == 'free-standing' and 'free' or 'building',
+            slope=area['slope'],
+            azimuth=area['azimuth'],
+            title=area['title'],
+        )
+        area_instance.save()
+        print(area_instance)
+        map_data.areasObjects.add(area_instance)
+    map_data.save()
 
 def save_map_img(image_url, user_id, db_id=None):
     image_url = image_url.replace('data:image/png;base64,', '')
@@ -80,7 +106,7 @@ def set_params(data):
     return params
 
 
-def rotate_pv_img(angle,slope, original_image_path, rotated_image_path):
+def rotate_pv_img(angle, slope, original_image_path, rotated_image_path):
     file_path = os.path.dirname(os.path.relpath(__file__))
     original_image = Image.open(file_path + original_image_path).convert("RGBA")
     width, height = original_image.size
@@ -93,6 +119,7 @@ def rotate_pv_img(angle,slope, original_image_path, rotated_image_path):
     rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)
 
     rotated_image.save(file_path + rotated_image_path + angle + '.png')
+
 
 def delete_rotated_images():
     file_path = os.path.dirname(os.path.relpath(__file__))

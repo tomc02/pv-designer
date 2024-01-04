@@ -3,6 +3,8 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+
 from .forms import SolarPVCalculatorForm, SolarPanelForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response
 from django.views.decorators.csrf import csrf_exempt
@@ -15,8 +17,8 @@ def start_page(request):
         if form.is_valid():
             print(form.cleaned_data)
             form.instance.user = request.user
-            form.save()
-            return redirect('map')
+            saved_instance = form.save()
+            return redirect(reverse('map', kwargs={'instance_id': saved_instance.id}))
         else:
             print(form.errors)
     else:
@@ -51,9 +53,10 @@ def index(request):
     return render(request, 'home.html')
 
 
-def map_view(request):
-    record_id = request.GET.get('record_id')  # Get the record ID query parameter
+def map_view(request, instance_id):
+    record_id = request.GET.get('record_id')
     if record_id:
+        print("record_id: " + record_id)
         map_data = get_object_or_404(MapData, id=record_id).to_JSON()
         latitude = map_data['latitude']
         longitude = map_data['longitude']
@@ -62,7 +65,7 @@ def map_view(request):
         return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': map_data})
     latitude = 49.83137
     longitude = 18.16086
-    return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': {}})
+    return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': {}, 'instance_id': instance_id})
 
 
 @login_required
@@ -88,6 +91,7 @@ def ajax_endpoint(request):
         if custom_header_value == "Map-Data":
             result = process_map_data(data_from_js, str(request.user.id))
             if result is not JsonResponse:
+                #save_response(get_pvgis_response(params), request.user.id)
                 return JsonResponse({'message': 'Data saved', 'id': result})
             else:
                 return result

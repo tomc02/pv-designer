@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, SolarPVCalculator, MapData, PVPowerPlant
+from .models import CustomUser, SolarPVCalculator, MapData, PVPowerPlant, Area
 
 # Register your models here.
 admin.site.site_header = "PV Designer Admin"
@@ -10,3 +10,5 @@ admin.site.register(CustomUser)
 admin.site.register(SolarPVCalculator)
 admin.site.register(MapData)
 admin.site.register(PVPowerPlant)
+admin.site.register(Area)
+

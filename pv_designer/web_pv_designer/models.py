@@ -15,6 +15,8 @@ class MapData(models.Model):
     areasData = models.JSONField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
+    pv_power_plant = models.ForeignKey('PVPowerPlant', on_delete=models.CASCADE, null=True)
+    areasObjects = models.ManyToManyField('Area', blank=True)
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
@@ -75,6 +77,28 @@ class PVPowerPlant(models.Model):
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    map_data = models.ForeignKey(MapData, on_delete=models.CASCADE, null=True)
+class Area(models.Model):
+    panels_count = models.IntegerField()
+    installed_peak_power = models.FloatField()
+    mounting_position = models.CharField(max_length=20, choices=(
+        ('option1', 'Free standing'),
+        ('option2', 'Roof added'),
+    ))
+    slope = models.FloatField()
+    azimuth = models.FloatField()
+    title = models.CharField(max_length=255)
 
+    def __str__(self):
+        return f"Area - ID: {self.id}"
+
+    def to_JSON(self):
+        return {
+            'id': self.id,
+            'panels_count': self.panels_count,
+            'installed_peak_power': self.installed_peak_power,
+            'mounting_position': self.mounting_position,
+            'slope': self.slope,
+            'azimuth': self.azimuth,
+            'title': self.title,
+        }
 

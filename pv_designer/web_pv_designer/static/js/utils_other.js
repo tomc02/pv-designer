@@ -31,6 +31,7 @@ function moveToForm() {
         'imageUrl': imageUrl,
         'zoom': map.zoom,
         'mapDataID': mapDataID,
+        'instanceID': instanceID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
 }

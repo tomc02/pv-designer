@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Include allauth URLs
     path('', views.index, name='home'),
     path('map/', views.map_view, name='map'),
+    path('map/<int:instance_id>/', views.map_view, name='map'),
     path('accounts/details/', views.account_details, name='account_details'),
     path('solar_pv_calculator/', views.solar_pv_calculator, name='solar_pv_calculator'),
     path('rotate_img/', views.rotate_img, name='rotate_img'),
