@@ -53,7 +53,7 @@ def parse_areas_data(areas_data_list, map_data):
         area_instance = Area(
             panels_count=area['panelsCount'],
             installed_peak_power=500.0,
-            mounting_position=area['mountingType'] == 'free-standing' and 'free' or 'building',
+            mounting_position=area['mountingType'] == 'free-standing' and 'option1' or 'option2',
             slope=area['slope'],
             azimuth=area['azimuth'],
             title=area['title'],

@@ -8,7 +8,7 @@ from django.urls import reverse
 from .forms import SolarPVCalculatorForm, SolarPanelForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response
 from django.views.decorators.csrf import csrf_exempt
-from .models import SolarPVCalculator, MapData
+from .models import SolarPVCalculator, MapData, SolarPanel
 from django.views.static import serve
 
 def start_page(request):
@@ -24,7 +24,7 @@ def start_page(request):
     else:
         form = SolarPanelForm()
 
-    return render(request, 'start_page.html', {'form': form})
+    return render(request, 'start_page.html', {'form': form, 'solar_panels' : SolarPanel.objects.all()})
 def solar_pv_calculator(request):
     if request.method == 'POST':
         form = SolarPVCalculatorForm(request.POST)

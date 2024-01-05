@@ -53,9 +53,8 @@ class SolarPVCalculatorForm(forms.ModelForm):
 class SolarPanelForm(forms.ModelForm):
     class Meta:
         model = PVPowerPlant
-        fields = ['panel_power', 'system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime']
+        fields = ['system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'solar_panel']
         widgets = {
-            'panel_power': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
             'pv_electricity_price': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'pv_system_cost': forms.TextInput(attrs={'class': 'form-control'}),

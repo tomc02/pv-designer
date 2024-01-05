@@ -1,24 +1,39 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-        <div class="container mt-5">
+    <div class="container mt-5">
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1>Solar PV System Calculator</h1>
                 <form method="post">
                     {% csrf_token %}
+                    <!-- Solar Panel Chooser -->
                     <div class="form-group">
-                        <label for="{{ form.panel_power.id_for_label }}">Panel power [W]</label>
-                        {{ form.panel_power }}
+                        <label for="{{ form.solar_panel.id_for_label }}">Choose Solar Panel</label>
+                        <div class="custom-select">
+                            <select class="form-control" id="{{ form.solar_panel.id_for_label }}"
+                                    name="{{ form.solar_panel.name }}">
+                                {% for panel in solar_panels %}
+                                    <option value="{{ panel.id }}"
+                                            data-img-src="'{% static "images/pv_panel" %}'">
+                                        {{ panel.model }} - {{ panel.width }} x {{ panel.height }}m - {{ panel.power }}
+                                        W
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="{{ form.system_loss.id_for_label }}">System loss [%]</label>
                         {{ form.system_loss }}
                     </div>
+
                     <div class="form-group">
                         <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
                         {{ form.pv_electricity_price }}
                     </div>
+
                     <div id="pvElectricityPriceInputs" style="display:none;">
                         <div class="form-group">
                             <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)</label>
@@ -41,7 +56,7 @@
         </div>
     </div>
     <script>
-    $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
+        $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
             if ($(this).prop('checked')) {
                 $('#pvElectricityPriceInputs').show();
             } else {
@@ -49,5 +64,6 @@
             }
 
         });
+        $('#{{ form.system_loss.id_for_label }}').val(14);
     </script>
 {% endblock %}

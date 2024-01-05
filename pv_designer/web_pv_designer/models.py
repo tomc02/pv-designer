@@ -70,13 +70,13 @@ class SolarPVCalculator(models.Model):
 
 class PVPowerPlant(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    panel_power = models.FloatField()
     system_loss = models.FloatField()
     pv_electricity_price = models.BooleanField(default=False)
     pv_system_cost = models.FloatField(blank=True, null=True)
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    solar_panel = models.ForeignKey('SolarPanel', on_delete=models.CASCADE, null=True)
 class Area(models.Model):
     panels_count = models.IntegerField()
     installed_peak_power = models.FloatField()
@@ -102,3 +102,11 @@ class Area(models.Model):
             'title': self.title,
         }
 
+class SolarPanel(models.Model):
+    model = models.CharField(max_length=100)
+    width = models.FloatField()
+    height = models.FloatField()
+    power = models.FloatField()
+
+    def __str__(self):
+        return f"{self.model} - {self.width}m - {self.height}m - {self.power}W"
