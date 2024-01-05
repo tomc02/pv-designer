@@ -2,6 +2,7 @@ let imageUrl = null;
 let mapDataLoaded = false;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
+    showProcessing();
     $.ajax({
         url: url,
         method: "POST",
@@ -54,5 +55,14 @@ function getPower(shapes, kwPerPanel) {
     return Math.round(panelsCount * kwPerPanel, 2);
 }
 
+function showProcessing() {
+    document.getElementById('content').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+}
+
+function showCalculationResult(id){
+    showProcessing();
+    window.location.href = getResultUrl + '?id=' + id;
+}
 
 

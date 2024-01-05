@@ -35,11 +35,6 @@ def start_page(request):
 def index(request):
     return render(request, 'home.html')
 
-def processing(request):
-    req_id = request.GET.get('id')
-    if req_id:
-        make_api_calling(req_id, request.user.id)
-        return render(request, 'processing.html')
 
 def map_view(request, instance_id):
     record_id = request.GET.get('record_id')

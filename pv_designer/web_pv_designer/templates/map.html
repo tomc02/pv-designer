@@ -17,38 +17,48 @@
     </head>
     <body>
     <div class="container mt-5">
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="text-center">Photovoltaic Calculator</h1>
-                        <div class="input-group mb-3">
-                            <input id="searchInput" type="text" class="form-control"
-                                   placeholder="Search for an address...">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" onclick="searchAddress()">Search</button>
+        <div id="content">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="text-center">Photovoltaic Calculator</h1>
+                            <div class="input-group mb-3">
+                                <input id="searchInput" type="text" class="form-control"
+                                       placeholder="Search for an address...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" onclick="searchAddress()">Search
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="map"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="map"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="row" style="padding-top: 10px" id="areaControlPanels">
-                </div>
-                <div class="row">
-                    <div id="actions" class="d-flex justify-content-end">
-                        <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
-                        <div id="areaDisplay"></div>
+                    <div class="row" style="padding-top: 10px" id="areaControlPanels">
                     </div>
-                </div>
-                <div class="row">
-                    <div id="canvas"></div>
+                    <div class="row">
+                        <div id="actions" class="d-flex justify-content-end">
+                            <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
+                            <div id="areaDisplay"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="canvas"></div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div id="loading" class="loading">
+            <div class="processing-container">
+                <div class="processing-animation"></div>
+                <p class="processing-message">Processing...</p>
+            </div>
+        </div>
+
     </div>
 
     </body>
