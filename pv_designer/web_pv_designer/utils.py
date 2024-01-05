@@ -35,24 +35,25 @@ def process_map_data(data, user_id):
                 id = last_map_data.id
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
             power_plant = PVPowerPlant.objects.get(id=parsed_data['instanceID'])
+            pv_panel = power_plant.solar_panel
             map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
                                areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
                                pv_power_plant=power_plant)
             saved_data = map_data.save()
-            parse_areas_data(parsed_data['shapesData'], map_data)
+            parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel['power']))
 
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
     return map_data.id
 
 
-def parse_areas_data(areas_data_list, map_data):
+def parse_areas_data(areas_data_list, map_data, pv_panel_power):
     print(areas_data_list)
     areas = []
     for area in areas_data_list:
         area_instance = Area(
             panels_count=area['panelsCount'],
-            installed_peak_power=500.0,
+            installed_peak_power=int(area['panelsCount'])*pv_panel_power,
             mounting_position=area['mountingType'] == 'free-standing' and 'option1' or 'option2',
             slope=area['slope'],
             azimuth=area['azimuth'],
