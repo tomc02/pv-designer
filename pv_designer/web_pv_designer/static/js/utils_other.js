@@ -12,7 +12,7 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         },
         success: function (response) {
             console.log(response);
-            //window.location.href = formUrl + '?id=' + response.id;
+            window.location.href = formUrl + '?id=' + response.id;
         }
     });
 }
@@ -34,6 +34,8 @@ function moveToForm() {
         'instanceID': instanceID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
+
+    // if
 }
 
 function convertShapesToJSON(shapes) {

@@ -73,7 +73,7 @@
         var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
-        var formUrl = "{% url 'solar_pv_calculator' %}";
+        var formUrl = "{% url 'calculation_result' %}";
         var csrfToken = "{{ csrf_token  }}";
         var latitude = parseFloat("{{ latitude }}");
         var longitude = parseFloat("{{ longitude }}");

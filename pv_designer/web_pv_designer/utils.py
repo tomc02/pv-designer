@@ -17,7 +17,6 @@ def process_map_data(data, user_id):
     try:
         delete_rotated_images()
         parsed_data = json.loads(data)
-        print('ID:' + parsed_data['mapDataID'])
         if parsed_data['mapDataID'] != '':
             map_data = MapData.objects.get(id=parsed_data['mapDataID'])
             map_data.latitude = parsed_data['lat']
@@ -27,6 +26,7 @@ def process_map_data(data, user_id):
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.save()
+            parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.pv_power_plant.solar_panel.power))
         else:
             last_map_data = MapData.objects.last()
             if last_map_data is None:
@@ -40,7 +40,7 @@ def process_map_data(data, user_id):
                                areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
                                pv_power_plant=power_plant)
             saved_data = map_data.save()
-            parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel['power']))
+            parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
 
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
@@ -53,7 +53,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
     for area in areas_data_list:
         area_instance = Area(
             panels_count=area['panelsCount'],
-            installed_peak_power=int(area['panelsCount'])*pv_panel_power,
+            installed_peak_power=int(area['panelsCount']) * pv_panel_power,
             mounting_position=area['mountingType'] == 'free-standing' and 'option1' or 'option2',
             slope=area['slope'],
             azimuth=area['azimuth'],
@@ -63,6 +63,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
         print(area_instance)
         map_data.areasObjects.add(area_instance)
     map_data.save()
+
 
 def save_map_img(image_url, user_id, db_id=None):
     image_url = image_url.replace('data:image/png;base64,', '')
@@ -133,7 +134,7 @@ def delete_rotated_images():
 
 
 def create_pdf_report(path_to_source):
-    with open(path_to_source + 'response.json', 'r') as json_file:
+    with open(path_to_source + 'response0.json', 'r') as json_file:
         data = json.load(json_file)
 
     monthly_data = data['outputs']['monthly']['fixed']
@@ -183,6 +184,32 @@ def get_pvgis_response(params):
     return response
 
 
-def save_response(response, user_id):
-    with open('./web_pv_designer/pdf_sources/' + str(user_id) + '/response.json', 'wb') as f:
+def save_response(response, user_id, index=0):
+    with open('./web_pv_designer/pdf_sources/' + str(user_id) + '/response' + str(index) + '.json', 'wb') as f:
         f.write(response.text.encode('utf-8'))
+
+
+def make_api_calling(data_id, user_id):
+    map_data = MapData.objects.get(id=data_id)
+    areas = map_data.areasObjects.all()
+    pv_power_plant = map_data.pv_power_plant
+    params = []
+    index = 0
+    for area in areas:
+        param = {
+            'lat': map_data.latitude,
+            'lon': map_data.longitude,
+            'peakpower': area.installed_peak_power/1000,
+            'loss': pv_power_plant.system_loss,
+            'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',
+            'angle': area.slope,
+            'aspect': area.azimuth,
+            'pvprice': pv_power_plant.pv_system_cost == 'True' and '1' or '0',
+            'systemcost': pv_power_plant.pv_electricity_price,
+            'interest': pv_power_plant.interest,
+            'lifetime': pv_power_plant.lifetime,
+            'outputformat': 'json'
+        }
+        params.append(param)
+        save_response(get_pvgis_response(param), user_id, index)
+        index += 1

@@ -33,4 +33,5 @@ urlpatterns = [
     path('calculations/', views.calculations_list, name='calculations'),
     path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
     path('start/', views.start_page, name='start_page'),
+    path('processing/', views.processing, name='processing'),
 ]

@@ -1,4 +1,6 @@
 import json
+import os
+
 import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -6,10 +8,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from .forms import SolarPVCalculatorForm, SolarPanelForm
-from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response
+from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response, make_api_calling
 from django.views.decorators.csrf import csrf_exempt
 from .models import SolarPVCalculator, MapData, SolarPanel
 from django.views.static import serve
+
+from django.conf import settings
+
 
 def start_page(request):
     if request.method == 'POST':
@@ -52,6 +57,11 @@ def solar_pv_calculator(request):
 def index(request):
     return render(request, 'home.html')
 
+def processing(request):
+    req_id = request.GET.get('id')
+    if req_id:
+        make_api_calling(req_id, request.user.id)
+        return render(request, 'processing.html')
 
 def map_view(request, instance_id):
     record_id = request.GET.get('record_id')
@@ -101,33 +111,34 @@ def ajax_endpoint(request):
 
 
 def calculation_result(request):
-    save_path = './web_pv_designer/pdf_sources/'+str(request.user.id)+'/'
-    pdf_created = create_pdf_report(save_path)
-    if pdf_created:
-        return render(request, 'calculation_result.html')
-    else:
-        pass
-        # something went wrong
+    req_id = request.GET.get('id')
+    if req_id:
+        make_api_calling(req_id, request.user.id)
+        save_path = './web_pv_designer/pdf_sources/'+str(request.user.id)+'/'
+        pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id), 'pv_data_report.pdf')
+        pdf_created = create_pdf_report(save_path)
+        if pdf_created:
+            return render(request, 'calculation_result.html', {'pdf_path' : pdf_path})
+        else:
+            pass
+            # something went wrong
 
 
 def calculations_list(request):
-    records = SolarPVCalculator.objects.filter(user=request.user)
+    records = MapData.objects.filter(pv_power_plant__user=request.user)
     context = {'records': records}
     return render(request, 'user_calculations.html', context)
 
 
 def get_pdf_result(request):
     if request.method == 'GET':
-        calculation_id = request.GET.get('calculation_id')
-        calculation = SolarPVCalculator.objects.get(id=calculation_id)
-        params = set_params(calculation.to_JSON())
-        save_response(get_pvgis_response(params), request.user.id)
-        # load map image and save it to pdf_sources folder
-        map_data = MapData.objects.get(id=calculation.map_data.id)
+        calculation_id = request.GET.get('id')
+        map_data = MapData.objects.get(id=calculation_id)
         image = map_data.map_image
-        print(image)
         image_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/' + 'pv_image.png'
         with open(image_path, 'wb') as f:
             f.write(image.file.read())
-        return redirect('calculation_result')
-    return render(request, 'calculation_result.html')
+
+        # Use reverse to construct the URL for 'calculation_result' without the '/pdf_result/' prefix
+        redirect_url = reverse('calculation_result') + f'?id={calculation_id}'
+        return redirect(redirect_url)

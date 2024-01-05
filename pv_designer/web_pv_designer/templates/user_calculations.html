@@ -13,10 +13,10 @@
             <tbody>
             {% for record in records %}
                 <tr>
-                    <td>{{ record.created_at }}</td>
-                    <td>{{ record.installed_peak_power }}</td>
-                    <td><a href="{% url 'map' %}?record_id={{ record.map_data.id }}" class="btn btn-primary">Edit</a></td>
-                    <td><a href="{% url 'get_pdf_result' %}?calculation_id={{ record.id }}" class="btn btn-primary">Show result</a></td>
+                    <td>{{ record.pv_power_plant.created_at }}</td>
+                    <td>{{ record.zoom }}</td>
+                    <td><a href="{% url 'map' %}{{ record.pv_power_plant.id }}?record_id={{ record.id }}" class="btn btn-primary">Edit</a></td>
+                    <td><a href="{% url 'get_pdf_result' %}?id={{ record.id }}" class="btn btn-primary">Show result</a></td>
                 </tr>
             {% endfor %}
             </tbody>
