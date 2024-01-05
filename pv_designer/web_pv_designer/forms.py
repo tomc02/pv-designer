@@ -1,7 +1,7 @@
 from allauth.account.forms import SignupForm, LoginForm
 from django import forms
 
-from .models import SolarPVCalculator, PVPowerPlant
+from .models import PVPowerPlant
 
 
 class CustomSignupForm(SignupForm):
@@ -12,7 +12,6 @@ class CustomSignupForm(SignupForm):
             field.widget.attrs['class'] = 'form-control'
 
     pass
-
 
 class CustomLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
@@ -27,37 +26,15 @@ class CustomLoginForm(LoginForm):
         self.fields['password'].widget.attrs['placeholder'] = 'Password'
 
 
-class SolarPVCalculatorForm(forms.ModelForm):
-    class Meta:
-        model = SolarPVCalculator
-        fields = ['installed_peak_power', 'system_loss', 'mounting_position', 'slope', 'azimuth', 'optimize_slope',
-                  'optimize_slope_and_azimuth', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime',
-                  'latitude', 'longitude', 'map_data']
-        widgets = {
-            'installed_peak_power': forms.TextInput(attrs={'class': 'form-control'}),
-            'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
-            'mounting_position': forms.Select(attrs={'class': 'form-control'}),
-            'slope': forms.TextInput(attrs={'class': 'form-control'}),
-            'azimuth': forms.TextInput(attrs={'class': 'form-control'}),
-            'optimize_slope': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'optimize_slope_and_azimuth': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'pv_electricity_price': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'pv_system_cost': forms.TextInput(attrs={'class': 'form-control'}),
-            'interest': forms.TextInput(attrs={'class': 'form-control'}),
-            'lifetime': forms.TextInput(attrs={'class': 'form-control'}),
-            'latitude': forms.HiddenInput(),
-            'longitude': forms.HiddenInput(),
-            'map_data': forms.HiddenInput()
-        }
-
 class SolarPanelForm(forms.ModelForm):
     class Meta:
         model = PVPowerPlant
-        fields = ['system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'solar_panel']
+        fields = ['title', 'system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'solar_panel']
         widgets = {
-            'system_loss': forms.TextInput(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'system_loss': forms.NumberInput(attrs={'class': 'form-control'}),
             'pv_electricity_price': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'pv_system_cost': forms.TextInput(attrs={'class': 'form-control'}),
-            'interest': forms.TextInput(attrs={'class': 'form-control'}),
-            'lifetime': forms.TextInput(attrs={'class': 'form-control'}),
+            'pv_system_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'interest': forms.NumberInput(attrs={'class': 'form-control'}),
+            'lifetime': forms.NumberInput(attrs={'class': 'form-control'}),
         }

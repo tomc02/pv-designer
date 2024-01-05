@@ -3,6 +3,9 @@ import json
 import math
 import os
 
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import requests
 from PIL import Image
@@ -10,12 +13,11 @@ from django.http import JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-from .models import MapData, PVPowerPlant, Area
+from .models import MapData, PVPowerPlant, Area, CustomUser
 
 
 def process_map_data(data, user_id):
     try:
-        delete_rotated_images()
         parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
             map_data = MapData.objects.get(id=parsed_data['mapDataID'])
@@ -36,11 +38,14 @@ def process_map_data(data, user_id):
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
             power_plant = PVPowerPlant.objects.get(id=parsed_data['instanceID'])
             pv_panel = power_plant.solar_panel
-            map_data = MapData(latitude=parsed_data['lat'], longitude=parsed_data['lng'], areas=parsed_data['shapes'],
+            user_obj = CustomUser.objects.get(id=user_id)
+            map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
+                               areas=parsed_data['shapes'],
                                areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
                                pv_power_plant=power_plant)
-            saved_data = map_data.save()
+            map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
+            delete_rotated_images()
 
     except json.JSONDecodeError as e:
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
@@ -199,7 +204,7 @@ def make_api_calling(data_id, user_id):
         param = {
             'lat': map_data.latitude,
             'lon': map_data.longitude,
-            'peakpower': area.installed_peak_power/1000,
+            'peakpower': area.installed_peak_power / 1000,
             'loss': pv_power_plant.system_loss,
             'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',
             'angle': area.slope,

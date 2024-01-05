@@ -7,16 +7,23 @@
             <thead>
             <tr>
                 <th>Date</th>
-                <th>Power</th>
+                <th>Title</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {% for record in records %}
                 <tr>
                     <td>{{ record.pv_power_plant.created_at }}</td>
-                    <td>{{ record.zoom }}</td>
-                    <td><a href="{% url 'map' %}{{ record.pv_power_plant.id }}?record_id={{ record.id }}" class="btn btn-primary">Edit</a></td>
-                    <td><a href="{% url 'get_pdf_result' %}?id={{ record.id }}" class="btn btn-primary">Show result</a></td>
+                    <td>{{ record.pv_power_plant.title }}</td>
+                    <td>
+                        <a href="{% url 'map' %}{{ record.pv_power_plant.id }}?record_id={{ record.id }}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'get_pdf_result' %}?id={{ record.id }}" class="btn btn-primary">Show result</a>
+                        <form method="post" action="{% url 'delete_record' %}?id={{ record.id }}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

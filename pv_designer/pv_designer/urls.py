@@ -26,7 +26,6 @@ urlpatterns = [
     path('map/', views.map_view, name='map'),
     path('map/<int:instance_id>/', views.map_view, name='map'),
     path('accounts/details/', views.account_details, name='account_details'),
-    path('solar_pv_calculator/', views.solar_pv_calculator, name='solar_pv_calculator'),
     path('rotate_img/', views.rotate_img, name='rotate_img'),
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
     path('calculation_result/', views.calculation_result, name='calculation_result'),
@@ -34,4 +33,5 @@ urlpatterns = [
     path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
     path('start/', views.start_page, name='start_page'),
     path('processing/', views.processing, name='processing'),
+    path('delete_record/', views.delete_record, name='delete_record'),
 ]

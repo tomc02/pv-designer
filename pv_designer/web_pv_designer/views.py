@@ -7,10 +7,10 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
-from .forms import SolarPVCalculatorForm, SolarPanelForm
+from .forms import SolarPanelForm
 from .utils import rotate_pv_img, create_pdf_report, process_map_data, set_params, save_response, get_pvgis_response, make_api_calling
 from django.views.decorators.csrf import csrf_exempt
-from .models import SolarPVCalculator, MapData, SolarPanel
+from .models import MapData, SolarPanel
 from django.views.static import serve
 
 from django.conf import settings
@@ -30,28 +30,6 @@ def start_page(request):
         form = SolarPanelForm()
 
     return render(request, 'start_page.html', {'form': form, 'solar_panels' : SolarPanel.objects.all()})
-def solar_pv_calculator(request):
-    if request.method == 'POST':
-        form = SolarPVCalculatorForm(request.POST)
-        if form.is_valid():
-            form.instance.user = request.user
-            data = form.cleaned_data
-            calculation = form.save(commit=False)
-            calculation.user = request.user
-            calculation.save()
-            params = set_params(data)
-            save_response(get_pvgis_response(params), request.user.id)
-            return redirect('calculation_result')
-    elif request.method == 'GET':
-        form = SolarPVCalculatorForm()
-        id = request.GET.get('id')
-        map_data = MapData.objects.get(id=id)
-        map_data = json.dumps(map_data.to_JSON())
-        return render(request, 'solar_pv_calculator.html', {'form': form, 'map_data': map_data})
-
-    else:
-        form = SolarPVCalculatorForm()
-    return render(request, 'solar_pv_calculator.html', {'form': form})
 
 
 def index(request):
@@ -125,7 +103,7 @@ def calculation_result(request):
 
 
 def calculations_list(request):
-    records = MapData.objects.filter(pv_power_plant__user=request.user)
+    records = MapData.objects.filter(user=request.user)
     context = {'records': records}
     return render(request, 'user_calculations.html', context)
 
@@ -142,3 +120,17 @@ def get_pdf_result(request):
         # Use reverse to construct the URL for 'calculation_result' without the '/pdf_result/' prefix
         redirect_url = reverse('calculation_result') + f'?id={calculation_id}'
         return redirect(redirect_url)
+
+def delete_record(request):
+    if request.method == 'POST':
+        record_id = request.GET.get('id')
+        record = get_object_or_404(MapData, id=record_id)
+        os.remove(os.path.join(settings.MEDIA_ROOT, record.map_image.name))
+        for area in record.areasObjects.all():
+            area.delete()
+        record.pv_power_plant.delete()
+        record.delete()
+        return redirect('calculations')
+    else:
+        # Handle other HTTP methods if needed
+        return redirect('calculations')

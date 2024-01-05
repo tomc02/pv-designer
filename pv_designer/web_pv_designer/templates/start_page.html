@@ -7,6 +7,10 @@
                 <h1>Solar PV System Calculator</h1>
                 <form method="post">
                     {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Name of your calculation</label>
+                        {{ form.title }}
+                    </div>
                     <!-- Solar Panel Chooser -->
                     <div class="form-group">
                         <label for="{{ form.solar_panel.id_for_label }}">Choose Solar Panel</label>

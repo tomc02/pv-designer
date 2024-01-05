@@ -12,7 +12,7 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         },
         success: function (response) {
             console.log(response);
-            window.location.href = formUrl + '?id=' + response.id;
+            window.location.href = resultUrl + '?id=' + response.id;
         }
     });
 }
