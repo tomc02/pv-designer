@@ -49,6 +49,10 @@ function initMap() {
             shapesHandler.deleteShape();
         }
     });
+
+    google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+        shapesHandler.fillAllAreasWithPanels();
+    });
 }
 
 function searchBoxInit(map) {

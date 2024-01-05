@@ -117,6 +117,12 @@ class ShapesHandler {
         }
     }
 
+    fillAllAreasWithPanels() {
+        for (let i = 0; i < this.shapesCount; i++) {
+            this.selectShapeByIndex(i);
+            this.fillAreaWithPanels();
+        }
+    }
     prepareAreasData() {
         const shapesData = [];
         for (let i = 0; i < this.shapes.length; i++) {

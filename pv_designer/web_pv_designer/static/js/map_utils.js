@@ -59,6 +59,7 @@ function loadMapData() {
             center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0, rotateControl: false,
         });
         map.setMapTypeId('satellite');
+        let index = 0;
         mapData.areas.forEach(function (area) {
             let polygon = new google.maps.Polygon({
                 paths: area,
@@ -72,6 +73,12 @@ function loadMapData() {
             });
             shapesHandler.addShape(polygon);
             addControlPanel();
+        });
+        mapData.areasData.forEach(function (areaData) {
+            updateControlPanelTitle(areaData.title, index);
+            updateControlPanelSlope(areaData.slope, index);
+            updateControlPanelMountingPosition(areaData.mountingType, index);
+            index++;
         });
         mapDataLoaded = true;
     } else {

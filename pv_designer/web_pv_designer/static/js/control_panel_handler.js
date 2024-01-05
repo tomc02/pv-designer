@@ -133,3 +133,22 @@ function updateMountingPosition(positionInput) {
     }
     console.log(shape.mountingType);
 }
+
+function updateControlPanelTitle(titleInput, index) {
+    const titleElement = document.getElementById("title" + (index + 1));
+    titleElement.textContent = titleInput;
+}
+
+function updateControlPanelSlope(slopeInput, index) {
+    const slopeElement = document.getElementById("slope" + (index + 1));
+    slopeElement.value = slopeInput;
+}
+
+function updateControlPanelMountingPosition(positionInput, index) {
+    const positionElement = document.getElementById("mountingPosition" + (index + 1));
+    if (positionInput === 'roof') {
+        positionElement.value = 0;
+    }else if (positionInput === 'free-standing') {
+        positionElement.value = 1;
+    }
+}
