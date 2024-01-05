@@ -10,7 +10,6 @@ class CustomSignupForm(SignupForm):
 
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-
     pass
 
 class CustomLoginForm(LoginForm):

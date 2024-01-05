@@ -9,12 +9,12 @@
                         <h2 class="text-center">Registration</h2>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{% url 'account_details' %}">
+                        <form method="post">
                             {% csrf_token %}
                             <div class="form-group">
                                 {{ form.as_p }}
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
                         </form>
                     </div>
                     <div class="card-footer">

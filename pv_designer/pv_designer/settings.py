@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Add this if it's not already there
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -143,7 +142,7 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'home'
-ACCOUNT_SIGNUP_REDIRECT_URL = 'home'
+ACCOUNT_SIGNUP_REDIRECT_URL = 'account_details'
 SIGNUP_REDIRECT_URL = 'home'
 
 ACCOUNT_FORMS = {
