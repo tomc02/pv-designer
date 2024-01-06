@@ -109,7 +109,9 @@ def calculation_result(request):
         save_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/'
         pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
                                 'pv_data_report.pdf')
-        pdf_created = create_pdf_report(save_path)
+        map_data = MapData.objects.get(id=req_id)
+        areas = map_data.areasObjects.all()
+        pdf_created = create_pdf_report(save_path, areas)
         if pdf_created:
             return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
         else:

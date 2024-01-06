@@ -60,7 +60,7 @@ function initMap() {
             });
             setTimeout(function () {
                 shapesHandler.fillAllAreasWithPanels();
-            }, 10);
+            }, 100);
         });
     }
 }
