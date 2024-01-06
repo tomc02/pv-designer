@@ -50,9 +50,16 @@ function initMap() {
         }
     });
 
-    google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
-        shapesHandler.fillAllAreasWithPanels();
-    });
+    if (mapDataLoaded) {
+        google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+            let index = 0;
+            mapData.areasData.forEach(function (areaData) {
+                shapesHandler.selectShapeByIndex(index);
+                shapesHandler.rotateSelectedShape(areaData.rotations);
+                index++;
+            });
+        });
+    }
 }
 
 function searchBoxInit(map) {

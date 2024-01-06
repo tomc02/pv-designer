@@ -12,11 +12,6 @@ class MarkersHandler {
             });
             this.markers[areaIndex] = [];
         }
-
-        for (let i = areaIndex + 1; i < 4; i++) {
-            this.markers[i - 1] = this.markers[i];
-            this.markers[i] = [];
-        }
     }
 
     putMarker(markerPosition, markerIcon, angle, areaIndex) {
@@ -44,8 +39,7 @@ class MarkersHandler {
 
         let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
         let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-        console.warn(anchorX + ' ' + anchorY);
-        console.log('angle: ' + angle + ' angleABS: ' + angleAbs);
+
         if (angle > 0) {
             anchorX = 0;
         } else {

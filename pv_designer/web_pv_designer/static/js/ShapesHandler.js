@@ -14,7 +14,6 @@ class ShapesHandler {
     }
 
     getShape(index) {
-        console.log('getShape: ' + index)
         return this.shapesObjects[index].getShape();
     }
 
@@ -23,12 +22,10 @@ class ShapesHandler {
     }
 
     getPanelHeight(index = this.selectedShapeIndex) {
-        console.log('getPanelHeight: ' + index)
         return this.shapesObjects[index].panelHeight;
     }
 
     getPanelWidth(index = this.selectedShapeIndex) {
-        console.log('getPanelWidth: ' + index)
         return this.shapesObjects[index].panelWidth;
     }
 
@@ -80,9 +77,13 @@ class ShapesHandler {
         }
     }
 
-    rotateSelectedShape() {
+    rotateSelectedShape(rotationsCount = 1) {
         if (this.selectedShape) {
-            this.selectedShape.rotateSelectedShape();
+            console.log('rotateSelectedShape ' + rotationsCount + ' times');
+            for (let i = 0; i < rotationsCount; i++) {
+                this.selectedShape.rotateShape();
+            }
+            this.fillAreaWithPanels();
         }
     }
 
@@ -123,16 +124,17 @@ class ShapesHandler {
             this.fillAreaWithPanels();
         }
     }
+
     prepareAreasData() {
         const shapesData = [];
         for (let i = 0; i < this.shapes.length; i++) {
             const shape = this.shapes[i];
+            const shapeObject = this.shapesObjects[i];
             const area = google.maps.geometry.spherical.computeArea(shape.getPath());
             const panelCount = document.getElementById("panelCount" + (i + 1)).textContent;
             const azimuth = document.getElementById("azimuth" + (i + 1)).textContent;
-            let slope = shapesHandler.getShapeObject(i).slope;
+            let slope = shapeObject.slope;
             const title = document.getElementById("title" + (i + 1)).textContent;
-            const mountingType = shapesHandler.getShapeObject(i).mountingType;
             console.log('slope: ' + title);
             if (slope === '') {
                 slope = 0;
@@ -144,7 +146,8 @@ class ShapesHandler {
                 'azimuth': azimuth,
                 'slope': slope,
                 'title': title,
-                'mountingType': mountingType,
+                'mountingType': shapeObject.mountingType,
+                'rotations': shapeObject.rotations,
             };
             console.log(shapeData);
             shapesData.push(shapeData);

@@ -51,6 +51,7 @@ class Area(models.Model):
     slope = models.FloatField()
     azimuth = models.FloatField()
     title = models.CharField(max_length=255)
+    rotations = models.IntegerField()
 
     def __str__(self):
         return f"Area - ID: {self.id}"
@@ -64,6 +65,7 @@ class Area(models.Model):
             'slope': self.slope,
             'azimuth': self.azimuth,
             'title': self.title,
+            'rotations': self.rotations,
         }
 
 class SolarPanel(models.Model):

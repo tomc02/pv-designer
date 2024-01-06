@@ -63,6 +63,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
             slope=area['slope'],
             azimuth=area['azimuth'],
             title=area['title'],
+            rotations=area['rotations'],
         )
         area_instance.save()
         print(area_instance)

@@ -9,11 +9,17 @@ class Shape {
         this.azimuth = 0;
         this.slope = 0;
         this.mountingType = 'roof';
+        this.rotations = 0;
     }
 
-    rotateSelectedShape() {
+    rotateShape() {
         if (this.isSelected) {
+            console.log('rotateShape ' + this.rotations);
             this.shape = rotatePolygon(this.shape);
+            this.rotations++;
+            if (this.rotations === 4) {
+                this.rotations = 0;
+            }
         }
     }
     getShape() {
