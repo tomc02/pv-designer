@@ -146,9 +146,10 @@ function updateControlPanelSlope(slopeInput, index) {
 
 function updateControlPanelMountingPosition(positionInput, index) {
     const positionElement = document.getElementById("mountingPosition" + (index + 1));
-    if (positionInput === 'roof') {
+    console.log(positionInput);
+    if (positionInput === 'option2') {
         positionElement.value = 0;
-    }else if (positionInput === 'free-standing') {
+    }else if (positionInput === 'option1') {
         positionElement.value = 1;
     }
 }

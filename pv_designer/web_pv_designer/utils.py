@@ -57,10 +57,11 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
     print(areas_data_list)
     areas = []
     for area in areas_data_list:
+        print("area: " + area['title'] + " " + str(area['mountingType']))
         area_instance = Area(
             panels_count=area['panelsCount'],
             installed_peak_power=int(area['panelsCount']) * pv_panel_power,
-            mounting_position=area['mountingType'] == 'free-standing' and 'option1' or 'option2',
+            mounting_position=area['mountingType'] == '1' and 'option1' or 'option2',
             slope=area['slope'],
             azimuth=area['azimuth'],
             title=area['title'],

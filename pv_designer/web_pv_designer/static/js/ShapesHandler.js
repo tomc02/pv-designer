@@ -143,8 +143,9 @@ class ShapesHandler {
             const area = google.maps.geometry.spherical.computeArea(shape.getPath());
             const panelCount = document.getElementById("panelCount" + (i + 1)).textContent;
             const azimuth = document.getElementById("azimuth" + (i + 1)).textContent;
-            let slope = shapeObject.slope;
+            let slope = document.getElementById("slope" + (i + 1)).value;
             const title = document.getElementById("title" + (i + 1)).textContent;
+            const mountingPosition = document.getElementById("mountingPosition" + (i + 1)).value;
             console.log('slope: ' + title);
             if (slope === '') {
                 slope = 0;
@@ -156,7 +157,7 @@ class ShapesHandler {
                 'azimuth': azimuth,
                 'slope': slope,
                 'title': title,
-                'mountingType': shapeObject.mountingType,
+                'mountingType': mountingPosition,
                 'rotations': shapeObject.rotations,
             };
             console.log(shapeData);

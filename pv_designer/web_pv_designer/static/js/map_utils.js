@@ -79,7 +79,7 @@ function loadMapData() {
         areasObjects.forEach(function (areaData) {
             updateControlPanelTitle(areaData.title, index);
             updateControlPanelSlope(areaData.slope, index);
-            updateControlPanelMountingPosition(areaData.mountingType, index);
+            updateControlPanelMountingPosition(areaData.mounting_position, index);
             index++;
         });
         mapDataLoaded = true;
