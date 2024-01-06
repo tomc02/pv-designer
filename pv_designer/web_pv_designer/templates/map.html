@@ -73,8 +73,9 @@
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         var areasObjects = {{ areas_objects|safe }}
-        console.log(areasObjects);
-        var instanceID = "{{ instance_id }}";
+        var instanceID = {{ instance_id }};
+        var panelSize = {{ panel_size|safe }};
+        const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         initMap();
     </script>
     </html>

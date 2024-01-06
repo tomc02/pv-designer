@@ -1,12 +1,15 @@
 class ShapesHandler {
-    constructor() {
+    constructor(panelHeight, panelWidth) {
         this.selectedShape = null;
         this.selectedShapeIndex = null;
         this.shapes = [];
         this.shapesObjects = [];
         this.shapesCount = 0;
-        this.panelH = 2.0;
-        this.panelW = 1.15;
+        this.panelH = panelHeight;
+        this.panelW = panelWidth;
+
+        console.log('panelHeight: ' + this.panelH);
+        console.log('panelWidth: ' + this.panelW);
     }
 
     getShapeObject(index) {
@@ -168,5 +171,4 @@ class ShapesHandler {
 
 }
 
-const shapesHandler = new ShapesHandler();
 
