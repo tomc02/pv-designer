@@ -14,12 +14,14 @@ function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD
 
 function getPvImgUrl(angle) {
     const currentTime = new Date().getTime();
+    angle = Math.round(angle);
     return pvPanelImg + angle + '.png' + '?v=' + currentTime;
 }
 
 function getPvImgSelectedUrl(angle) {
     console.log('getPvImgSelectedUrl' + angle);
     const currentTime = new Date().getTime();
+    angle = Math.round(angle);
     return pvPanelSelectedImg + angle + '.png' + '?v=' + currentTime;
 }
 

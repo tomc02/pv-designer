@@ -127,6 +127,7 @@ def rotate_pv_img(angle, slope, original_image_path, rotated_image_path):
     rotation_angle = float(angle)
     rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)
 
+    angle = str(round(rotation_angle))
     rotated_image.save(file_path + rotated_image_path + angle + '.png')
 
 
