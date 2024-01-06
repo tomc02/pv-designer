@@ -43,9 +43,12 @@ def map_view(request, instance_id):
         map_data = get_object_or_404(MapData, id=record_id).to_JSON()
         latitude = map_data['latitude']
         longitude = map_data['longitude']
-        print(map_data)
+        areasObjects = MapData.objects.get(id=record_id).areasObjects.all()
+        areasObjects = [area.to_JSON() for area in areasObjects]
+        print(areasObjects)
         map_data = json.dumps(map_data)
-        return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': map_data})
+        print(map_data)
+        return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': map_data, 'areas_objects': areasObjects})
     latitude = 49.83137
     longitude = 18.16086
     return render(request, 'map.html', {'latitude': latitude, 'longitude': longitude, 'map_data': {}, 'instance_id': instance_id})

@@ -11,7 +11,6 @@ class areaData {
 function rotatePolygon(polygon) {
     const cornerPoints = getCornerPoints(polygon);
     polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
-    return polygon;
 }
 
 function sortCorners(corners) {
@@ -51,39 +50,10 @@ function getCornerPoints(polugon) {
     }
 }
 
-function calculateSlopeDimensions(corners, slopeDegrees) {
-    let leftTop;
-    let rightTop;
-    let leftBottom;
-    let rightBottom;
-
-    leftBottom = corners.leftBottom;
-    rightBottom = corners.rightBottom;
-    leftTop = corners.leftTop;
-    rightTop = corners.rightTop;
-
-    const topToBottomLeft = google.maps.geometry.spherical.computeDistanceBetween(leftTop, leftBottom);
-    const topToBottomRight = google.maps.geometry.spherical.computeDistanceBetween(rightTop, rightBottom);
-    slopeDegrees = 90 - slopeDegrees;
-    const hypotenuseLeft = topToBottomLeft / Math.sin(slopeDegrees * Math.PI / 180);
-    const hypotenuseRight = topToBottomRight / Math.sin(slopeDegrees * Math.PI / 180);
-
-    leftBottom = google.maps.geometry.spherical.computeOffset(leftTop, hypotenuseLeft, google.maps.geometry.spherical.computeHeading(leftTop, leftBottom));
-    rightBottom = google.maps.geometry.spherical.computeOffset(rightTop, hypotenuseRight, google.maps.geometry.spherical.computeHeading(rightTop, rightBottom));
-
-    return {
-        leftTop,
-        rightTop,
-        leftBottom,
-        rightBottom,
-    };
-}
-
 function fillPolygon(index) {
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
-        //cornerPoints = calculateSlopeDimensions(cornerPoints, 55);
         shapesFiled.push(index);
     } else {
         cornerPoints = getCornerPoints(shapesHandler.getShape(index));

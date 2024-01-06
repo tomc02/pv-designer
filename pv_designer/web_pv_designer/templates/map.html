@@ -72,6 +72,8 @@
         var latitude = parseFloat("{{ latitude }}");
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
+        var areasObjects = {{ areas_objects|safe }}
+        console.log(areasObjects);
         var instanceID = "{{ instance_id }}";
         initMap();
     </script>

@@ -53,11 +53,14 @@ function initMap() {
     if (mapDataLoaded) {
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
             let index = 0;
+            shapesHandler.fillAllAreasWithPanels();
             mapData.areasData.forEach(function (areaData) {
-                shapesHandler.selectShapeByIndex(index);
-                shapesHandler.rotateSelectedShape(areaData.rotations);
+                shapesHandler.rotateShapeByIndex(index, areaData.rotations);
                 index++;
             });
+            setTimeout(function () {
+                shapesHandler.fillAllAreasWithPanels();
+            }, 10);
         });
     }
 }

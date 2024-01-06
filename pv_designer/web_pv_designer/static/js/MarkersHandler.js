@@ -14,6 +14,14 @@ class MarkersHandler {
         }
     }
 
+    deleteMarkersArea(areaIndex) {
+        console.log('deleteMarkersArea: ' + areaIndex);
+        this.clearMarkers(areaIndex);
+        for (let i = areaIndex; i < 3; i++) {
+            this.markers[i] = this.markers[i + 1];
+        }
+    }
+
     putMarker(markerPosition, markerIcon, angle, areaIndex) {
         angle = angle + '';
         setTimeout(() => {

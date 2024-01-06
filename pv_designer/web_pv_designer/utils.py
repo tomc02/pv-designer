@@ -27,6 +27,7 @@ def process_map_data(data, user_id):
             map_data.areasData = parsed_data['shapesData']
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
+            map_data.areasObjects.clear()
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.pv_power_plant.solar_panel.power))
         else:

@@ -74,7 +74,7 @@ function loadMapData() {
             shapesHandler.addShape(polygon);
             addControlPanel();
         });
-        mapData.areasData.forEach(function (areaData) {
+        areasObjects.forEach(function (areaData) {
             updateControlPanelTitle(areaData.title, index);
             updateControlPanelSlope(areaData.slope, index);
             updateControlPanelMountingPosition(areaData.mountingType, index);
@@ -86,11 +86,6 @@ function loadMapData() {
             center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0, rotateControl: false,
         });
     }
-
-    /* create delete button
-    <button className="btn btn-danger" onClick="deleteShape()">
-                            <i className="bi bi-trash"></i>
-                        </button> */
 
     const deleteButton = document.createElement('button');
     deleteButton.id = 'markerDeleteButton';

@@ -87,11 +87,21 @@ class ShapesHandler {
         }
     }
 
+    rotateShapeByIndex(index, rotationsCount = 1) {
+        if (this.shapes[index]) {
+            console.log('rotateShape ' + rotationsCount + ' times');
+            for (let i = 0; i < rotationsCount; i++) {
+                this.shapesObjects[index].rotateShape();
+            }
+            this.fillAreaWithPanels();
+        }
+    }
+
     deleteShape() {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
                 const index = this.selectedShapeIndex;
-                markerHandler.clearMarkers(index);
+                markerHandler.deleteMarkersArea(index);
                 this.selectedShape.deleteShape();
                 deleteControlPanel(index);
                 this.shapes.splice(index, 1);
