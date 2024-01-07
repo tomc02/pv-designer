@@ -121,9 +121,10 @@ class ShapesHandler {
             markerHandler.clearMarkers(this.selectedShapeIndex);
             const data = fillPolygon(this.selectedShapeIndex);
             const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
-            const p = document.getElementById("panelCount" + (this.selectedShapeIndex + 1));
+            console.log('area: ' + this.selectedShapeIndex);
+            const p = document.getElementById("panelCount" + (this.selectedShapeIndex));
             p.textContent = data.panelsCount;
-            const a = document.getElementById("azimuth" + (this.selectedShapeIndex + 1));
+            const a = document.getElementById("azimuth" + (this.selectedShapeIndex));
             a.textContent = data.azimuth;
             const shape = this.selectedShape;
             shape.panelsCount = data.panelsCount;
@@ -144,11 +145,11 @@ class ShapesHandler {
             const shape = this.shapes[i];
             const shapeObject = this.shapesObjects[i];
             const area = google.maps.geometry.spherical.computeArea(shape.getPath());
-            const panelCount = document.getElementById("panelCount" + (i + 1)).textContent;
-            const azimuth = document.getElementById("azimuth" + (i + 1)).textContent;
-            let slope = document.getElementById("slope" + (i + 1)).value;
-            const title = document.getElementById("title" + (i + 1)).textContent;
-            const mountingPosition = document.getElementById("mountingPosition" + (i + 1)).value;
+            const panelCount = document.getElementById("panelCount" + (i)).textContent;
+            const azimuth = document.getElementById("azimuth" + (i)).textContent;
+            let slope = document.getElementById("slope" + (i)).value;
+            const title = document.getElementById("title" + (i)).textContent;
+            const mountingPosition = document.getElementById("mountingPosition" + (i)).value;
             console.log('slope: ' + title);
             if (slope === '') {
                 slope = 0;

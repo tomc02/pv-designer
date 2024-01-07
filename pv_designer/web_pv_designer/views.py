@@ -38,6 +38,12 @@ def index(request):
 def map_view(request, instance_id):
     record_id = request.GET.get('record_id')
     pv_power_plant = get_object_or_404(PVPowerPlant, id=instance_id)
+    # check if exists map_data with this pv_power_plant
+    map_data = MapData.objects.filter(pv_power_plant=pv_power_plant)
+    if map_data:
+        if map_data[0].user != request.user:
+            return redirect('home')
+
     panel_size = json.dumps(
         {'width': pv_power_plant.solar_panel.width,
          'height': pv_power_plant.solar_panel.height})

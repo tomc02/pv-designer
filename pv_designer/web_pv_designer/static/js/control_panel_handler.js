@@ -1,7 +1,7 @@
 function addControlPanel() {
     const subpanelsContainer = document.getElementById("areaControlPanels");
     const newSubpanel = document.createElement("div");
-    const areaIndex = subpanelsContainer.querySelectorAll(".col-md.subpanel").length + 1;
+    const areaIndex = subpanelsContainer.querySelectorAll(".col-md.subpanel").length;
     newSubpanel.className = "col-md subpanel";
     newSubpanel.style.maxWidth = "50%";
     newSubpanel.innerHTML = `
@@ -52,6 +52,23 @@ function deleteControlPanel(index) {
 
     if (index >= 0 && index < subpanels.length) {
         subpanels[index].remove();
+
+        // Update the indices of the remaining subpanels
+        for (let i = index+1; i < subpanels.length; i++) {
+            console.log('i: ' + i);
+            const titleElement = document.getElementById("title" + (i));
+            titleElement.id = "title" + (i-1);
+            const panelCountElement = document.getElementById("panelCount" + (i));
+            panelCountElement.id = "panelCount" + (i-1);
+            const azimuthElement = document.getElementById("azimuth" + (i));
+            azimuthElement.id = "azimuth" + (i-1);
+            const slopeElement = document.getElementById("slope" + (i));
+            slopeElement.id = "slope" + (i-1);
+            const mountingPositionElement = document.getElementById("mountingPosition" + (i));
+            mountingPositionElement.id = "mountingPosition" + (i-1);
+
+        }
+
     }
 }
 function highlightControlPanel(panel) {
@@ -108,7 +125,7 @@ function makeTitleEditable(titleElement) {
 function refreshPanelsCount() {
     // refresh panels count on the control panel
     for (let i = 0; i < shapesHandler.shapesCount; i++) {
-        const p = document.getElementById("panelCount" + (i + 1));
+        const p = document.getElementById("panelCount" + (i));
         p.textContent = markerHandler.markers[i].length;
     }
 }
@@ -135,17 +152,17 @@ function updateMountingPosition(positionInput) {
 }
 
 function updateControlPanelTitle(titleInput, index) {
-    const titleElement = document.getElementById("title" + (index + 1));
+    const titleElement = document.getElementById("title" + (index));
     titleElement.textContent = titleInput;
 }
 
 function updateControlPanelSlope(slopeInput, index) {
-    const slopeElement = document.getElementById("slope" + (index + 1));
+    const slopeElement = document.getElementById("slope" + (index));
     slopeElement.value = slopeInput;
 }
 
 function updateControlPanelMountingPosition(positionInput, index) {
-    const positionElement = document.getElementById("mountingPosition" + (index + 1));
+    const positionElement = document.getElementById("mountingPosition" + (index));
     console.log(positionInput);
     if (positionInput === 'option2') {
         positionElement.value = 0;
