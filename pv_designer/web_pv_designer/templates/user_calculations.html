@@ -26,10 +26,11 @@
                             <button onclick="showCalculationResult({{ record.id }})" class="btn btn-primary">Show
                                 result
                             </button>
-                            <form method="post" action="{% url 'delete_record' %}?id={{ record.id }}"
-                                  style="display: inline;">
+                            <form id="deleteRecordForm" method="post"
+                                  action="{% url 'delete_record' %}?id={{ record.id }}" style="display: inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                <button type="button" class="btn btn-danger" onclick="confirmDelete()"><i
+                                        class="bi bi-trash"></i></button>
                             </form>
                         </td>
                     </tr>
@@ -46,6 +47,15 @@
     </div>
     <script>
         var getResultUrl = "{% url 'get_pdf_result' %}";
+        function confirmDelete() {
+            if (window.confirm("Are you sure you want to delete this record?")) {
+                // If the user clicks 'OK', submit the form
+                document.getElementById('deleteRecordForm').submit();
+            } else {
+                // If the user clicks 'Cancel', do nothing
+            }
+        }
+
         addBackButtonListener();
     </script>
 {% endblock %}
