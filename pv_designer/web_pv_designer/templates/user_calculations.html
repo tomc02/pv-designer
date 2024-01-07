@@ -23,7 +23,9 @@
                         <td>
                             <a href="{% url 'map' %}{{ record.pv_power_plant.id }}?record_id={{ record.id }}"
                                class="btn btn-primary">Edit</a>
-                            <button onclick="showCalculationResult({{ record.id }})" class="btn btn-primary">Show result</button>
+                            <button onclick="showCalculationResult({{ record.id }})" class="btn btn-primary">Show
+                                result
+                            </button>
                             <form method="post" action="{% url 'delete_record' %}?id={{ record.id }}"
                                   style="display: inline;">
                                 {% csrf_token %}
@@ -43,6 +45,7 @@
         </div>
     </div>
     <script>
-    var getResultUrl = "{% url 'get_pdf_result' %}";
+        var getResultUrl = "{% url 'get_pdf_result' %}";
+        addBackButtonListener();
     </script>
 {% endblock %}

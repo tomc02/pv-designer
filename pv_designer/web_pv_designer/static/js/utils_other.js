@@ -1,5 +1,6 @@
 let imageUrl = null;
 let mapDataLoaded = false;
+let processing = false;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
     showProcessing();
@@ -58,6 +59,24 @@ function getPower(shapes, kwPerPanel) {
 function showProcessing() {
     document.getElementById('content').style.display = 'none';
     document.getElementById('loading').style.display = 'block';
+    processing = true;
+}
+
+function hideProcessing() {
+    if (processing) {
+        document.getElementById('content').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+        processing = false;
+    }
+}
+
+function addBackButtonListener() {
+    window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                hideProcessing();
+            } else {
+            }
+        });
 }
 
 function showCalculationResult(id){

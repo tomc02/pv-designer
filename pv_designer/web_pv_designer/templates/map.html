@@ -76,6 +76,7 @@
         var instanceID = {{ instance_id }};
         var panelSize = {{ panel_size|safe }};
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
+        addBackButtonListener();
         initMap();
     </script>
     </html>

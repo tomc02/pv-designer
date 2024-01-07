@@ -10,7 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SolarPanelForm
 from .models import MapData, SolarPanel, PVPowerPlant
-from .utils import rotate_pv_img, create_pdf_report, process_map_data, make_api_calling
+from .utils.utils import process_map_data, make_api_calling
+from .utils.pdf_report import create_pdf_report
+from .utils.images import rotate_pv_img
 
 
 def start_page(request):
