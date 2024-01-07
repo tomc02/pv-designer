@@ -6,11 +6,8 @@ import os
 from io import BytesIO
 
 import matplotlib
-from reportlab.lib import colors
-
-matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
+from django.conf import settings
 import requests
 from PIL import Image
 from django.http import JsonResponse
@@ -18,15 +15,9 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image as ImagePlatypus
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.graphics.charts.barcharts import VerticalBarChart
-from reportlab.graphics.charts.piecharts import Pie
-from reportlab.graphics import renderPDF
-from reportlab.platypus.flowables import KeepTogether
-
 from .models import MapData, PVPowerPlant, Area, CustomUser
-from fpdf import FPDF
 
-
+matplotlib.use('Agg')
 def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
@@ -86,26 +77,25 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
 
 def save_map_img(image_url, user_id, db_id=None):
     image_url = image_url.replace('data:image/png;base64,', '')
-    save_path = './web_pv_designer/pdf_sources/' + user_id + '/'
-    db_path = './media/map_images/'
+    save_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', user_id)
+    db_path = os.path.join(settings.MEDIA_ROOT, 'map_images')
+
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    with open(save_path + 'pv_image.png', "wb") as fh:
+
+    with open(os.path.join(save_path, 'pv_image.png'), "wb") as fh:
         fh.write(base64.decodebytes(image_url.encode()))
-    im = Image.open(save_path + 'pv_image.png')
+
+    im = Image.open(os.path.join(save_path, 'pv_image.png'))
     width, height = im.size
     im = im.crop((0, 0, width, height - 15))
-    im.save(save_path + 'pv_image.png')
+    im.save(os.path.join(save_path, 'pv_image.png'))
+
     if db_id is not None:
-        db_path = db_path + str(db_id) + '.png'
+        db_path = os.path.join(db_path, f'{db_id}.png')
         im.save(db_path)
-        return 'map_images/' + str(db_id) + '.png'
+        return os.path.relpath(db_path, settings.MEDIA_ROOT)
 
-
-def load_map_img(user_id):
-    load_path = './web_pv_designer/pdf_sources/' + user_id + '/'
-    im = Image.open(load_path + 'pv_image.png')
-    return im
 
 
 def set_params(data):
@@ -127,9 +117,9 @@ def set_params(data):
     return params
 
 
-def rotate_pv_img(angle, slope, original_image_path, rotated_image_path):
-    file_path = os.path.dirname(os.path.relpath(__file__))
-    original_image = Image.open(file_path + original_image_path).convert("RGBA")
+def rotate_pv_img(angle, slope, original_image_name, rotated_image_name):
+    static_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'images')
+    original_image = Image.open(os.path.join(static_path, original_image_name + '.png')).convert("RGBA")
     width, height = original_image.size
     slope = 90 - float(slope)
     new_height = height * math.sin(math.radians(slope))
@@ -140,21 +130,21 @@ def rotate_pv_img(angle, slope, original_image_path, rotated_image_path):
     rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)
 
     angle = str(round(rotation_angle))
-    rotated_image.save(file_path + rotated_image_path + angle + '.png')
+    rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
 
 
 def delete_rotated_images():
-    file_path = os.path.dirname(os.path.relpath(__file__))
-    dir_path = file_path + '/static/images/'
-    for file in os.listdir(dir_path):
+    static_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'images')
+    for file in os.listdir(static_path):
         if file.startswith('pv_panel_rotated'):
-            os.remove(dir_path + file)
+            os.remove(os.path.join(static_path, file))
         if file.startswith('pv_panel_selected_rotated'):
-            os.remove(dir_path + file)
+            os.remove(os.path.join(static_path, file))
 
 
-def create_pdf_report(path_to_source, areas):
-    pdf_file = './web_pv_designer/static/pv_data_report.pdf'
+def create_pdf_report(user_id, areas):
+    pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'pv_data_report.pdf')
+    path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
 
     lat, long = None, None
@@ -288,7 +278,8 @@ def get_pvgis_response(params):
 
 
 def save_response(response, user_id, index=0):
-    with open('./web_pv_designer/pdf_sources/' + str(user_id) + '/response' + str(index) + '.json', 'wb') as f:
+    path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id))
+    with open(path_to_source + '/response' + str(index) + '.json', 'wb') as f:
         f.write(response.text.encode('utf-8'))
 
 

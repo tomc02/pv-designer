@@ -78,9 +78,9 @@ def account_details(request):
 def rotate_img(request):
     angle = request.GET.get('angle')
     slope = request.GET.get('slope')
-    result = rotate_pv_img(angle, slope, '/static/images/pv_panel.png', '/static/images/pv_panel_rotated')
-    result = rotate_pv_img(angle, slope, '/static/images/pv_panel_selected.png',
-                           '/static/images/pv_panel_selected_rotated')
+    result = rotate_pv_img(angle, slope, 'pv_panel', 'pv_panel_rotated')
+    result = rotate_pv_img(angle, slope, 'pv_panel_selected',
+                           'pv_panel_selected_rotated')
     return JsonResponse({'result': result})
 
 
@@ -106,12 +106,11 @@ def calculation_result(request):
     req_id = request.GET.get('id')
     if req_id:
         make_api_calling(req_id, request.user.id)
-        save_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/'
         pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
                                 'pv_data_report.pdf')
         map_data = MapData.objects.get(id=req_id)
         areas = map_data.areasObjects.all()
-        pdf_created = create_pdf_report(save_path, areas)
+        pdf_created = create_pdf_report(request.user.id, areas)
         if pdf_created:
             return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
         else:
