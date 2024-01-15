@@ -1,7 +1,7 @@
 function addControlPanel() {
     const subpanelsContainer = document.getElementById("areaControlPanels");
     const newSubpanel = document.createElement("div");
-    const areaIndex = subpanelsContainer.querySelectorAll(".col-md.subpanel").length + 1;
+    const areaIndex = subpanelsContainer.querySelectorAll(".col-md.subpanel").length;
     newSubpanel.className = "col-md subpanel";
     newSubpanel.style.maxWidth = "50%";
     newSubpanel.innerHTML = `
@@ -16,13 +16,20 @@ function addControlPanel() {
                             </div>
                         </div>
                         <p>Azimuth: <span id="azimuth${areaIndex}">0</span></p>
-                        <div class="input-group mt-3" style="padding-bottom: 10px">
+                        <div class="input-group mt-3">
                             <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
-                            <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)">
+                            <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)" onchange="updateAreaSlope(this)">
                         </div>
-                        <button class="btn btn-primary" onclick="fillAreaWithPanels()">Fill with panels</button>
-                        <button class="btn btn-primary" onclick="rotateSelectedShape()">Rotate polygon</button>
-                        <button class="btn btn-danger" onclick="deleteShape()">
+                         <div class="input-group mt-3" style="padding-bottom: 10px">
+                            <label class="input-group-text" for="roofSlopeInput">Mounting position</label>
+                            <select class="form-select" id="mountingPosition${areaIndex}" onchange="updateMountingPosition(this)">
+                                <option value="0">Roof added</option>
+                                <option value="1">Free standing</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="shapesHandler.fillAreaWithPanels()">Fill with panels</button>
+                        <button class="btn btn-primary" onclick="shapesHandler.rotateSelectedShape()">Rotate</button>
+                        <button class="btn btn-danger" onclick="shapesHandler.deleteShape()">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -39,16 +46,31 @@ function toggleOrientation(switchElement) {
 }
 
 function deleteControlPanel(index) {
-    clearSelection();
+    shapesHandler.clearSelection();
     const subpanelsContainer = document.getElementById("areaControlPanels");
     const subpanels = subpanelsContainer.querySelectorAll(".col-md.subpanel");
 
     if (index >= 0 && index < subpanels.length) {
         subpanels[index].remove();
+
+        // Update the indices of the remaining subpanels
+        for (let i = index+1; i < subpanels.length; i++) {
+            console.log('i: ' + i);
+            const titleElement = document.getElementById("title" + (i));
+            titleElement.id = "title" + (i-1);
+            const panelCountElement = document.getElementById("panelCount" + (i));
+            panelCountElement.id = "panelCount" + (i-1);
+            const azimuthElement = document.getElementById("azimuth" + (i));
+            azimuthElement.id = "azimuth" + (i-1);
+            const slopeElement = document.getElementById("slope" + (i));
+            slopeElement.id = "slope" + (i-1);
+            const mountingPositionElement = document.getElementById("mountingPosition" + (i));
+            mountingPositionElement.id = "mountingPosition" + (i-1);
+
+        }
+
     }
 }
-
-
 function highlightControlPanel(panel) {
     const allPanels = document.querySelectorAll(".card");
     allPanels.forEach((p) => {
@@ -65,7 +87,7 @@ function highlightControlPanel(panel) {
     });
     const index = Array.from(allPanels).indexOf(panel);
     if (index >= 0) {
-        selectShape(shapes[index]);
+        shapesHandler.selectShape(shapesHandler.shapes[index]);
     }
 }
 
@@ -102,8 +124,49 @@ function makeTitleEditable(titleElement) {
 
 function refreshPanelsCount() {
     // refresh panels count on the control panel
-    for (let i = 0; i < shapes.length; i++) {
-        const p = document.getElementById("panelCount" + (i + 1));
-        p.textContent = markers[i].length;
+    for (let i = 0; i < shapesHandler.shapesCount; i++) {
+        const p = document.getElementById("panelCount" + (i));
+        p.textContent = markerHandler.markers[i].length;
+    }
+}
+
+function updateAreaSlope(slopeInput) {
+    const slope = slopeInput.value;
+    const shape = shapesHandler.selectedShape;
+    shape.setSlope(slope);
+    if (shape.panelsCount > 0) {
+       shapesHandler.fillAreaWithPanels();
+    }
+}
+
+function updateMountingPosition(positionInput) {
+    const position = positionInput.value;
+    const shape = shapesHandler.selectedShape;
+    if (position === '0') {
+        shape.setMountingPosition('roof');
+    }
+    else if (position === '1') {
+        shape.setMountingPosition('free-standing');
+    }
+    console.log(shape.mountingType);
+}
+
+function updateControlPanelTitle(titleInput, index) {
+    const titleElement = document.getElementById("title" + (index));
+    titleElement.textContent = titleInput;
+}
+
+function updateControlPanelSlope(slopeInput, index) {
+    const slopeElement = document.getElementById("slope" + (index));
+    slopeElement.value = slopeInput;
+}
+
+function updateControlPanelMountingPosition(positionInput, index) {
+    const positionElement = document.getElementById("mountingPosition" + (index));
+    console.log(positionInput);
+    if (positionInput === 'option2') {
+        positionElement.value = 0;
+    }else if (positionInput === 'option1') {
+        positionElement.value = 1;
     }
 }

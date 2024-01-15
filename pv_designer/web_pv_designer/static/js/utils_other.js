@@ -1,7 +1,9 @@
 let imageUrl = null;
 let mapDataLoaded = false;
+let processing = false;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
+    showProcessing();
     $.ajax({
         url: url,
         method: "POST",
@@ -12,13 +14,13 @@ function sendData(dataToSend, url, customHeader, csrf_token) {
         },
         success: function (response) {
             console.log(response);
-            //window.location.href = formUrl + '?id=' + response.id;
+            window.location.href = resultUrl + '?id=' + response.id;
         }
     });
 }
 
 function moveToForm() {
-    prepareAreasData();
+    shapesHandler.prepareAreasData();
     let mapDataID = '';
     if (mapDataLoaded) {
         mapDataID = mapData.id;
@@ -26,19 +28,22 @@ function moveToForm() {
     const dataToSave = {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
-        'shapesData': shapesData,
-        'shapes': convertShapesToJSON(shapes),
+        'shapesData': shapesHandler.prepareAreasData(),
+        'shapes': convertShapesToJSON(shapesHandler.shapesObjects),
         'imageUrl': imageUrl,
         'zoom': map.zoom,
         'mapDataID': mapDataID,
+        'instanceID': instanceID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
+
+    // if
 }
 
 function convertShapesToJSON(shapes) {
     let shapesJSON = [];
     shapes.forEach(function (shape) {
-        shapesJSON.push(shape.getPath().getArray());
+        shapesJSON.push(shape.getShape().getPath().getArray());
     });
     return shapesJSON;
 }
@@ -51,23 +56,32 @@ function getPower(shapes, kwPerPanel) {
     return Math.round(panelsCount * kwPerPanel, 2);
 }
 
-function enableTab() {
-    /* enable tab2-tab
+function showProcessing() {
+    document.getElementById('content').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    processing = true;
+}
 
-        <ul class="nav nav-tabs" id="myTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab"
-                   aria-controls="tab1" aria-selected="true">Map</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link disabled" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2"
-                   aria-selected="false" aria-disabled="true" >Other data</a>
-            </li>
-        </ul>
-    */
-    const tab2 = document.getElementById('tab2-tab');
-    tab2.classList.remove('disabled');
-    tab2.removeAttribute('aria-disabled');
+function hideProcessing() {
+    if (processing) {
+        document.getElementById('content').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+        processing = false;
+    }
+}
+
+function addBackButtonListener() {
+    window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                hideProcessing();
+            } else {
+            }
+        });
+}
+
+function showCalculationResult(id){
+    showProcessing();
+    window.location.href = getResultUrl + '?id=' + id;
 }
 
 

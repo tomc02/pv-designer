@@ -1,8 +1,8 @@
 function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD) {
     let panelLeftTop = leftTop;
     console.log(headingLTR, headingRTD);
-    let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, panelWidth, headingLTR);
-    let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, panelHeight, headingRTD);
+    let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, shapesHandler.getPanelWidth(), headingLTR);
+    let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, shapesHandler.getPanelHeight(), headingRTD);
     let isLeftTop = google.maps.geometry.poly.containsLocation(panelLeftTop, polygon);
     let isRightBottom = google.maps.geometry.poly.containsLocation(panelRightBottom, polygon);
     let isRightTop = true;
@@ -14,17 +14,19 @@ function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD
 
 function getPvImgUrl(angle) {
     const currentTime = new Date().getTime();
+    angle = Math.round(angle);
     return pvPanelImg + angle + '.png' + '?v=' + currentTime;
 }
 
 function getPvImgSelectedUrl(angle) {
     console.log('getPvImgSelectedUrl' + angle);
     const currentTime = new Date().getTime();
+    angle = Math.round(angle);
     return pvPanelSelectedImg + angle + '.png' + '?v=' + currentTime;
 }
 
 function getMapPicture() {
-    enableTab();
+    mapDataForm = shapesHandler.prepareAreasData();
     document.getElementById('markerDeleteButton').style.display = 'none';
     // lock map moving
     map.setOptions({
@@ -39,8 +41,8 @@ function getMapPicture() {
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
-    clearSelection();
-    clearMarkerSelection();
+    shapesHandler.clearSelection();
+    markerHandler.clearMarkerSelection();
     setTimeout(function () {
         html2canvas(document.querySelector('#map'), {
             backgroundColor: null,
@@ -59,6 +61,7 @@ function loadMapData() {
             center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0, rotateControl: false,
         });
         map.setMapTypeId('satellite');
+        let index = 0;
         mapData.areas.forEach(function (area) {
             let polygon = new google.maps.Polygon({
                 paths: area,
@@ -68,10 +71,16 @@ function loadMapData() {
             });
             polygon.setMap(map);
             google.maps.event.addListener(polygon, 'click', function () {
-                selectShape(polygon);
+                shapesHandler.selectShape(polygon);
             });
-            shapes.push(polygon);
+            shapesHandler.addShape(polygon);
             addControlPanel();
+        });
+        areasObjects.forEach(function (areaData) {
+            updateControlPanelTitle(areaData.title, index);
+            updateControlPanelSlope(areaData.slope, index);
+            updateControlPanelMountingPosition(areaData.mounting_position, index);
+            index++;
         });
         mapDataLoaded = true;
     } else {
@@ -80,17 +89,12 @@ function loadMapData() {
         });
     }
 
-    /* create delete button
-    <button className="btn btn-danger" onClick="deleteShape()">
-                            <i className="bi bi-trash"></i>
-                        </button> */
-
     const deleteButton = document.createElement('button');
     deleteButton.id = 'markerDeleteButton';
     deleteButton.classList.add('btn', 'btn-danger');
     deleteButton.addEventListener('click', function () {
-        let selectedMarkerKey = Object.keys(markers).find(key => markers[key].includes(selectedMarker));
-        deleteMarker(selectedMarkerKey);
+        let selectedMarkerKey = Object.keys(markerHandler.markers).find(key => markerHandler.markers[key].includes(markerHandler.selectedMarker));
+        markerHandler.deleteMarker(selectedMarkerKey);
         deleteButton.style.display = 'none';
     });
     // add padding to the button

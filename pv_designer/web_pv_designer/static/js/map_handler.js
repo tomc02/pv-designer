@@ -17,14 +17,14 @@ function initMap() {
         const shape = event.overlay;
         // if shape has 4 points
         if (shape.getPath().getLength() === 4) {
-            if (shapes.length < 4) {
+            if (shapesHandler.shapesCount < 4) {
                 addControlPanel();
-                shapes.push(shape);
+                shapesHandler.addShape(shape);
                 google.maps.event.addListener(shape, 'click', function () {
-                    selectShape(shape);
+                    shapesHandler.selectShape(shape);
                 });
                 drawingManager.setDrawingMode(null);
-                selectShape(shape);
+                shapesHandler.selectShape(shape);
             } else {
                 shape.setMap(null);
                 alert('You can draw only 4 areas');
@@ -35,20 +35,34 @@ function initMap() {
         }
     });
 
-    google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
+    google.maps.event.addListener(drawingManager, 'drawingmode_changed', shapesHandler.clearSelection);
 
     google.maps.event.addListener(map, 'click', function () {
-        clearSelectionAndHighlight();
-        clearMarkerSelection();
+        shapesHandler.clearSelectionAndHighlight();
+        markerHandler.clearMarkerSelection();
     });
 
     searchBoxInit(map);
     google.maps.event.addDomListener(document, 'keyup', function (e) {
         const code = (e.keyCode ? e.keyCode : e.which);
         if (code === 46) {
-            deleteShape();
+            shapesHandler.deleteShape();
         }
     });
+
+    if (mapDataLoaded) {
+        google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+            let index = 0;
+            shapesHandler.fillAllAreasWithPanels();
+            mapData.areasData.forEach(function (areaData) {
+                shapesHandler.rotateShapeByIndex(index, areaData.rotations);
+                index++;
+            });
+            setTimeout(function () {
+                shapesHandler.fillAllAreasWithPanels();
+            }, 100);
+        });
+    }
 }
 
 function searchBoxInit(map) {

@@ -9,12 +9,15 @@ class CustomUser(AbstractUser):
         return self.username
 
 class MapData(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     areas = models.JSONField()
     areasData = models.JSONField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
+    pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
+    areasObjects = models.ManyToManyField('Area', blank=True)
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
@@ -28,42 +31,48 @@ class MapData(models.Model):
             'zoom': self.zoom,
         }
 
-class SolarPVCalculator(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    installed_peak_power = models.FloatField()
+
+class PVPowerPlant(models.Model):
+    title = models.CharField(max_length=255)
     system_loss = models.FloatField()
+    pv_electricity_price = models.BooleanField(default=False)
+    pv_system_cost = models.FloatField(blank=True, null=True)
+    interest = models.FloatField(blank=True, null=True)
+    lifetime = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
+class Area(models.Model):
+    panels_count = models.IntegerField()
+    installed_peak_power = models.FloatField()
     mounting_position = models.CharField(max_length=20, choices=(
         ('option1', 'Free standing'),
         ('option2', 'Roof added'),
     ))
     slope = models.FloatField()
     azimuth = models.FloatField()
-    optimize_slope = models.BooleanField(default=False)
-    optimize_slope_and_azimuth = models.BooleanField(default=False)
-    pv_electricity_price = models.BooleanField(default=False)
-    pv_system_cost = models.FloatField(blank=True, null=True)
-    interest = models.FloatField(blank=True, null=True)
-    lifetime = models.IntegerField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    map_data = models.ForeignKey(MapData, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255)
+    rotations = models.IntegerField()
+
     def __str__(self):
-        return f"Solar PV Calculator - ID: {self.id}"
+        return f"Area - ID: {self.id}"
 
     def to_JSON(self):
         return {
-            'latitude': self.latitude,
-            'longitude': self.longitude,
+            'id': self.id,
+            'panels_count': self.panels_count,
             'installed_peak_power': self.installed_peak_power,
-            'system_loss': self.system_loss,
             'mounting_position': self.mounting_position,
             'slope': self.slope,
             'azimuth': self.azimuth,
-            'pv_electricity_price': self.pv_electricity_price,
-            'pv_system_cost': self.pv_system_cost,
-            'interest': self.interest,
-            'lifetime': self.lifetime,
+            'title': self.title,
+            'rotations': self.rotations,
         }
 
+class SolarPanel(models.Model):
+    model = models.CharField(max_length=100)
+    width = models.FloatField()
+    height = models.FloatField()
+    power = models.FloatField()
 
+    def __str__(self):
+        return f"{self.model} - {self.width}m - {self.height}m - {self.power}W"
