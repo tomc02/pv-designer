@@ -40,19 +40,25 @@ class MarkersHandler {
 
     getMarkerPicture(position, imgUrl, angle) {
         const angleAbs = Math.abs(angle);
+        console.log('angleAbs: ' + angleAbs);
         const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
         const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
-        const rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-        const rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
+        let rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+        let rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
 
         let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
         let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+
+        console.log('anchorX: ' + anchorX);
+        console.log('anchorY: ' + anchorY);
 
         if (angle > 0) {
             anchorX = 0;
         } else {
             anchorY = 0;
         }
+        console.log('anchorX: ' + anchorX);
+        console.log('anchorY: ' + anchorY);
         return {
             url: imgUrl,
             scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),

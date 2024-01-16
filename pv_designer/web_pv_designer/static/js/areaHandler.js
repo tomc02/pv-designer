@@ -38,7 +38,7 @@ class AreaHandler {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / panelWidth);
         let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
         let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 20; i++) {
             cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, panelHeight, headingLTR + 90);
             cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, panelHeight, headingRTL - 90);
             console.log('azimuth: ' + azimuth)
@@ -48,7 +48,6 @@ class AreaHandler {
             } else {
                 panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
             }
-
         }
         return new areaData(panelsCount, azimuth);
     }
