@@ -2,8 +2,7 @@ function addControlPanel() {
     const subpanelsContainer = document.getElementById("areaControlPanels");
     const newSubpanel = document.createElement("div");
     const areaIndex = subpanelsContainer.querySelectorAll(".col-md.subpanel").length;
-    newSubpanel.className = "col-md subpanel";
-    newSubpanel.style.maxWidth = "50%";
+    newSubpanel.className = "subpanel col-sm-12 col-md";
     newSubpanel.innerHTML = `
                 <div class="card" onclick="highlightControlPanel(this)">
                     <div class="card-body">
