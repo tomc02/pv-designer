@@ -23,6 +23,7 @@ class MarkersHandler {
     }
 
     putMarker(markerPosition, markerIcon, angle, areaIndex) {
+        angle = Math.round(angle);
         angle = angle + '';
         setTimeout(() => {
             const marker = new google.maps.Marker({

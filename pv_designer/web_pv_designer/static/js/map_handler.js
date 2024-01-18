@@ -38,8 +38,8 @@ function initMap() {
     google.maps.event.addListener(drawingManager, 'drawingmode_changed', shapesHandler.clearSelection);
 
     google.maps.event.addListener(map, 'click', function () {
-        shapesHandler.clearSelectionAndHighlight();
         markerHandler.clearMarkerSelection();
+        shapesHandler.clearSelectionAndHighlight();
     });
 
     searchBoxInit(map);
@@ -59,6 +59,7 @@ function initMap() {
                 index++;
             });
             setTimeout(function () {
+                refreshAllSlopes();
                 shapesHandler.fillAllAreasWithPanels();
             }, 100);
         });

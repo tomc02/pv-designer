@@ -68,6 +68,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
 
 
 def set_params(data):
+    print('azimuth: ' + data['azimuth'])
     params = {
         'lat': data['latitude'],
         'lon': data['longitude'],

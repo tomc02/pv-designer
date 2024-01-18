@@ -70,28 +70,31 @@ function fillPolygon(index) {
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     let headingLTD = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.leftBottom);
-    let headingRTD2 = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
+    let headingRTD = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
 
     let angleLTR_LTD = calculateAngle(headingLTR, headingLTD);
     angleLTR_LTD = Math.abs(angleLTR_LTD - 90);
     console.log(`Angle between LTR and LTD: ${angleLTR_LTD} degrees`);
 
-    let angleRTL_RTD2 = calculateAngle(headingRTL, headingRTD2);
-    angleRTL_RTD2 = Math.abs(angleRTL_RTD2 - 90);
-    console.log(`Angle between RTL and RTD2: ${angleRTL_RTD2} degrees`);
+    let angleRTL_RTD = calculateAngle(headingRTL, headingRTD);
+    angleRTL_RTD = Math.abs(angleRTL_RTD - 90);
+    console.log(`Angle between RTL and RTD: ${angleRTL_RTD} degrees`);
 
     const hypotenuseLTR_LTD = shapesHandler.getPanelHeight(index) / Math.cos(angleLTR_LTD * Math.PI / 180);
-    const hypotenuseRTL_RTD2 = shapesHandler.getPanelHeight(index) / Math.cos(angleRTL_RTD2 * Math.PI / 180);
+    const hypotenuseRTL_RTD = shapesHandler.getPanelHeight(index) / Math.cos(angleRTL_RTD * Math.PI / 180);
     console.log(`Hypotenuse LTR_LTD: ${hypotenuseLTR_LTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
-    console.log(`Hypotenuse RTL_RTD2: ${hypotenuseRTL_RTD2}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
+    console.log(`Hypotenuse RTL_RTD: ${hypotenuseRTL_RTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
 
-    const angle = 90 - headingLTR;
+    let angle = 90 - headingLTR;
+    angle = angle > 180 ? angle - 180 : angle;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
     console.log('url: ' + pvPanelUrl);
-    //cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
-    //cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
+
     let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
-    const headingRTD = headingLTR + 90;
+    const absAzimuth = Math.abs(azimuth);
+    if (absAzimuth > 180) {
+        azimuth = 360 - absAzimuth;
+    }
     let topPoints = [];
     let panelsCount=0;
     for (let i = 0; i < 10; i++) {
@@ -99,16 +102,16 @@ function fillPolygon(index) {
         topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, colsCount);
         // move corner points
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD2, headingRTD2);
+        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
         if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD2, pvPanelUrl, index);
+            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD, pvPanelUrl, index);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD2, pvPanelUrl, index);
+            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
         }
     }
     return new areaData(panelsCount, azimuth);
 }
-
+/*
 function fillPolygon2(index) {
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
@@ -152,7 +155,7 @@ function fillPolygon2(index) {
     }
     return new areaData(panelsCount, azimuth);
 }
-
+*/
 function generatePointsBetween(startPoint, endPoint, numPoints) {
     const points = [];
     for (let i = 1; i < numPoints; i++) {
@@ -174,7 +177,7 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     for (let i = 0; i < points.length; i++) {
         const leftTop = points[i];
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            markerHandler.putMarker(points[i],picture,  angle, polygonIndex);
+            markerHandler.putMarker(points[i], picture,  angle, polygonIndex);
             panelCount++;
         }
     }

@@ -35,6 +35,7 @@ class ShapesHandler {
     recalculatePanelHeight(index, slope) {
         slope = 90 - slope;
         this.shapesObjects[index].panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
+        this.shapesObjects[index].panelWidth = this.panelW;
     }
 
     addShape(shape) {

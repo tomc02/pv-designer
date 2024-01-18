@@ -138,6 +138,14 @@ function updateAreaSlope(slopeInput) {
     }
 }
 
+function refreshAllSlopes() {
+    for (let i = 0; i < shapesHandler.shapesCount; i++) {
+        const slope = document.getElementById("slope" + (i));
+        shapesHandler.shapesObjects[i].setSlope(slope.value);
+    }
+
+}
+
 function updateMountingPosition(positionInput) {
     const position = positionInput.value;
     const shape = shapesHandler.selectedShape;
