@@ -7,7 +7,7 @@ import requests
 from django.http import JsonResponse
 
 from .images import save_map_img, delete_rotated_images
-from ..models import MapData, PVPowerPlant, Area, CustomUser
+from ..models import MapData, PVPowerPlant, Area, CustomUser, SolarPanel
 
 matplotlib.use('Agg')
 def process_map_data(data, user_id):
@@ -23,7 +23,7 @@ def process_map_data(data, user_id):
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.areasObjects.clear()
             map_data.save()
-            parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.pv_power_plant.solar_panel.power))
+            parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.solar_panel.power))
         else:
             last_map_data = MapData.objects.last()
             if last_map_data is None:
@@ -31,13 +31,11 @@ def process_map_data(data, user_id):
             else:
                 id = last_map_data.id
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
-            power_plant = PVPowerPlant.objects.get(id=parsed_data['instanceID'])
-            pv_panel = power_plant.solar_panel
+            pv_panel = SolarPanel.objects.get(id=parsed_data['solarPanelID'])
             user_obj = CustomUser.objects.get(id=user_id)
             map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
                                areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
-                               pv_power_plant=power_plant)
+                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path, solar_panel=pv_panel)
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
             delete_rotated_images()

@@ -26,9 +26,10 @@ class CustomLoginForm(LoginForm):
 
 
 class SolarPanelForm(forms.ModelForm):
+    map_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
     class Meta:
         model = PVPowerPlant
-        fields = ['title', 'system_loss','pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'solar_panel']
+        fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -37,3 +38,7 @@ class SolarPanelForm(forms.ModelForm):
             'interest': forms.NumberInput(attrs={'class': 'form-control'}),
             'lifetime': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(SolarPanelForm, self).__init__(*args, **kwargs)
+        self.fields['map_id'].label = 'Map ID'

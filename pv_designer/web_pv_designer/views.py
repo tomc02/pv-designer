@@ -9,10 +9,10 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SolarPanelForm
-from .models import MapData, SolarPanel, PVPowerPlant
-from .utils.utils import process_map_data, make_api_calling
-from .utils.pdf_report import create_pdf_report
+from .models import MapData, SolarPanel
 from .utils.images import rotate_pv_img
+from .utils.pdf_report import create_pdf_report
+from .utils.utils import process_map_data, make_api_calling
 
 
 def start_page(request):
@@ -22,31 +22,37 @@ def start_page(request):
             print(form.cleaned_data)
             form.instance.user = request.user
             saved_instance = form.save()
-            return redirect(reverse('map', kwargs={'instance_id': saved_instance.id}))
+            map_data_id = form.cleaned_data['map_id']
+            if map_data_id:
+                map_data = MapData.objects.get(id=map_data_id)
+                map_data.pv_power_plant = saved_instance
+                map_data.save()
+                return redirect('calculation_result', id=map_data_id)
         else:
             print(form.errors)
     else:
-        form = SolarPanelForm()
-
-    return render(request, 'start_page.html', {'form': form, 'solar_panels': SolarPanel.objects.all()})
+        req_id = request.GET.get('id')
+        if req_id:
+            form = SolarPanelForm()
+            # if exists map data with this id
+            map_data = get_object_or_404(MapData, id=req_id)
+            # if map_data.pv_power_plant exists
+            if map_data.pv_power_plant:
+                form = SolarPanelForm(instance=map_data.pv_power_plant)
+            form.fields['map_id'].initial = req_id
+            return render(request, 'start_page.html', {'form': form})
 
 
 def index(request):
     return render(request, 'home.html')
 
 
-def map_view(request, instance_id):
+def map_view(request):
     record_id = request.GET.get('record_id')
-    pv_power_plant = get_object_or_404(PVPowerPlant, id=instance_id)
-    # check if exists map_data with this pv_power_plant
-    map_data = MapData.objects.filter(pv_power_plant=pv_power_plant)
-    if map_data:
-        if map_data[0].user != request.user:
-            return redirect('home')
 
     panel_size = json.dumps(
-        {'width': pv_power_plant.solar_panel.width,
-         'height': pv_power_plant.solar_panel.height})
+        {'width': 1,
+         'height': 2})
 
     if record_id:
         print("record_id: " + record_id)
@@ -59,7 +65,7 @@ def map_view(request, instance_id):
             'longitude': map_data['longitude'],
             'map_data': json.dumps(map_data),
             'areas_objects': areasObjects,
-            'instance_id': instance_id,
+            'instance_id': 0,
             'panel_size': panel_size,
             'solar_panels': SolarPanel.objects.all(),
         }
@@ -72,7 +78,7 @@ def map_view(request, instance_id):
         'longitude': longitude,
         'map_data': {},
         'areas_objects': [],
-        'instance_id': instance_id,
+        'instance_id': 0,
         'panel_size': panel_size,
         'solar_panels': SolarPanel.objects.all(),
     }
@@ -112,20 +118,18 @@ def ajax_endpoint(request):
     return JsonResponse({"error": "Invalid request method"})
 
 
-def calculation_result(request):
-    req_id = request.GET.get('id')
-    if req_id:
-        make_api_calling(req_id, request.user.id)
-        pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
-                                'pv_data_report.pdf')
-        map_data = MapData.objects.get(id=req_id)
-        areas = map_data.areasObjects.all()
-        pdf_created = create_pdf_report(request.user.id, areas)
-        if pdf_created:
-            return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
-        else:
-            pass
-            # something went wrong
+def calculation_result(request, id):
+    make_api_calling(id, request.user.id)
+    pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
+                            'pv_data_report.pdf')
+    map_data = MapData.objects.get(id=id)
+    areas = map_data.areasObjects.all()
+    pdf_created = create_pdf_report(request.user.id, areas)
+    if pdf_created:
+        return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
+    else:
+        pass
+        # something went wrong
 
 
 def calculations_list(request):
@@ -142,14 +146,12 @@ def get_pdf_result(request):
         image_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/' + 'pv_image.png'
         with open(image_path, 'wb') as f:
             f.write(image.file.read())
-
-        # Use reverse to construct the URL for 'calculation_result' without the '/pdf_result/' prefix
-        redirect_url = reverse('calculation_result') + f'?id={calculation_id}'
-        return redirect(redirect_url)
+        return redirect('calculation_result', id=calculation_id)
 
 
 def delete_record(request):
     if request.method == 'POST':
+        print('delete record' + str(request.GET.get('id')))
         record_id = request.GET.get('id')
         record = get_object_or_404(MapData, id=record_id)
         os.remove(os.path.join(settings.MEDIA_ROOT, record.map_image.name))

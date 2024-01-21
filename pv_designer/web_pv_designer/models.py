@@ -18,6 +18,7 @@ class MapData(models.Model):
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
     pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
     areasObjects = models.ManyToManyField('Area', blank=True)
+    solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
@@ -29,6 +30,7 @@ class MapData(models.Model):
             'areas': self.areas,
             'areasData': self.areasData,
             'zoom': self.zoom,
+            'solar_panel_id': self.solar_panel.id,
         }
 
 
@@ -40,7 +42,6 @@ class PVPowerPlant(models.Model):
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
 class Area(models.Model):
     panels_count = models.IntegerField()
     installed_peak_power = models.FloatField()

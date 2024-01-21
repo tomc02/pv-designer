@@ -33,7 +33,7 @@ function moveToForm() {
         'imageUrl': imageUrl,
         'zoom': map.zoom,
         'mapDataID': mapDataID,
-        'instanceID': instanceID,
+        'solarPanelID': solarPanelID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
 
@@ -102,6 +102,7 @@ function addSelectListener() {
 document.getElementById('solarPanelSelect').addEventListener('change', function() {
         hideChoosePanel();
         var selectedPanelId = this.value;
+        solarPanelID = selectedPanelId;
         var selectedPanelWidth = this.options[this.selectedIndex].getAttribute('data-width');
         var selectedPanelHeight = this.options[this.selectedIndex].getAttribute('data-height');
         var selectedPanelPower = this.options[this.selectedIndex].getAttribute('data-power');

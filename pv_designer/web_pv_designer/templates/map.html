@@ -96,19 +96,26 @@
         var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
-        var resultUrl = "{% url 'calculation_result' %}";
+        var resultUrl = "{% url 'start_page' %}";
         var csrfToken = "{{ csrf_token  }}";
         var latitude = parseFloat("{{ latitude }}");
         var longitude = parseFloat("{{ longitude }}");
         var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
+        const panelId = mapData['solar_panel_id'];
         var areasObjects = {{ areas_objects|safe }}
-        var instanceID = {{ instance_id }};
+        var solarPanelID = 0;
         var panelSize = {{ panel_size|safe }};
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         addBackButtonListener();
         initMap();
         showChoosePanel();
         addSelectListener();
+        if (panelId > 0) {
+            const panel = document.getElementById('solarPanelSelect');
+            panel.value = panelId;
+            solarPanelID = panelId;
+            panel.dispatchEvent(new Event('change'));
+        }
     </script>
     </html>
 

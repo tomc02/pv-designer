@@ -11,22 +11,6 @@
                         <label for="{{ form.title.id_for_label }}">Name of your calculation</label>
                         {{ form.title }}
                     </div>
-                    <!-- Solar Panel Chooser -->
-                    <div class="form-group">
-                        <label for="{{ form.solar_panel.id_for_label }}">Choose Solar Panel</label>
-                        <div class="custom-select">
-                            <select class="form-control" id="{{ form.solar_panel.id_for_label }}"
-                                    name="{{ form.solar_panel.name }}">
-                                {% for panel in solar_panels %}
-                                    <option value="{{ panel.id }}"
-                                            data-img-src="'{% static "images/pv_panel" %}'">
-                                        {{ panel.model }} - {{ panel.width }} x {{ panel.height }}m - {{ panel.power }}
-                                        W
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
 
                     <div class="form-group">
                         <label for="{{ form.system_loss.id_for_label }}">System loss [%]</label>
@@ -37,7 +21,7 @@
                         <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
                         {{ form.pv_electricity_price }}
                     </div>
-
+                    {{ form.map_id }}
                     <div id="pvElectricityPriceInputs" style="display:none;">
                         <div class="form-group">
                             <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)</label>
@@ -60,14 +44,16 @@
         </div>
     </div>
     <script>
-        $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
-            if ($(this).prop('checked')) {
-                $('#pvElectricityPriceInputs').show();
-            } else {
-                $('#pvElectricityPriceInputs').hide();
-            }
+        $(document).ready(function () {
+            $('#{{ form.pv_electricity_price.auto_id }}').on('change', function () {
+                if ($(this).prop('checked')) {
+                    $('#pvElectricityPriceInputs').show();
+                } else {
+                    $('#pvElectricityPriceInputs').hide();
+                }
 
+            });
+            $('#{{ form.system_loss.id_for_label }}').val(14);
         });
-        $('#{{ form.system_loss.id_for_label }}').val(14);
     </script>
 {% endblock %}

@@ -24,11 +24,10 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Include allauth URLs
     path('', views.index, name='home'),
     path('map/', views.map_view, name='map'),
-    path('map/<int:instance_id>/', views.map_view, name='map'),
     path('accounts/details/', views.account_details, name='account_details'),
     path('rotate_img/', views.rotate_img, name='rotate_img'),
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
-    path('calculation_result/', views.calculation_result, name='calculation_result'),
+    path('calculation_result/<int:id>/', views.calculation_result, name='calculation_result'),
     path('calculations/', views.calculations_list, name='calculations'),
     path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
     path('start/', views.start_page, name='start_page'),
