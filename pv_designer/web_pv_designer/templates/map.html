@@ -23,44 +23,73 @@
                     <div class="row">
                         <div class="col-md-12">
                             <h1 class="text-center">Photovoltaic Calculator</h1>
-                            <div class="input-group mb-3">
-                                <input id="searchInput" type="text" class="form-control"
-                                       placeholder="Search for an address...">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" onclick="searchAddress()">Search
-                                    </button>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-select">
+                                        <select class="form-control" id="solarPanelSelect">
+                                            <option value="" disabled selected>Choose Solar Panel</option>
+                                            {% for panel in solar_panels %}
+                                                <option value="{{ panel.id }}"
+                                                        data-width="{{ panel.width }}"
+                                                        data-height="{{ panel.height }}"
+                                                        data-power="{{ panel.power }}"
+                                                        data-img-src="{% static 'images/pv_panel' %}">
+                                                    {{ panel.model }} - {{ panel.width }} x {{ panel.height }}m
+                                                    - {{ panel.power }} W
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input id="searchInput" type="text" class="form-control"
+                                               placeholder="Search for an address...">
+                                        <div class="input-group-append" id="searchButton">
+                                            <button class="btn btn-primary" type="button" onclick="searchAddress()"
+                                                    style="margin-left: 5px">Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="map_content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div id="map"></div>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-top: 10px" id="areaControlPanels">
+                                </div>
+                                <div class="row">
+                                    <div id="actions" class="d-flex justify-content-end">
+                                        <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
+                                        <div id="areaDisplay"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="canvas"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="map"></div>
-                        </div>
-                    </div>
-                    <div class="row" style="padding-top: 10px" id="areaControlPanels">
-                    </div>
-                    <div class="row">
-                        <div id="actions" class="d-flex justify-content-end">
-                            <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
-                            <div id="areaDisplay"></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div id="canvas"></div>
+                </div>
+                <div id="loading" class="loading">
+                    <div class="processing-container">
+                        <div class="processing-animation"></div>
+                        <p class="processing-message">Processing...</p>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="loading" class="loading">
-            <div class="processing-container">
-                <div class="processing-animation"></div>
-                <p class="processing-message">Processing...</p>
-            </div>
-        </div>
+                <div id="choose" class="choose">
+                    <div class="choose-container">
+                        <p class="choose-message">Choose panel...</p>
+                    </div>
+                </div>
 
+            </div>
+        </div>
     </div>
-
     </body>
     <script>
         var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
@@ -78,6 +107,8 @@
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         addBackButtonListener();
         initMap();
+        showChoosePanel();
+        addSelectListener();
     </script>
     </html>
 

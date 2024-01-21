@@ -58,7 +58,6 @@ class MarkersHandler {
             }
         } else {
             if (angle > 180) {
-                anchorX = rotatedPanelWidth;
             } else {
                 anchorY = rotatedPanelHeight;
             }

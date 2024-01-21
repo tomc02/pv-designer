@@ -61,6 +61,7 @@ def map_view(request, instance_id):
             'areas_objects': areasObjects,
             'instance_id': instance_id,
             'panel_size': panel_size,
+            'solar_panels': SolarPanel.objects.all(),
         }
 
         return render(request, 'map.html', context)
@@ -73,6 +74,7 @@ def map_view(request, instance_id):
         'areas_objects': [],
         'instance_id': instance_id,
         'panel_size': panel_size,
+        'solar_panels': SolarPanel.objects.all(),
     }
     return render(request, 'map.html', context)
 

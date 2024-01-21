@@ -69,6 +69,20 @@ function hideProcessing() {
         processing = false;
     }
 }
+function showChoosePanel() {
+    document.getElementById('choose').style.display = 'block';
+    document.getElementById('map_content').style.display = 'none';
+    document.getElementById('searchInput').style.display = 'none';
+    document.getElementById('searchButton').style.display = 'none';
+}
+
+function hideChoosePanel() {
+    document.getElementById('choose').style.display = 'none';
+    document.getElementById('map_content').style.display = 'block';
+    document.getElementById('searchInput').style.display = 'block';
+    document.getElementById('searchButton').style.display = 'block';
+
+}
 
 function addBackButtonListener() {
     window.addEventListener('pageshow', function (event) {
@@ -82,6 +96,30 @@ function addBackButtonListener() {
 function showCalculationResult(id){
     showProcessing();
     window.location.href = getResultUrl + '?id=' + id;
+}
+
+function addSelectListener() {
+document.getElementById('solarPanelSelect').addEventListener('change', function() {
+        hideChoosePanel();
+        var selectedPanelId = this.value;
+        var selectedPanelWidth = this.options[this.selectedIndex].getAttribute('data-width');
+        var selectedPanelHeight = this.options[this.selectedIndex].getAttribute('data-height');
+        var selectedPanelPower = this.options[this.selectedIndex].getAttribute('data-power');
+        var selectedPanelImgSrc = this.options[this.selectedIndex].getAttribute('data-img-src');
+
+        // Now you have the selectedPanelId, selectedPanelWidth, selectedPanelHeight, and selectedPanelPower
+        // You can use these values as needed.
+        // For example, you can display them or use them in further calculations.
+
+        console.log("Selected Panel ID:", selectedPanelId);
+        console.log("Selected Panel Width:", selectedPanelWidth);
+        console.log("Selected Panel Height:", selectedPanelHeight);
+        console.log("Selected Panel Power:", selectedPanelPower);
+
+        shapesHandler.panelW = selectedPanelWidth;
+        shapesHandler.panelH = selectedPanelHeight;
+        shapesHandler.fillAllAreasWithPanels();
+    });
 }
 
 

@@ -9,8 +9,7 @@
 }
 
 #searchInput {
-    width: 100%;
-    max-width: 300px;
+    max-width: 90%;
     padding: 5px;
     margin-bottom: 10px;
 }
