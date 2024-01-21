@@ -50,11 +50,17 @@ class MarkersHandler {
         let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
         let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
 
-        if (angle < 180) {
+        if (angle < 120) {
             if (angle > 0) {
                 anchorX = 0;
             } else {
                 anchorY = 0;
+            }
+        } else {
+            if (angle > 180) {
+                anchorX = rotatedPanelWidth;
+            } else {
+                anchorY = rotatedPanelHeight;
             }
         }
         console.log('anchorX: ' + anchorX);
