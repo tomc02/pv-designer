@@ -172,8 +172,8 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     const leftTop = polygon.getPath().getAt(0);
     let angle = 90 - headingLTR;
     // recalculate angle to range 0-180
-    angle = angle > 180 ? angle - 180 : angle;
     const picture = markerHandler.getMarkerPicture(leftTop, pvPanelUrl, angle, polygonIndex);
+    //angle = angle > 180 ? angle - 180 : angle;
     for (let i = 0; i < points.length; i++) {
         const leftTop = points[i];
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {

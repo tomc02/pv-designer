@@ -1,6 +1,6 @@
 class MarkersHandler {
     constructor() {
-        this.markers = { '0': [], '1': [], '2': [], '3': [] };
+        this.markers = {'0': [], '1': [], '2': [], '3': []};
         this.selectedMarker = null;
     }
 
@@ -40,8 +40,8 @@ class MarkersHandler {
     }
 
     getMarkerPicture(position, imgUrl, angle) {
-        const angleAbs = Math.abs(angle);
-        console.log('angleAbs: ' + angleAbs);
+        console.log('angleAbs: ' + angle);
+        const angleAbs = Math.abs(this.clipAngle(angle));
         const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
         const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
         let rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
@@ -50,13 +50,12 @@ class MarkersHandler {
         let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
         let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
 
-        console.log('anchorX: ' + anchorX);
-        console.log('anchorY: ' + anchorY);
-
-        if (angle > 0) {
-            anchorX = 0;
-        } else {
-            anchorY = 0;
+        if (angle < 180) {
+            if (angle > 0) {
+                anchorX = 0;
+            } else {
+                anchorY = 0;
+            }
         }
         console.log('anchorX: ' + anchorX);
         console.log('anchorY: ' + anchorY);
@@ -74,14 +73,14 @@ class MarkersHandler {
         shapesHandler.selectShapeByIndex(areaIndex);
         marker.setDraggable(true);
         console.log('title:' + marker.title);
-        marker.setIcon(this.getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(marker.title), marker.title));
+        marker.setIcon(this.getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(this.clipAngle(marker.title)), marker.title));
         document.getElementById('markerDeleteButton').style.display = 'block';
     }
 
     clearMarkerSelection() {
         if (this.selectedMarker) {
             this.selectedMarker.setDraggable(false);
-            this.selectedMarker.setIcon(this.getMarkerPicture(this.selectedMarker.getPosition(), getPvImgUrl(this.selectedMarker.title), this.selectedMarker.title));
+            this.selectedMarker.setIcon(this.getMarkerPicture(this.selectedMarker.getPosition(), getPvImgUrl(this.clipAngle(this.selectedMarker.title)), this.selectedMarker.title));
             this.selectedMarker = null;
         }
     }
@@ -96,6 +95,10 @@ class MarkersHandler {
             this.selectedMarker = null;
             refreshPanelsCount();
         }
+    }
+
+    clipAngle(angle) {
+        return angle > 180 ? angle - 180 : angle;
     }
 }
 
