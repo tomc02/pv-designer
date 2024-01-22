@@ -38,6 +38,29 @@
                             {{ form.lifetime }}
                         </div>
                     </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.off_grid.name }}"
+                               id="{{ form.off_grid.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.off_grid.id_for_label }}">Include Battery</label>
+                    </div>
+
+                    <div id="batteryFields" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity</label>
+                            {{ form.battery_capacity }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit</label>
+                            {{ form.discharge_cutoff_limit }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day</label>
+                            {{ form.consumption_per_day }}
+                        </div>
+                    </div>
                     <button class="btn btn-primary mt-3" type="submit">Continue</button>
                 </form>
             </div>
@@ -51,8 +74,23 @@
                 } else {
                     $('#pvElectricityPriceInputs').hide();
                 }
-
             });
+
+            $('#{{ form.off_grid.auto_id }}').on('change', function () {
+                if ($(this).prop('checked')) {
+                    $('#batteryFields').show();
+                } else {
+                    $('#batteryFields').hide();
+                }
+            });
+            
+        var offGridDefaultValue = "{{ form.off_grid.value }}";
+            
+        var checkbox = document.getElementById("{{ form.off_grid.id_for_label }}");
+            
+        checkbox.checked = offGridDefaultValue === "True";
+        checkbox.dispatchEvent(new Event("change"));
+
             $('#{{ form.system_loss.id_for_label }}').val(14);
         });
     </script>

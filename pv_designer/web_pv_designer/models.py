@@ -41,6 +41,11 @@ class PVPowerPlant(models.Model):
     pv_system_cost = models.FloatField(blank=True, null=True)
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
+    off_grid = models.BooleanField(default=False)
+    battery_capacity = models.FloatField(blank=True, null=True)
+    discharge_cutoff_limit = models.FloatField(blank=True, null=True)
+    consumption_per_day = models.FloatField(blank=True, null=True)
+    consumption_per_year = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 class Area(models.Model):
     panels_count = models.IntegerField()
