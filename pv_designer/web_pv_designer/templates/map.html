@@ -108,7 +108,7 @@
         var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
-        var resultUrl = "{% url 'start_page' %}";
+        var resultUrl = "{% url 'data_page' %}";
         var csrfToken = "{{ csrf_token  }}";
         var latitude = parseFloat("{{ latitude }}");
         var longitude = parseFloat("{{ longitude }}");

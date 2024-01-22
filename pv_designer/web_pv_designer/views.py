@@ -15,7 +15,7 @@ from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling
 
 
-def start_page(request):
+def data_page(request):
     if request.method == 'POST':
         form = SolarPanelForm(request.POST)
         if form.is_valid():
@@ -40,7 +40,7 @@ def start_page(request):
             if map_data.pv_power_plant:
                 form = SolarPanelForm(instance=map_data.pv_power_plant)
             form.fields['map_id'].initial = req_id
-            return render(request, 'start_page.html', {'form': form})
+            return render(request, 'data_page.html', {'form': form})
 
 
 def index(request):

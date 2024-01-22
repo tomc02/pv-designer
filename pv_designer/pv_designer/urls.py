@@ -30,6 +30,6 @@ urlpatterns = [
     path('calculation_result/<int:id>/', views.calculation_result, name='calculation_result'),
     path('calculations/', views.calculations_list, name='calculations'),
     path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
-    path('start/', views.start_page, name='start_page'),
+    path('data/', views.data_page, name='data_page'),
     path('delete_record/', views.delete_record, name='delete_record'),
 ]
