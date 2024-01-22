@@ -69,6 +69,7 @@ function hideProcessing() {
         processing = false;
     }
 }
+
 function showChoosePanel() {
     document.getElementById('choose').style.display = 'block';
     document.getElementById('map_content').style.display = 'none';
@@ -86,20 +87,20 @@ function hideChoosePanel() {
 
 function addBackButtonListener() {
     window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                hideProcessing();
-            } else {
-            }
-        });
+        if (event.persisted) {
+            hideProcessing();
+        } else {
+        }
+    });
 }
 
-function showCalculationResult(id){
+function showCalculationResult(id) {
     showProcessing();
     window.location.href = getResultUrl + '?id=' + id;
 }
 
 function addSelectListener() {
-document.getElementById('solarPanelSelect').addEventListener('change', function() {
+    document.getElementById('solarPanelSelect').addEventListener('change', function () {
         hideChoosePanel();
         var selectedPanelId = this.value;
         solarPanelID = selectedPanelId;
@@ -108,9 +109,6 @@ document.getElementById('solarPanelSelect').addEventListener('change', function(
         var selectedPanelPower = this.options[this.selectedIndex].getAttribute('data-power');
         var selectedPanelImgSrc = this.options[this.selectedIndex].getAttribute('data-img-src');
 
-        // Now you have the selectedPanelId, selectedPanelWidth, selectedPanelHeight, and selectedPanelPower
-        // You can use these values as needed.
-        // For example, you can display them or use them in further calculations.
 
         console.log("Selected Panel ID:", selectedPanelId);
         console.log("Selected Panel Width:", selectedPanelWidth);
@@ -121,6 +119,30 @@ document.getElementById('solarPanelSelect').addEventListener('change', function(
         shapesHandler.panelH = selectedPanelHeight;
         shapesHandler.fillAllAreasWithPanels();
     });
+}
+
+function darkMode() {
+    document.body.classList.toggle("dark-mode");
+    const navbar = document.getElementById('main_nav');
+    document.documentElement.setAttribute('data-bs-theme', 'dark');
+    navbar.classList.remove('bg-light');
+    navbar.classList.remove('navbar-light');
+    navbar.classList.add('bg-dark');
+    navbar.classList.add('navbar-dark');
+        const label = document.getElementById('darkModeSwitchLabel');
+    label.innerHTML = '<i class="bi bi-moon"></i>';
+}
+
+function lightMode() {
+    document.body.classList.toggle("light-mode");
+    const navbar = document.getElementById('main_nav');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    navbar.classList.remove('bg-dark');
+    navbar.classList.remove('navbar-dark');
+    navbar.classList.add('bg-light');
+    navbar.classList.add('navbar-light');
+    const label = document.getElementById('darkModeSwitchLabel');
+    label.innerHTML = '<i class="bi bi-sun"></i>';
 }
 
 
