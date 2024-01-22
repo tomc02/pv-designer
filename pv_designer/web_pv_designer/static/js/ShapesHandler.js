@@ -130,13 +130,20 @@ class ShapesHandler {
             const shape = this.selectedShape;
             shape.panelsCount = data.panelsCount;
             shape.azimuth = data.azimuth;
+            shape.isFilled = true;
         }
     }
 
-    fillAllAreasWithPanels() {
+    fillAllAreasWithPanels(filledOnly = false) {
         for (let i = 0; i < this.shapesCount; i++) {
             this.selectShapeByIndex(i);
-            this.fillAreaWithPanels();
+            if (!filledOnly) {
+                this.fillAreaWithPanels();
+            } else {
+                if (this.selectedShape.isFilled) {
+                    this.fillAreaWithPanels();
+                }
+            }
         }
     }
 

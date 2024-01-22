@@ -10,7 +10,7 @@ class Shape {
         this.slope = 0;
         this.mountingType = 'roof';
         this.rotations = 0;
-
+        this.isFilled = false;
     }
 
     rotateShape() {

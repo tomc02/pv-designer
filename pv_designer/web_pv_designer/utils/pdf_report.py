@@ -110,6 +110,19 @@ def create_pdf_report(user_id, areas):
     story.append(chart_img)
     doc.build(story)
 
+    # Nice big table with 3 cols (Installed Peak Power, Energy Production for 1 year, Max energy production)
+    installed_peak_power = total_values[1]
+    energy_production = total_values[2]
+    max_energy_production = data['outputs']['totals']['fixed']['E_m']
+
+    table_data = [
+        ['Installed Peak Power', 'Energy Production for 1 year', 'Max energy production'],
+        [f'{installed_peak_power} kWp', f'{energy_production} kWh', f'{max_energy_production} kWh'],
+    ]
+    table_data = Table(table_data, colWidths=[200, 200, 200])
+    story.append(table_data)
+
+
     print(f"Report generated and saved as {pdf_file}")
 
     return True

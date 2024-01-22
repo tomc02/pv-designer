@@ -57,6 +57,11 @@ function initMap() {
         drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
     });
 
+    // add listener for map zoom change
+    google.maps.event.addListener(map, 'zoom_changed', function () {
+        shapesHandler.fillAllAreasWithPanels(true);
+    });
+
     if (mapDataLoaded) {
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
             let index = 0;
