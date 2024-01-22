@@ -7,6 +7,8 @@
                 <h1>Solar PV System Calculator</h1>
                 <form method="post">
                     {% csrf_token %}
+                    {{ form.map_id }}
+
                     <div class="form-group">
                         <label for="{{ form.title.id_for_label }}">Name of your calculation</label>
                         {{ form.title }}
@@ -16,12 +18,25 @@
                         <label for="{{ form.system_loss.id_for_label }}">System loss [%]</label>
                         {{ form.system_loss }}
                     </div>
-
-                    <div class="form-group">
-                        <label for="{{ form.pv_electricity_price.id_for_label }}">PV electricity price</label>
-                        {{ form.pv_electricity_price }}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.known_consumption.name }}"
+                               id="{{ form.known_consumption.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.known_consumption.id_for_label }}">I know my consumption</label>
                     </div>
-                    {{ form.map_id }}
+
+                    <div id="consumptionInput" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per year [KWh]</label>
+                            {{ form.consumption_per_day }}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.pv_electricity_price.name }}"
+                               id="{{ form.pv_electricity_price.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.pv_electricity_price.id_for_label }}">PV system
+                            price</label>
+                    </div>
                     <div id="pvElectricityPriceInputs" style="display:none;">
                         <div class="form-group">
                             <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)</label>
@@ -47,17 +62,18 @@
 
                     <div id="batteryFields" style="display:none;">
                         <div class="form-group">
-                            <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity</label>
+                            <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity [Wh]</label>
                             {{ form.battery_capacity }}
                         </div>
 
                         <div class="form-group">
-                            <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit</label>
+                            <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit
+                                [%]</label>
                             {{ form.discharge_cutoff_limit }}
                         </div>
 
                         <div class="form-group">
-                            <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day</label>
+                            <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day [Wh]</label>
                             {{ form.consumption_per_day }}
                         </div>
                     </div>
@@ -78,18 +94,28 @@
 
             $('#{{ form.off_grid.auto_id }}').on('change', function () {
                 if ($(this).prop('checked')) {
+                    console.log("checked");
                     $('#batteryFields').show();
                 } else {
+                    console.log("unchecked");
                     $('#batteryFields').hide();
                 }
             });
-            
-        var offGridDefaultValue = "{{ form.off_grid.value }}";
-            
-        var checkbox = document.getElementById("{{ form.off_grid.id_for_label }}");
-            
-        checkbox.checked = offGridDefaultValue === "True";
-        checkbox.dispatchEvent(new Event("change"));
+
+            $('#{{ form.known_consumption.auto_id }}').on('change', function () {
+                if ($(this).prop('checked')) {
+                    $('#consumptionInput').show();
+                } else {
+                    $('#consumptionInput').hide();
+                }
+            });
+
+            var offGridDefaultValue = "{{ form.off_grid.value }}";
+
+            var checkbox = document.getElementById("{{ form.off_grid.id_for_label }}");
+
+            checkbox.checked = offGridDefaultValue === "True";
+            checkbox.dispatchEvent(new Event("change"));
 
             $('#{{ form.system_loss.id_for_label }}').val(14);
         });

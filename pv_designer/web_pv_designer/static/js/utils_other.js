@@ -82,7 +82,6 @@ function hideChoosePanel() {
     document.getElementById('map_content').style.display = 'block';
     document.getElementById('searchInput').style.display = 'block';
     document.getElementById('searchButton').style.display = 'block';
-
 }
 
 function addBackButtonListener() {
@@ -129,7 +128,7 @@ function darkMode() {
     navbar.classList.remove('navbar-light');
     navbar.classList.add('bg-dark');
     navbar.classList.add('navbar-dark');
-        const label = document.getElementById('darkModeSwitchLabel');
+    const label = document.getElementById('darkModeSwitchLabel');
     label.innerHTML = '<i class="bi bi-moon"></i>';
 }
 

@@ -45,6 +45,7 @@ class PVPowerPlant(models.Model):
     battery_capacity = models.FloatField(blank=True, null=True)
     discharge_cutoff_limit = models.FloatField(blank=True, null=True)
     consumption_per_day = models.FloatField(blank=True, null=True)
+    known_consumption = models.BooleanField(default=False)
     consumption_per_year = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 class Area(models.Model):
