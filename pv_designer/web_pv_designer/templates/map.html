@@ -26,7 +26,9 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="custom-select">
-                                        <select class="form-control" id="solarPanelSelect">
+                                        <select class="form-control" id="solarPanelSelect" data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="Choose the pv panel, you can change it any time">
                                             <option value="" disabled selected>Choose Solar Panel</option>
                                             {% for panel in solar_panels %}
                                                 <option value="{{ panel.id }}"
@@ -60,11 +62,21 @@
                                         <div id="map"></div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div id="actions" class="d-flex justify-content-end">
+                                        <button class="btn btn-success" id="drawShapeButton" data-bs-toggle="tooltip"
+                                                data-bs-placement="left" title="After click, draw a shape on the map">
+                                            Add new area
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="row" style="padding-top: 10px" id="areaControlPanels">
                                 </div>
                                 <div class="row">
                                     <div id="actions" class="d-flex justify-content-end">
-                                        <button class="btn btn-success mb-2" onclick="getMapPicture()">Confirm</button>
+                                        <button id="confirmationButton" class="btn btn-success mb-2"
+                                                onclick="getMapPicture()" style="display: none">Confirm
+                                        </button>
                                         <div id="areaDisplay"></div>
                                     </div>
                                 </div>

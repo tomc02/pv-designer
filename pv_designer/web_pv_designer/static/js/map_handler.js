@@ -50,6 +50,13 @@ function initMap() {
         }
     });
 
+    var drawButton = document.getElementById('drawShapeButton');
+    // Add a click event listener to the button
+    drawButton.addEventListener('click', function () {
+        // Trigger a drawing mode on the map polygon
+        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+    });
+
     if (mapDataLoaded) {
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
             let index = 0;

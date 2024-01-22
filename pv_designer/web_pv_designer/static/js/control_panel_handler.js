@@ -37,6 +37,10 @@ function addControlPanel() {
 
     // Append the new subpanel to the container
     subpanelsContainer.appendChild(newSubpanel);
+    const confirmationButton = document.getElementById("confirmationButton");
+    if (confirmationButton.style.display === "none") {
+        confirmationButton.style.display = "block";
+    }
 }
 
 function toggleOrientation(switchElement) {
@@ -53,23 +57,28 @@ function deleteControlPanel(index) {
         subpanels[index].remove();
 
         // Update the indices of the remaining subpanels
-        for (let i = index+1; i < subpanels.length; i++) {
+        for (let i = index + 1; i < subpanels.length; i++) {
             console.log('i: ' + i);
             const titleElement = document.getElementById("title" + (i));
-            titleElement.id = "title" + (i-1);
+            titleElement.id = "title" + (i - 1);
             const panelCountElement = document.getElementById("panelCount" + (i));
-            panelCountElement.id = "panelCount" + (i-1);
+            panelCountElement.id = "panelCount" + (i - 1);
             const azimuthElement = document.getElementById("azimuth" + (i));
-            azimuthElement.id = "azimuth" + (i-1);
+            azimuthElement.id = "azimuth" + (i - 1);
             const slopeElement = document.getElementById("slope" + (i));
-            slopeElement.id = "slope" + (i-1);
+            slopeElement.id = "slope" + (i - 1);
             const mountingPositionElement = document.getElementById("mountingPosition" + (i));
-            mountingPositionElement.id = "mountingPosition" + (i-1);
-
+            mountingPositionElement.id = "mountingPosition" + (i - 1);
         }
 
     }
+    console.log('len' + subpanels.length);
+    if (subpanels.length === 1) {
+        const confirmationButton = document.getElementById("confirmationButton");
+        confirmationButton.style.display = "none";
+    }
 }
+
 function highlightControlPanel(panel) {
     const allPanels = document.querySelectorAll(".card");
     allPanels.forEach((p) => {
@@ -134,7 +143,7 @@ function updateAreaSlope(slopeInput) {
     const shape = shapesHandler.selectedShape;
     shape.setSlope(slope);
     if (shape.panelsCount > 0) {
-       shapesHandler.fillAreaWithPanels();
+        shapesHandler.fillAreaWithPanels();
     }
 }
 
@@ -151,8 +160,7 @@ function updateMountingPosition(positionInput) {
     const shape = shapesHandler.selectedShape;
     if (position === '0') {
         shape.setMountingPosition('roof');
-    }
-    else if (position === '1') {
+    } else if (position === '1') {
         shape.setMountingPosition('free-standing');
     }
     console.log(shape.mountingType);
@@ -173,7 +181,7 @@ function updateControlPanelMountingPosition(positionInput, index) {
     console.log(positionInput);
     if (positionInput === 'option2') {
         positionElement.value = 0;
-    }else if (positionInput === 'option1') {
+    } else if (positionInput === 'option1') {
         positionElement.value = 1;
     }
 }
