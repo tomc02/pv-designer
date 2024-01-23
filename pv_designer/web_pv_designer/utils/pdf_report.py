@@ -11,7 +11,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as ImagePlatypus, TableStyle, Table
 
 
-def create_pdf_report(user_id, areas):
+def create_pdf_report(user_id, areas, pv_data):
     pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'pv_data_report.pdf')
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
@@ -108,19 +108,34 @@ def create_pdf_report(user_id, areas):
     # Embed the chart in the PDF report
     chart_img = ImagePlatypus(buffer, width=500, height=300)
     story.append(chart_img)
+
+    known_consumption = pv_data.known_consumption
+    if known_consumption:
+        year_consumption = pv_data.consumption_per_year
+        year_energy_data = data['outputs']['totals']['fixed']
+        year_production = year_energy_data['E_y']
+
+        print(f"year_consumption: {year_consumption}")
+        print(f"year_production: {year_production}")
+
+        plt.figure(figsize=(10, 6))
+
+        pie_plot = plt.pie([year_consumption, year_production], labels=['Consumption', 'Production'], colors=['#4285F4', '#DB4437'], autopct='%1.1f%%', startangle=90)
+        plt.title('Yearly Consumption vs Production')
+
+
+        # Save the chart to a BytesIO buffer
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+
+        # Embed the chart in the PDF report
+        chart_img = ImagePlatypus(buffer, width=500, height=300)
+        story.append(chart_img)
+
     doc.build(story)
 
-    # Nice big table with 3 cols (Installed Peak Power, Energy Production for 1 year, Max energy production)
-    installed_peak_power = total_values[1]
-    energy_production = total_values[2]
-    max_energy_production = data['outputs']['totals']['fixed']['E_m']
-
-    table_data = [
-        ['Installed Peak Power', 'Energy Production for 1 year', 'Max energy production'],
-        [f'{installed_peak_power} kWp', f'{energy_production} kWh', f'{max_energy_production} kWh'],
-    ]
-    table_data = Table(table_data, colWidths=[200, 200, 200])
-    story.append(table_data)
 
 
     print(f"Report generated and saved as {pdf_file}")
