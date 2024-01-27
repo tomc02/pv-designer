@@ -26,6 +26,7 @@ function getPvImgSelectedUrl(angle) {
 }
 
 function getMapPicture() {
+    markerHandler.clearMarkerSelection();
     mapDataForm = shapesHandler.prepareAreasData();
     document.getElementById('markerDeleteButton').style.display = 'none';
     // lock map moving
