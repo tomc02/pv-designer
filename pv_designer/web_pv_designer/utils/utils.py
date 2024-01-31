@@ -86,6 +86,7 @@ def set_params(data):
 
 
 def get_pvgis_response(params):
+    print(params)
     base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
     response = requests.get(base_url, params=params)
     return response
@@ -117,8 +118,8 @@ def make_api_calling(data_id, user_id):
             'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',
             'angle': area.slope,
             'aspect': area.azimuth,
-            'pvprice': pv_power_plant.pv_system_cost == 'True' and '1' or '0',
-            'systemcost': pv_power_plant.pv_electricity_price,
+            'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
+            'systemcost': pv_power_plant.pv_system_cost,
             'interest': pv_power_plant.interest,
             'lifetime': pv_power_plant.lifetime,
             'outputformat': 'json'
