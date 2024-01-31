@@ -124,7 +124,7 @@ def calculation_result(request, id):
                             'pv_data_report.pdf')
     map_data = MapData.objects.get(id=id)
     areas = map_data.areasObjects.all()
-    pdf_created = create_pdf_report(request.user.id, areas, map_data.pv_power_plant)
+    pdf_created = create_pdf_report(request.user.id, areas, map_data)
     if pdf_created:
         return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
     else:

@@ -28,22 +28,53 @@ def create_pdf_report(user_id, areas, pv_data):
         long = round(location_data['longitude'], 4)
 
     story = []
-
+    input_values = data['inputs']
     # Title
     title_style = getSampleStyleSheet()['Title']
     story.append(Paragraph('Photovoltaic System Performance Report', title_style))
 
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
-    story.append(ImagePlatypus(pv_panel_img_path, width=400, height=200))
+    page_content_width = doc.width
+    story.append(ImagePlatypus(pv_panel_img_path, width=page_content_width, height=200))
+    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+
+    consumption_per_year = pv_data.pv_power_plant.consumption_per_year
+    if consumption_per_year is None:
+        consumption_per_year = '-'
+    total_peak_power = 0
+    for area in areas:
+        total_peak_power += area.installed_peak_power
+    total_peak_power = round(total_peak_power / 1000, 2)
+
+    table_data = [
+        ["PV Panel Type", "Location Information", "Totals"],
+        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {data["outputs"]["totals"]["fixed"]["E_y"]:.2f} kWh'],
+        [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
+        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {consumption_per_year} kWh'],
+        [f'Power: {pv_data.solar_panel.power} W', ''],
+    ]
+
+    # Create the table
+    table = Table(table_data, colWidths=[page_content_width / len(table_data[0])])
+
+    # Add style to the table(bold text in the first row)
+    table_style = TableStyle([
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')])
+    table.setStyle(table_style)
+
+    # Add the table to the story
+    story.append(table)
+    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
     # Table with Area Information
-    area_info = [['Area', 'Panels Count', 'Installed Peak Power', 'Slope', 'Azimuth']]
+    area_info = [['Area', 'Panels Count', 'Peak Power [kW]', 'Slope [°]', 'Azimuth']]
     total_values = [0, 0, 0, 0, 0]  # Initialize total values
 
     for area in areas:
         data_json = area.to_JSON()
-        area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000, data_json['slope'],
+        area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000,
+                       data_json['slope'],
                        data_json['azimuth']]
         area_info.append(area_values)
         total_values = [sum(x) for x in zip(total_values, area_values[1:])]
@@ -63,12 +94,15 @@ def create_pdf_report(user_id, areas, pv_data):
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('BACKGROUND', (0, last_row_index), (-1, last_row_index), (222/255, 222/255, 182/255)),
+        ('BACKGROUND', (0, last_row_index), (-1, last_row_index), (222 / 255, 222 / 255, 182 / 255)),
     ])
-
-    table_data = Table(area_info, colWidths=[80, 80, 120, 60, 60])  # Set custom column widths
+    table_data = Table(area_info, colWidths=[page_content_width / len(area_info[0])])
     table_data.setStyle(table_style)
     story.append(table_data)
+    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+
+    year_energy_data = data['outputs']['totals']['fixed']
+    year_production = year_energy_data['E_y']
 
     monthly_energy_data = data['outputs']['monthly']['fixed']
 
@@ -88,7 +122,7 @@ def create_pdf_report(user_id, areas, pv_data):
                  color='black', fontweight='bold', fontsize=10)
 
     plt.xticks(months)
-    plt.ylim(0, max(energy_values)*1.1)  # Adjust y-axis limit for better visualization
+    plt.ylim(0, max(energy_values) * 1.1)  # Adjust y-axis limit for better visualization
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
     # Beautify the chart
@@ -99,73 +133,80 @@ def create_pdf_report(user_id, areas, pv_data):
 
     plt.tight_layout()
 
-    # Save the chart to a BytesIO buffer
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plt.close()
+    add_graph_to_report(plt, story, page_content_width)
 
-    # Embed the chart in the PDF report
-    chart_img = ImagePlatypus(buffer, width=500, height=300)
-    story.append(chart_img)
-
-    known_consumption = pv_data.known_consumption
+    known_consumption = pv_data.pv_power_plant.known_consumption
     if known_consumption:
-        year_consumption = pv_data.consumption_per_year
-        year_energy_data = data['outputs']['totals']['fixed']
-        year_production = year_energy_data['E_y']
+        year_consumption = pv_data.pv_power_plant.consumption_per_year
 
         print(f"year_consumption: {year_consumption}")
         print(f"year_production: {year_production}")
 
+        # Create a chart with the yearly energy production and consumption
         plt.figure(figsize=(10, 6))
+        bars = plt.bar(['Production', 'Consumption'], [year_production, year_consumption], color=['#4285F4', '#EA4335'],
+                       edgecolor='black', linewidth=1.2)
+        plt.title('Yearly Energy Production vs Consumption')
+        plt.ylabel('Energy (kWh)')
+        plt.ylim(0, max(year_production, year_consumption) * 1.1)  # Adjust y-axis limit for better visualization
 
-        pie_plot = plt.pie([year_consumption, year_production], labels=['Consumption', 'Production'], colors=['#4285F4', '#DB4437'], autopct='%1.1f%%', startangle=90)
-        plt.title('Yearly Consumption vs Production')
+        percentage = year_production / year_consumption * 100
+        percentage = round(percentage, 2)
+        plt.text(bars[0].get_x() + bars[0].get_width() / 2, bars[0].get_height() + 0.2, f'Coverage: {percentage:.0f}%',
+                 ha='center', va='bottom',
+                 color='black', fontweight='bold', fontsize=14)
 
+        # Put values into the bars with better styling, NOT above the bars
+        for bar, value in zip(bars, [year_production, year_consumption]):
+            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.0f} kWh', ha='center',
+                     va='center',
+                     color='black', fontweight='bold', fontsize=10)
 
-        # Save the chart to a BytesIO buffer
-        buffer = BytesIO()
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plt.close()
+        add_graph_to_report(plt, story, page_content_width)
 
-        # Embed the chart in the PDF report
-        chart_img = ImagePlatypus(buffer, width=500, height=300)
-        story.append(chart_img)
+    # Create nice graph with losses
+    l_aoi = year_energy_data['l_aoi']  # Losses due to angle of incidence
+    l_spec = year_energy_data['l_spec']  # Losses due to spectral effects
+    l_tg = year_energy_data['l_tg']  # Losses due Temperature and irradiance losses
+    l_system = input_values['pv_module']['system_loss']  # System losses
+    l_system = l_system * -1
+    l_total = year_energy_data['l_total']  # Total losses
+
+    # Negative values will be red, positive values will be green
+    colors_plt = ['red' if value < 0 else 'green' for value in [l_aoi, l_spec, l_tg, l_system, l_total]]
+
+    losses = [l_aoi, l_spec, l_tg, l_system, l_total]
+    labels = ['Angle of Incidence', 'Spectral Effects', 'Temperature and Irradiance', 'System', 'Total']
+
+    plt.figure(figsize=(12, 8))
+    bars = plt.bar(labels, losses, color=colors_plt, edgecolor='black', linewidth=1.2)
+    plt.title('Losses', fontsize=16)
+    plt.ylabel('Percentage (%)')
+
+    # Put values into the bars with better styling, NOT above the bars
+    for bar, value in zip(bars, losses):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
+                 color='black', fontweight='bold', fontsize=10)
+
+    add_graph_to_report(plt, story, page_content_width)
 
     doc.build(story)
-
-
 
     print(f"Report generated and saved as {pdf_file}")
 
     return True
 
 
-def process_area_for_pdf(area, index, path_to_source):
-    with open(path_to_source + f'response{0}.json', 'r') as json_file:
-        data = json.load(json_file)
-
-    monthly_data = data['outputs']['monthly']['fixed']
-    pv_module_data = data['inputs']['pv_module']
-    location_data = data['inputs']['location']
-
-    months = [entry['month'] for entry in monthly_data]
-    e_d_values = [entry['E_d'] for entry in monthly_data]
-
-    plt.figure(figsize=(10, 4))
-    plt.bar(months, e_d_values, color='skyblue', label='Energy Production')
-    plt.xlabel('Month')
-    plt.ylabel('Average daily energy production (kWh/d)')
-    plt.title('Monthly Energy Production')
-    plt.xticks(months)
-    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-    plt.legend()
-    plt.tight_layout()
-
-    plt.savefig(path_to_source + f'monthly_energy_production{index}.png')
+def add_graph_to_report(plt, story, width=500, height=300):
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
     plt.close()
+
+    chart_img = ImagePlatypus(buffer, width=width, height=height)
+    story.append(chart_img)
+
+    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
 
 def sum_responses(file_paths, path_to_source):
@@ -200,8 +241,26 @@ def sum_responses(file_paths, path_to_source):
 
         # Summing values for totals output
         for key in response["outputs"]["totals"]["fixed"].keys():
-            sum_response["outputs"]["totals"]["fixed"][key] = sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(response["outputs"]["totals"]["fixed"][key])
+            if key not in ["l_total", "l_aoi", "l_spec", "l_tg"]:
+                sum_response["outputs"]["totals"]["fixed"][key] = sum_response["outputs"]["totals"]["fixed"].get(key,
+                                                                                                                 0) + float(
+                    response["outputs"]["totals"]["fixed"][key])
+
+        # Summing values for losses by average because they are percentages
+        for key in ["l_aoi", "l_spec", "l_tg"]:
+            sum_response["outputs"]["totals"]["fixed"][key] = (
+                    sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(
+                response["outputs"]["totals"]["fixed"][key]))
+
+    for key in ["l_aoi", "l_spec", "l_tg"]:
+        sum_response["outputs"]["totals"]["fixed"][key] = (
+                sum_response["outputs"]["totals"]["fixed"][key] / len(file_paths))
+    # Summing all losses to get the total loss
+    sum_response["outputs"]["totals"]["fixed"]["l_total"] = sum_response["outputs"]["totals"]["fixed"]["l_aoi"] + \
+                                                            sum_response["outputs"]["totals"]["fixed"]["l_spec"] + \
+                                                            sum_response["outputs"]["totals"]["fixed"]["l_tg"] - \
+                                                            sum_response["inputs"]["pv_module"]["system_loss"]
 
     # Save the sum to a new file
-    with open(path_to_source+'response_sum.json', 'w') as output_file:
+    with open(path_to_source + 'response_sum.json', 'w') as output_file:
         json.dump(sum_response, output_file, indent=2)
