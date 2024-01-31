@@ -108,15 +108,8 @@ function addSelectListener() {
         var selectedPanelPower = this.options[this.selectedIndex].getAttribute('data-power');
         var selectedPanelImgSrc = this.options[this.selectedIndex].getAttribute('data-img-src');
 
-
-        console.log("Selected Panel ID:", selectedPanelId);
-        console.log("Selected Panel Width:", selectedPanelWidth);
-        console.log("Selected Panel Height:", selectedPanelHeight);
-        console.log("Selected Panel Power:", selectedPanelPower);
-
         shapesHandler.panelW = selectedPanelWidth;
         shapesHandler.panelH = selectedPanelHeight;
-        shapesHandler.fillAllAreasWithPanels();
     });
 }
 

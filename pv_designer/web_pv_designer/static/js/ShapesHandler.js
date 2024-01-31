@@ -8,9 +8,6 @@ class ShapesHandler {
         this.panelH = panelHeight;
         this.panelW = panelWidth;
         this.dragging = false;
-
-        console.log('panelHeight: ' + this.panelH);
-        console.log('panelWidth: ' + this.panelW);
     }
 
     getShapeObject(index) {

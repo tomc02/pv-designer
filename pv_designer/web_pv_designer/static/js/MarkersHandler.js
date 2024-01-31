@@ -5,7 +5,6 @@ class MarkersHandler {
     }
 
     clearMarkers(areaIndex) {
-        console.log('clearMarkers: ' + areaIndex);
         if (this.markers[areaIndex] !== undefined) {
             this.markers[areaIndex].forEach(function (marker) {
                 marker.setMap(null);
@@ -15,7 +14,6 @@ class MarkersHandler {
     }
 
     deleteMarkersArea(areaIndex) {
-        console.log('deleteMarkersArea: ' + areaIndex);
         this.clearMarkers(areaIndex);
         for (let i = areaIndex; i < 3; i++) {
             this.markers[i] = this.markers[i + 1];
@@ -40,7 +38,6 @@ class MarkersHandler {
     }
 
     getMarkerPicture(position, imgUrl, angle) {
-        console.log('angleAbs: ' + angle);
         const angleAbs = Math.abs(this.clipAngle(angle));
         const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
         const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
@@ -62,8 +59,6 @@ class MarkersHandler {
                 anchorY = rotatedPanelHeight;
             }
         }
-        console.log('anchorX: ' + anchorX);
-        console.log('anchorY: ' + anchorY);
         return {
             url: imgUrl,
             scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
@@ -87,6 +82,7 @@ class MarkersHandler {
             this.selectedMarker.setDraggable(false);
             this.selectedMarker.setIcon(this.getMarkerPicture(this.selectedMarker.getPosition(), getPvImgUrl(this.clipAngle(this.selectedMarker.title)), this.selectedMarker.title));
             this.selectedMarker = null;
+            document.getElementById('markerDeleteButton').style.display = 'none';
         }
     }
 

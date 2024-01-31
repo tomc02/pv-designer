@@ -49,26 +49,22 @@ function getCornerPoints(polugon) {
         leftBottom: polugon.getPath().getAt(3),
     }
 }
+
 function calculateAngle(heading1, heading2) {
-  let angle = Math.abs(heading1 - heading2);
-  angle = Math.min(angle, 360 - angle);
-  return angle;
+    let angle = Math.abs(heading1 - heading2);
+    angle = Math.min(angle, 360 - angle);
+    return angle;
 }
 
 function setListenerForShapeChange(shape) {
-    google.maps.event.addListener(shape, 'dragstart', function () {
-        shapesHandler.dragging = true;
+    google.maps.event.addListener(shape.getShape(), 'dragstart', function () {
+        shape.dragging = true;
     });
-    google.maps.event.addListener(shape.getPath(), 'set_at', function () {
-        shapesHandler.selectedShape.updateHighlightedEdge();
-        if (!shapesHandler.dragging) {
-            shapesHandler.fillAreaWithPanels();
-        }
-    });
-    google.maps.event.addListener(shape, 'dragend', function () {
+    google.maps.event.addListener(shape.getShape(), 'dragend', function () {
         shapesHandler.fillAreaWithPanels();
-        shapesHandler.dragging = false;
+        shape.dragging = false;
     });
+    shape.listenerSet = true;
 }
 
 function fillPolygon(index) {
@@ -77,14 +73,23 @@ function fillPolygon(index) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
     } else {*/
-        cornerPoints = getCornerPoints(shapesHandler.getShape(index));
+    cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     //}
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
 
-   setListenerForShapeChange(shapesHandler.getShape(index));
-
+    const shape = shapesHandler.getShapeObject(index);
+    if (!shape.listenerSet) {
+        setListenerForShapeChange(shape);
+    }
+    google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+        shapesHandler.selectedShape.updateHighlightedEdge();
+        if (!shape.dragging) {
+            shapesHandler.fillAreaWithPanels();
+        }
+    });
+    shapesHandler.selectedShape.updateHighlightedEdge();
 
     let polygon = shapesHandler.getShape(index);
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
@@ -116,7 +121,7 @@ function fillPolygon(index) {
         azimuth = 360 - absAzimuth;
     }
     let topPoints = [];
-    let panelsCount=0;
+    let panelsCount = 0;
     for (let i = 0; i < 10; i++) {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
         topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, colsCount);
@@ -131,6 +136,7 @@ function fillPolygon(index) {
     }
     return new areaData(panelsCount, azimuth);
 }
+
 /*
 function fillPolygon2(index) {
     let cornerPoints;
@@ -197,7 +203,7 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     for (let i = 0; i < points.length; i++) {
         const leftTop = points[i];
         if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            markerHandler.putMarker(points[i], picture,  angle, polygonIndex);
+            markerHandler.putMarker(points[i], picture, angle, polygonIndex);
             panelCount++;
         }
     }

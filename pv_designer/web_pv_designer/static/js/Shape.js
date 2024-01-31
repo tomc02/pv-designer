@@ -12,6 +12,8 @@ class Shape {
         this.rotations = 0;
         this.isFilled = false;
         this.highlightedEdge = null;
+        this.dragging = false;
+        this.listenerSet = false;
     }
 
     rotateShape() {
@@ -33,11 +35,9 @@ class Shape {
             strokeOpacity: 2.0,
             strokeWeight: 6,
             map: map,
-            zIndex: 100,
+            zIndex: 1000,
             title: this.index,
         });
-        console.log('updateHighlightedEdge' + this.index);
-        console.log(this.highlightedEdge);
     }
 
     getShape() {
