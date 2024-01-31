@@ -25,6 +25,11 @@ function initMap() {
                 });
                 drawingManager.setDrawingMode(null);
                 shapesHandler.selectShape(shape);
+                shapesHandler.selectedShape.updateHighlightedEdge();
+                google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+                    shapesHandler.selectedShape.updateHighlightedEdge();
+                    shapesHandler.clearFilledPanels();
+                });
             } else {
                 shape.setMap(null);
                 alert('You can draw only 4 areas');

@@ -7,6 +7,7 @@ class ShapesHandler {
         this.shapesCount = 0;
         this.panelH = panelHeight;
         this.panelW = panelWidth;
+        this.dragging = false;
 
         console.log('panelHeight: ' + this.panelH);
         console.log('panelWidth: ' + this.panelW);
@@ -98,6 +99,12 @@ class ShapesHandler {
                 this.shapesObjects[index].rotateShape();
             }
             this.fillAreaWithPanels();
+        }
+    }
+
+    clearFilledPanels() {
+        if(this.selectedShape) {
+            markerHandler.clearMarkers(this.selectedShapeIndex);
         }
     }
 

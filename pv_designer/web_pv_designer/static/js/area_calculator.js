@@ -8,9 +8,9 @@ class areaData {
     }
 }
 
-function rotatePolygon(polygon) {
-    const cornerPoints = getCornerPoints(polygon);
-    polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
+function rotatePolygon(shape) {
+    const cornerPoints = getCornerPoints(shape.getShape());
+    shape.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
 }
 
 function sortCorners(corners) {
@@ -55,17 +55,37 @@ function calculateAngle(heading1, heading2) {
   return angle;
 }
 
+function setListenerForShapeChange(shape) {
+    google.maps.event.addListener(shape, 'dragstart', function () {
+        shapesHandler.dragging = true;
+    });
+    google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+        shapesHandler.selectedShape.updateHighlightedEdge();
+        if (!shapesHandler.dragging) {
+            shapesHandler.fillAreaWithPanels();
+        }
+    });
+    google.maps.event.addListener(shape, 'dragend', function () {
+        shapesHandler.fillAreaWithPanels();
+        shapesHandler.dragging = false;
+    });
+}
+
 function fillPolygon(index) {
     let cornerPoints;
-    if (!shapesFiled.includes(index)) {
+    /*if (!shapesFiled.includes(index)) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
-    } else {
+    } else {*/
         cornerPoints = getCornerPoints(shapesHandler.getShape(index));
-    }
+    //}
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
+
+   setListenerForShapeChange(shapesHandler.getShape(index));
+
+
     let polygon = shapesHandler.getShape(index);
     let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
     let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);

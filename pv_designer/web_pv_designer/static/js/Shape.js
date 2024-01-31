@@ -11,18 +11,41 @@ class Shape {
         this.mountingType = 'roof';
         this.rotations = 0;
         this.isFilled = false;
+        this.highlightedEdge = null;
     }
 
     rotateShape() {
-        rotatePolygon(this.shape);
+        rotatePolygon(this);
+        this.updateHighlightedEdge();
         this.rotations++;
         if (this.rotations === 4) {
             this.rotations = 0;
         }
     }
 
+    updateHighlightedEdge() {
+        if (this.highlightedEdge) {
+            this.highlightedEdge.setMap(null);
+        }
+        this.highlightedEdge = new google.maps.Polyline({
+            path: [this.shape.getPath().getAt(0), this.shape.getPath().getAt(1)],
+            strokeColor: '#FF0000',
+            strokeOpacity: 2.0,
+            strokeWeight: 6,
+            map: map,
+            zIndex: 100,
+            title: this.index,
+        });
+        console.log('updateHighlightedEdge' + this.index);
+        console.log(this.highlightedEdge);
+    }
+
     getShape() {
         return this.shape;
+    }
+
+    getPath() {
+        return this.shape.getPath();
     }
 
     setPath(path) {
