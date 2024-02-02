@@ -1,102 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Solar PV System Calculator</title>
-    <!-- Add Bootstrap CSS link -->
-    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
-          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Your Web Page</title>
+  <style>
+    /* Custom styles */
+    .custom-box {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translate(0, -50%);
+      width: 300px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
+
 <body>
-<div class="container mt-5">
+
+  <div class="container-fluid">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h1>Solar PV System Calculator</h1>
-            <form>
-                <div class="form-group">
-                    <label for="installedPeakPower">Installed peak PV power [kWp]</label>
-                    <input class="form-control" id="installedPeakPower" name="installedPeakPower" required
-                           type="number">
-                </div>
+      <div class="col-8">
+        <!-- Your main content goes here -->
+        <h1>Main Content</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. ...</p>
+      </div>
 
-                <div class="form-group">
-                    <label for="systemLoss">System loss [%]*</label>
-                    <input class="form-control" id="systemLoss" name="systemLoss" required type="number">
-                </div>
+      <div class="col-4">
+        <!-- Small box on the right side -->
+        <div class="custom-box">
+          <h4>Help</h4>
+          <!-- Bootstrap Nav Tabs -->
+          <ul class="nav nav-tabs mt-3" id="myTabs" style="display: none;">
+            <li class="nav-item">
+              <a class="nav-link active" id="tab1" data-toggle="tab" href="#content1">Tab 1</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab2" data-toggle="tab" href="#content2">Tab 2</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab3" data-toggle="tab" href="#content3">Tab 3</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab4" data-toggle="tab" href="#content4">Tab 4</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tab5" data-toggle="tab" href="#content5">Tab 5</a>
+            </li>
+          </ul>
 
-                <div class="form-group">
-                    <label for="mountingPosition">Mounting position *</label>
-                    <select class="form-control" id="mountingPosition" name="mountingPosition" required>
-                        <option value="">Choose...</option>
-                        <option value="option1">Free standing</option>
-                        <option value="option2">Roof added</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="slope">Slope [°]*</label>
-                    <input class="form-control" id="slope" name="slope" required type="number">
-                </div>
-
-                <div class="form-group">
-                    <label for="azimuth">Azimuth [°]*</label>
-                    <input class="form-control" id="azimuth" name="azimuth" required type="number">
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" id="optimizeSlope" name="optimizeSlope" type="checkbox">
-                    <label class="form-check-label" for="optimizeSlope">Optimize slope</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" id="optimizeSlopeAndAzimuth" name="optimizeSlopeAndAzimuth"
-                           type="checkbox">
-                    <label class="form-check-label" for="optimizeSlopeAndAzimuth">Optimize slope and azimuth</label>
-                </div>
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" id="pvElectricityPrice" name="pvElectricityPrice" type="checkbox">
-                    <label class="form-check-label" for="pvElectricityPrice">PV electricity price</label>
-                </div>
-
-                <div id="pvElectricityPriceInputs" style="display:none;">
-                    <div class="form-group">
-                        <label for="pvSystemCost">PV system cost (your currency)</label>
-                        <input class="form-control" id="pvSystemCost" name="pvSystemCost" type="number">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="interest">Interest [%/year]</label>
-                        <input class="form-control" id="interest" name="interest" type="number">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lifetime">Lifetime [years]</label>
-                        <input class="form-control" id="lifetime" name="lifetime" type="number">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary mt-3" type="submit">Calculate</button>
-            </form>
+          <!-- Bootstrap Tab Content -->
+          <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="content1">
+              <p>Content for Tab 1 goes here...</p>
+              <img src="your-image.jpg" alt="Image">
+            </div>
+            <div class="tab-pane fade" id="content2">
+              <p>Content for Tab 2 goes here...</p>
+            </div>
+            <div class="tab-pane fade" id="content3">
+              <p>Content for Tab 3 goes here...</p>
+            </div>
+            <div class="tab-pane fade" id="content4">
+              <p>Content for Tab 4 goes here...</p>
+            </div>
+            <div class="tab-pane fade" id="content5">
+              <p>Content for Tab 5 goes here...</p>
+            </div>
+          </div>
+          <!-- Buttons to switch tabs -->
+          <div class="mt-3">
+            <button class="btn btn-primary" id="prevTab">Previous Tab</button>
+            <span id="currentTab">1</span>
+            <button class="btn btn-primary" id="nextTab">Next Tab</button>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Add Bootstrap JS and jQuery scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
-      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" rel="stylesheet">
+  <!-- Bootstrap and jQuery JS files -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-    // Show/hide PV electricity price inputs based on checkbox status
-    $('#pvElectricityPrice').on('change', function () {
-        if ($(this).prop('checked')) {
-            $('#pvElectricityPriceInputs').show();
-        } else {
-            $('#pvElectricityPriceInputs').hide();
+  <script>
+    // JavaScript to handle tab switching
+    $(document).ready(function () {
+      var currentTab = 1;
+
+      // Function to show the current tab content
+      function showTab() {
+        $('#myTabs a[href="#content' + currentTab + '"]').tab('show');
+        $('#currentTab').text(currentTab);
+      }
+
+      // Event listener for previous button
+      $('#prevTab').on('click', function () {
+        if (currentTab > 1) {
+          currentTab--;
+          showTab();
         }
+      });
+
+      // Event listener for next button
+      $('#nextTab').on('click', function () {
+        if (currentTab < 5) {
+          currentTab++;
+          showTab();
+        }
+      });
     });
-</script>
+  </script>
+
 </body>
+
 </html>

@@ -60,10 +60,66 @@
                                     <div class="col-md-12">
                                         <div id="map"></div>
                                     </div>
+                                    <div class="col-sm" style="display: none">
+                                        <div class="custom-box d-flex flex-column justify-content-between">
+                                            <h4>Help</h4>
+                                            <!-- Bootstrap Nav Tabs -->
+                                            <ul class="nav nav-tabs mt-3" id="myTabs" style="display: none;">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="tab1" data-toggle="tab"
+                                                       href="#content1"></a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="tab2" data-toggle="tab"
+                                                       href="#content2"></a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="tab3" data-toggle="tab"
+                                                       href="#content3"></a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="tab4" data-toggle="tab"
+                                                       href="#content4"></a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="tab5" data-toggle="tab"
+                                                       href="#content5"></a>
+                                                </li>
+                                            </ul>
+
+                                            <!-- Bootstrap Tab Content -->
+                                            <div class="tab-content mt-3">
+                                                <div class="tab-pane fade show active" id="content1">
+                                                    <p>Content for Tab 1 goes here...</p>
+                                                    <img src="{% static '/images/pv_panel.png' %}" alt="Image" style="height: 50px">
+                                                </div>
+                                                <div class="tab-pane fade" id="content2">
+                                                    <p>Content for Tab 2 goes here...</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="content3">
+                                                    <p>Content for Tab 3 goes here...</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="content4">
+                                                    <p>Content for Tab 4 goes here...</p>
+                                                </div>
+                                                <div class="tab-pane fade" id="content5">
+                                                    <p>Content for Tab 5 goes here...</p>
+                                                </div>
+                                            </div>
+                                            <!-- Buttons to switch tabs -->
+                                            <div class="mt-3 d-flex justify-content-center flex-column align-items-center">
+                                                <div>
+                                                    <button class="btn btn-primary" id="prevTab"><i class="bi bi-arrow-left-short"></i></button>
+                                                    <span id="currentTab">1</span>
+                                                    <button class="btn btn-primary" id="nextTab"><i class="bi bi-arrow-right-short"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div id="actions" class="d-flex">
-                                        <button class="btn btn-success" id="drawShapeButton" data-bs-toggle="tooltip"
+                                        <button class="btn btn-success big-mobile-button" id="drawShapeButton" data-bs-toggle="tooltip"
                                                 data-bs-placement="right" title="After click, draw a shape on the map">
                                             Add new area
                                         </button>
@@ -73,7 +129,7 @@
                                 </div>
                                 <div class="row">
                                     <div id="actions" class="d-flex justify-content-end">
-                                        <button id="confirmationButton" class="btn btn-success mb-2"
+                                        <button id="confirmationButton" class="btn btn-success mb-2 big-mobile-button"
                                                 onclick="getMapPicture()" style="display: none">Confirm
                                         </button>
                                         <div id="areaDisplay"></div>
@@ -127,6 +183,29 @@
             solarPanelID = panelId;
             panel.dispatchEvent(new Event('change'));
         }
+        var currentTab = 1;
+
+        // Function to show the current tab content
+        function showTab() {
+            $('#myTabs a[href="#content' + currentTab + '"]').tab('show');
+            $('#currentTab').text(currentTab);
+        }
+
+        // Event listener for previous button
+        $('#prevTab').on('click', function () {
+            if (currentTab > 1) {
+                currentTab--;
+                showTab();
+            }
+        });
+
+        // Event listener for next button
+        $('#nextTab').on('click', function () {
+            if (currentTab < 5) {
+                currentTab++;
+                showTab();
+            }
+        });
     </script>
     </html>
 

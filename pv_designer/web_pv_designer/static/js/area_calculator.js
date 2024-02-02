@@ -69,12 +69,12 @@ function setListenerForShapeChange(shape) {
 
 function fillPolygon(index) {
     let cornerPoints;
-    /*if (!shapesFiled.includes(index)) {
+    if (!shapesFiled.includes(index)) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
-    } else {*/
+    } else {
     cornerPoints = getCornerPoints(shapesHandler.getShape(index));
-    //}
+    }
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);

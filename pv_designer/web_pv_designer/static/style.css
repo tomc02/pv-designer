@@ -36,7 +36,22 @@
 }
 
 .container {
-    max-width: 80vw; /* Adjust this value as needed */
+    max-width: 80vw; /* Adjust this value as needed for larger screens */
+
+    /* Media query for screens with a maximum width of 767px (typical for mobile devices) */
+    @media (max-width: 767px) {
+        max-width: 100%;
+    }
+}
+
+.big-mobile-button {
+    @media (max-width: 767px) {
+        width: 100%;
+    }
+}
+
+.gm-style-cc {
+    display: none;
 }
 
 .processing-container {
@@ -77,6 +92,13 @@
 
 .left-dropdown {
     margin-left: 15px;
+}
+
+.custom-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    height: 100%;
 }
 
 

@@ -28,6 +28,7 @@ function getMapPicture() {
     markerHandler.clearMarkerSelection();
     mapDataForm = shapesHandler.prepareAreasData();
     document.getElementById('markerDeleteButton').style.display = 'none';
+
     // lock map moving
     map.setOptions({
         zoomControl: false,
@@ -41,6 +42,7 @@ function getMapPicture() {
     });
     drawingManager.setOptions({drawingControl: false});
     map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
+
     shapesHandler.clearSelection();
     markerHandler.clearMarkerSelection();
     setTimeout(function () {

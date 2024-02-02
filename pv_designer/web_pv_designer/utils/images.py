@@ -19,7 +19,8 @@ def save_map_img(image_url, user_id, db_id=None):
 
     im = Image.open(os.path.join(save_path, 'pv_image.png'))
     width, height = im.size
-    im = im.crop((0, 0, width, height - 15))
+    if height > width:
+        im = im.rotate(90, expand=True)
     im.save(os.path.join(save_path, 'pv_image.png'))
 
     if db_id is not None:

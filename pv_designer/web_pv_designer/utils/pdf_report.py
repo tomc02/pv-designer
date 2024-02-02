@@ -36,7 +36,8 @@ def create_pdf_report(user_id, areas, pv_data):
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
     page_content_width = doc.width
-    story.append(ImagePlatypus(pv_panel_img_path, width=page_content_width, height=200))
+    img = ImagePlatypus(pv_panel_img_path, width=page_content_width, height=300)
+    story.append(img)
     story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
     consumption_per_year = pv_data.pv_power_plant.consumption_per_year
