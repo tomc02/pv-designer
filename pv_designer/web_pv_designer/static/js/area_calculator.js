@@ -99,27 +99,27 @@ function fillPolygon(index) {
 
     let angleLTR_LTD = calculateAngle(headingLTR, headingLTD);
     angleLTR_LTD = Math.abs(angleLTR_LTD - 90);
-    console.log(`Angle between LTR and LTD: ${angleLTR_LTD} degrees`);
 
     let angleRTL_RTD = calculateAngle(headingRTL, headingRTD);
     angleRTL_RTD = Math.abs(angleRTL_RTD - 90);
-    console.log(`Angle between RTL and RTD: ${angleRTL_RTD} degrees`);
 
     const hypotenuseLTR_LTD = shapesHandler.getPanelHeight(index) / Math.cos(angleLTR_LTD * Math.PI / 180);
     const hypotenuseRTL_RTD = shapesHandler.getPanelHeight(index) / Math.cos(angleRTL_RTD * Math.PI / 180);
-    console.log(`Hypotenuse LTR_LTD: ${hypotenuseLTR_LTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
-    console.log(`Hypotenuse RTL_RTD: ${hypotenuseRTL_RTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
+
 
     let angle = 90 - headingLTR;
     angle = angle > 180 ? angle - 180 : angle;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
     console.log('url: ' + pvPanelUrl);
 
-    let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
-    const absAzimuth = Math.abs(azimuth);
-    if (absAzimuth > 180) {
-        azimuth = 360 - absAzimuth;
+    let azimuth = 0;
+    if (headingLTR < -90) {
+        azimuth = 90 + 180 + headingLTR;
+    }else{
+        azimuth = headingLTR-90;
     }
+    azimuth = Math.round(azimuth);
+
     let topPoints = [];
     let panelsCount = 0;
     for (let i = 0; i < 10; i++) {
