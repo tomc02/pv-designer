@@ -32,4 +32,5 @@ urlpatterns = [
     path('pdf_result/', views.get_pdf_result, name='get_pdf_result'),
     path('data/', views.data_page, name='data_page'),
     path('delete_record/', views.delete_record, name='delete_record'),
+    path('add_solar_panel/', views.add_solar_panel, name='add_solar_panel'),
 ]

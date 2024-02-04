@@ -109,6 +109,17 @@ function loadMapData() {
     map.controls[google.maps.ControlPosition.RIGHT].push(deleteButton);
     deleteButton.style.display = 'none';
 
+    const drawShapeButton = document.createElement('button');
+    drawShapeButton.id = 'drawShapeButton';
+    drawShapeButton.classList.add('btn', 'btn-success');
+    drawShapeButton.innerText = 'Add area';
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(drawShapeButton);
+    drawShapeButton.style.display = 'block';
+    drawShapeButton.style.margin = '10px';
+
+    drawShapeButton.addEventListener('click', function () {
+        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+    });
     clearHighlight();
     return map;
 }

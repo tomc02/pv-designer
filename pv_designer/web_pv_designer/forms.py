@@ -1,7 +1,7 @@
 from allauth.account.forms import SignupForm, LoginForm
 from django import forms
 
-from .models import PVPowerPlant
+from .models import PVPowerPlant, SolarPanel
 
 
 class CustomSignupForm(SignupForm):
@@ -51,3 +51,16 @@ class SolarPanelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SolarPanelForm, self).__init__(*args, **kwargs)
         self.fields['map_id'].label = 'Map ID'
+
+class AddSolarPanelForm(forms.ModelForm):
+    class Meta:
+        model = SolarPanel
+        fields = ['model', 'width', 'height', 'power', 'pv_technology']
+
+        widgets = {
+            'model': forms.TextInput(attrs={'class': 'form-control'}),
+            'width': forms.NumberInput(attrs={'class': 'form-control'}),
+            'height': forms.NumberInput(attrs={'class': 'form-control'}),
+            'power': forms.NumberInput(attrs={'class': 'form-control'}),
+            'pv_technology': forms.Select(attrs={'class': 'form-control'}),
+        }

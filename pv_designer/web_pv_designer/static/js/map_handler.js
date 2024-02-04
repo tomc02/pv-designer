@@ -50,13 +50,6 @@ function initMap() {
         }
     });
 
-    var drawButton = document.getElementById('drawShapeButton');
-    // Add a click event listener to the button
-    drawButton.addEventListener('click', function () {
-        // Trigger a drawing mode on the map polygon
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-    });
-
     // add listener for map zoom change
     google.maps.event.addListener(map, 'zoom_changed', function () {
         shapesHandler.fillAllAreasWithPanels(true);

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import SolarPanelForm
+from .forms import SolarPanelForm, AddSolarPanelForm
 from .models import MapData, SolarPanel
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
@@ -163,3 +163,16 @@ def delete_record(request):
     else:
         # Handle other HTTP methods if needed
         return redirect('calculations')
+
+def add_solar_panel(request):
+    if request.method == 'POST':
+        form = AddSolarPanelForm(request.POST)
+        if form.is_valid():
+            solar_panel = form.save()
+            solar_panel.user = request.user
+            solar_panel.save()
+            return redirect('add_solar_panel')
+    else:
+        form = AddSolarPanelForm()
+
+    return render(request, 'add_solar_panel.html', {'form': form})

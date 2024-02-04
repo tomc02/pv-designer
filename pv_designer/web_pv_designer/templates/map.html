@@ -20,6 +20,7 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
                     <div class="row">
+                        <!-- Modal -->
                         <div class="col-md-12">
                             <h1 class="text-center">Photovoltaic Calculator</h1>
                             <div class="row">
@@ -30,13 +31,15 @@
                                                 title="Choose the pv panel, you can change it any time">
                                             <option value="" disabled selected>Choose Solar Panel</option>
                                             {% for panel in solar_panels %}
-                                                <option value="{{ panel.id }}"
-                                                        data-width="{{ panel.width }}"
-                                                        data-height="{{ panel.height }}"
-                                                        data-power="{{ panel.power }}"
-                                                        data-img-src="{% static 'images/pv_panel' %}">
-                                                    {{ panel }}
-                                                </option>
+                                                {% if panel.user == request.user or panel.user is null %}
+                                                    <option value="{{ panel.id }}"
+                                                            data-width="{{ panel.width }}"
+                                                            data-height="{{ panel.height }}"
+                                                            data-power="{{ panel.power }}"
+                                                            data-img-src="{% static 'images/pv_panel' %}">
+                                                        {{ panel }}
+                                                    </option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -90,7 +93,8 @@
                                             <div class="tab-content mt-3">
                                                 <div class="tab-pane fade show active" id="content1">
                                                     <p>Content for Tab 1 goes here...</p>
-                                                    <img src="{% static '/images/pv_panel.png' %}" alt="Image" style="height: 50px">
+                                                    <img src="{% static '/images/pv_panel.png' %}" alt="Image"
+                                                         style="height: 50px">
                                                 </div>
                                                 <div class="tab-pane fade" id="content2">
                                                     <p>Content for Tab 2 goes here...</p>
@@ -108,9 +112,11 @@
                                             <!-- Buttons to switch tabs -->
                                             <div class="mt-3 d-flex justify-content-center flex-column align-items-center">
                                                 <div>
-                                                    <button class="btn btn-primary" id="prevTab"><i class="bi bi-arrow-left-short"></i></button>
+                                                    <button class="btn btn-primary" id="prevTab"><i
+                                                            class="bi bi-arrow-left-short"></i></button>
                                                     <span id="currentTab">1</span>
-                                                    <button class="btn btn-primary" id="nextTab"><i class="bi bi-arrow-right-short"></i></button>
+                                                    <button class="btn btn-primary" id="nextTab"><i
+                                                            class="bi bi-arrow-right-short"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -118,9 +124,12 @@
                                 </div>
                                 <div class="row">
                                     <div id="actions" class="d-flex">
-                                        <button class="btn btn-success big-mobile-button" id="drawShapeButton" data-bs-toggle="tooltip"
-                                                data-bs-placement="right" title="After click, draw a shape on the map">
-                                            Add new area
+
+                                    </div>
+                                    <div id="actions" class="d-flex">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#exampleModal">
+                                            Open Modal
                                         </button>
                                     </div>
                                 </div>
@@ -152,7 +161,22 @@
                         <p class="choose-message">Choose panel...</p>
                     </div>
                 </div>
-
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add PV panel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <embed src="{% url 'add_solar_panel' %}" type="text/html" width="100%" height="400px">
+                </div>
             </div>
         </div>
     </div>

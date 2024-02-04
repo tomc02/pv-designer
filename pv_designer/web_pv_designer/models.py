@@ -91,6 +91,7 @@ class SolarPanel(models.Model):
         ('CdTe', 'Cadmium telluride'),
         ('Unknown', 'Unknown'),
     ))
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         pv_technology_display = dict(self._meta.get_field('pv_technology').flatchoices).get(self.pv_technology,
