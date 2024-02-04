@@ -28,6 +28,7 @@ function getMapPicture() {
     markerHandler.clearMarkerSelection();
     mapDataForm = shapesHandler.prepareAreasData();
     document.getElementById('markerDeleteButton').style.display = 'none';
+    document.getElementById('drawShapeButton').style.display = 'none';
 
     // lock map moving
     map.setOptions({

@@ -24,7 +24,7 @@
                         <div class="col-md-12">
                             <h1 class="text-center">Photovoltaic Calculator</h1>
                             <div class="row">
-                                <div class="col-md">
+                                <div class="col-md-12">
                                     <div class="input-group">
                                         <input id="searchInput" type="text" class="form-control"
                                                placeholder="Search for an address...">
@@ -105,25 +105,24 @@
                                 <div class="row">
                                     <div class="col-md-12 bottom-input">
                                         <div class="input-group">
-                                            <div class="custom-select">
-                                                <select class="form-control" id="solarPanelSelect"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        title="Choose the pv panel, you can change it any time">
-                                                    <option value="" disabled selected>Choose Solar Panel</option>
-                                                    {% for panel in solar_panels %}
-                                                        {% if panel.user == request.user or panel.user is null %}
-                                                            <option value="{{ panel.id }}"
-                                                                    data-width="{{ panel.width }}"
-                                                                    data-height="{{ panel.height }}"
-                                                                    data-power="{{ panel.power }}"
-                                                                    data-img-src="{% static 'images/pv_panel' %}">
-                                                                {{ panel }}
-                                                            </option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
+                                            <select class="form-control" id="solarPanelSelect"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Choose the pv panel, you can change it any time">
+                                                <option value="" disabled selected>Choose Solar Panel</option>
+                                                {% for panel in solar_panels %}
+                                                    {% if panel.user == request.user or panel.user is null %}
+                                                        <option value="{{ panel.id }}"
+                                                                data-width="{{ panel.width }}"
+                                                                data-height="{{ panel.height }}"
+                                                                data-power="{{ panel.power }}"
+                                                                data-img-src="{% static 'images/pv_panel' %}">
+                                                            {{ panel }}
+                                                        </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+
                                             <div class="input-group-append" id="searchButton">
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                         data-bs-target="#exampleModal" style="margin-left: 5px">

@@ -111,7 +111,7 @@ function addSelectListener() {
         shapesHandler.panelW = selectedPanelWidth;
         shapesHandler.panelH = selectedPanelHeight;
 
-        shapesHandler.fillAreaWithPanels(true);
+        shapesHandler.fillAllAreasWithPanels(true);
     });
 }
 

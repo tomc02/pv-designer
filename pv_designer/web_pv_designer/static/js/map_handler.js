@@ -7,7 +7,7 @@ function initMap() {
         drawingControl: true, drawingControlOptions: {
             position: google.maps.ControlPosition.TOP_CENTER, drawingModes: [google.maps.drawing.OverlayType.POLYGON,],
         }, polygonOptions: {
-            editable: true, draggable: true, strokeColor: '#0033ff',zIndex: 1,
+            editable: true, draggable: true, strokeColor: '#0033ff', zIndex: 1,
         },
     });
 
@@ -16,7 +16,7 @@ function initMap() {
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
         const shape = event.overlay;
         // if shape has 4 points
-        if (shape.getPath().getLength() === 4) {
+        if (shape.getPath().getLength() != 4 || shape.getPath().getLength() != 3) {
             if (shapesHandler.shapesCount < 4) {
                 addControlPanel();
                 shapesHandler.addShape(shape);
@@ -25,13 +25,14 @@ function initMap() {
                 });
                 drawingManager.setDrawingMode(null);
                 shapesHandler.selectShape(shape);
+                addInsertPointListener(shape);
             } else {
                 shape.setMap(null);
                 alert('You can draw only 4 areas');
             }
         } else {
             shape.setMap(null);
-            alert('You can draw only rectangles');
+            alert('Area must have 4 points');
         }
     });
 
@@ -130,5 +131,12 @@ function searchBoxInit(map) {
             }
         });
         map.fitBounds(bounds);
+    });
+}
+
+function addInsertPointListener(shape) {
+    google.maps.event.addListener(shape.getPath(), 'insert_at', function(index) {
+        shape.getPath().removeAt(index);
+        alert('Area can have only 4 points');
     });
 }
