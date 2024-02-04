@@ -14,7 +14,7 @@ from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling
 
-
+@login_required
 def data_page(request):
     if request.method == 'POST':
         form = SolarPanelForm(request.POST)
@@ -46,7 +46,7 @@ def data_page(request):
 def index(request):
     return render(request, 'home.html')
 
-
+@login_required
 def map_view(request):
     record_id = request.GET.get('record_id')
 
@@ -117,7 +117,7 @@ def ajax_endpoint(request):
             return JsonResponse(response_msg)
     return JsonResponse({"error": "Invalid request method"})
 
-
+@login_required
 def calculation_result(request, id):
     make_api_calling(id, request.user.id)
     pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
@@ -131,7 +131,7 @@ def calculation_result(request, id):
         pass
         # something went wrong
 
-
+@login_required
 def calculations_list(request):
     records = MapData.objects.filter(user=request.user)
     context = {'records': records}

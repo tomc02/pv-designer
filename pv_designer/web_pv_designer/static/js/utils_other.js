@@ -100,7 +100,7 @@ function showCalculationResult(id) {
 
 function addSelectListener() {
     document.getElementById('solarPanelSelect').addEventListener('change', function () {
-        hideChoosePanel();
+        //hideChoosePanel();
         var selectedPanelId = this.value;
         solarPanelID = selectedPanelId;
         var selectedPanelWidth = this.options[this.selectedIndex].getAttribute('data-width');
@@ -110,6 +110,8 @@ function addSelectListener() {
 
         shapesHandler.panelW = selectedPanelWidth;
         shapesHandler.panelH = selectedPanelHeight;
+
+        shapesHandler.fillAreaWithPanels(true);
     });
 }
 

@@ -49,7 +49,9 @@
         width: 100%;
     }
 }
-
+.bottom-input{
+    margin-top: 10px;
+}
 .gm-style-cc {
     display: none;
 }

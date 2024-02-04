@@ -111,7 +111,7 @@ function loadMapData() {
 
     const drawShapeButton = document.createElement('button');
     drawShapeButton.id = 'drawShapeButton';
-    drawShapeButton.classList.add('btn', 'btn-success');
+    drawShapeButton.classList.add('btn', 'btn-primary');
     drawShapeButton.innerText = 'Add area';
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(drawShapeButton);
     drawShapeButton.style.display = 'block';
