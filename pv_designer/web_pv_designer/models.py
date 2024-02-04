@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
+
 class MapData(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     latitude = models.FloatField()
@@ -19,6 +20,7 @@ class MapData(models.Model):
     pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
     areasObjects = models.ManyToManyField('Area', blank=True)
     solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
+
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
@@ -48,6 +50,8 @@ class PVPowerPlant(models.Model):
     known_consumption = models.BooleanField(default=False)
     consumption_per_year = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Area(models.Model):
     panels_count = models.IntegerField()
     installed_peak_power = models.FloatField()
@@ -75,11 +79,20 @@ class Area(models.Model):
             'rotations': self.rotations,
         }
 
+
 class SolarPanel(models.Model):
     model = models.CharField(max_length=100)
     width = models.FloatField()
     height = models.FloatField()
     power = models.FloatField()
+    pv_technology = models.CharField(max_length=20, choices=(
+        ('crystSi', 'Crystalline silicon'),
+        ('CIS', 'Copper indium selenide'),
+        ('CdTe', 'Cadmium telluride'),
+        ('Unknown', 'Unknown'),
+    ))
 
     def __str__(self):
-        return f"{self.model} - {self.width}m - {self.height}m - {self.power}W"
+        pv_technology_display = dict(self._meta.get_field('pv_technology').flatchoices).get(self.pv_technology,
+                                                                                            self.pv_technology)
+        return f"{self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}"

@@ -113,6 +113,7 @@ def make_api_calling(data_id, user_id):
         param = {
             'lat': map_data.latitude,
             'lon': map_data.longitude,
+            'pvtechchoice': map_data.solar_panel.pv_technology,
             'peakpower': area.installed_peak_power / 1000,
             'loss': pv_power_plant.system_loss,
             'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',

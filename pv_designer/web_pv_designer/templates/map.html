@@ -35,8 +35,7 @@
                                                         data-height="{{ panel.height }}"
                                                         data-power="{{ panel.power }}"
                                                         data-img-src="{% static 'images/pv_panel' %}">
-                                                    {{ panel.model }} - {{ panel.width }} x {{ panel.height }}m
-                                                    - {{ panel.power }} W
+                                                    {{ panel }}
                                                 </option>
                                             {% endfor %}
                                         </select>
