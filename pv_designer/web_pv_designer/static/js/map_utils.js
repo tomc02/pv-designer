@@ -25,36 +25,46 @@ function getPvImgSelectedUrl(angle) {
 }
 
 function getMapPicture() {
-    markerHandler.clearMarkerSelection();
-    mapDataForm = shapesHandler.prepareAreasData();
-    document.getElementById('markerDeleteButton').style.display = 'none';
-    document.getElementById('drawShapeButton').style.display = 'none';
+    if (shapesHandler.pvPanelSelected) {
+        markerHandler.clearMarkerSelection();
+        mapDataForm = shapesHandler.prepareAreasData();
+        document.getElementById('markerDeleteButton').style.display = 'none';
+        document.getElementById('drawShapeButton').style.display = 'none';
 
-    // lock map moving
-    map.setOptions({
-        zoomControl: false,
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        draggable: false,
-        scrollwheel: false,
-        disableDoubleClickZoom: true,
+        // extend height of the map
+        const width = document.getElementById('map').offsetWidth;
+        const height = width * 9 / 16;
+        // /document.getElementById('map').style.height = height + 'px';
 
-    });
-    drawingManager.setOptions({drawingControl: false});
-    map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
 
-    shapesHandler.clearSelection();
-    markerHandler.clearMarkerSelection();
-    setTimeout(function () {
-        html2canvas(document.querySelector('#map'), {
-            backgroundColor: null,
-            useCORS: true
-        }).then(canvas => {
-            imageUrl = canvas.toDataURL();
-            moveToForm();
+        // lock map moving
+        map.setOptions({
+            zoomControl: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            draggable: false,
+            scrollwheel: false,
+            disableDoubleClickZoom: true,
+
         });
-    }, 800);
+        drawingManager.setOptions({drawingControl: false});
+        map.setOptions({styles: [{featureType: "all", elementType: "labels", stylers: [{visibility: "off"}]}]});
+
+        shapesHandler.clearSelection();
+        markerHandler.clearMarkerSelection();
+        setTimeout(function () {
+            html2canvas(document.querySelector('#map'), {
+                backgroundColor: null,
+                useCORS: true
+            }).then(canvas => {
+                imageUrl = canvas.toDataURL();
+                moveToForm();
+            });
+        }, 1300);
+    }else {
+        alert('Please select a PV panel type');
+    }
 }
 
 function loadMapData() {

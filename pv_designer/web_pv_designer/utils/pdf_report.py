@@ -36,7 +36,16 @@ def create_pdf_report(user_id, areas, pv_data):
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
     page_content_width = doc.width
-    img = ImagePlatypus(pv_panel_img_path, width=page_content_width, height=300)
+    print(f"page_content_width: {page_content_width}")
+    # load the image and find its dimensions
+    image = ImagePlatypus(pv_panel_img_path)
+    img_width, img_height = image.wrap(doc.width, doc.height)
+    # calculate aspect ratio
+    aspect = float(img_height) / float(img_width)
+    # calculate image width and height to fit into the page
+    img_width = page_content_width
+    img_height = img_width * aspect
+    img = ImagePlatypus(pv_panel_img_path, width=img_width, height=img_height)
     story.append(img)
     story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 

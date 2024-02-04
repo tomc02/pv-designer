@@ -112,6 +112,7 @@ function addSelectListener() {
         shapesHandler.panelH = selectedPanelHeight;
 
         shapesHandler.fillAllAreasWithPanels(true);
+        shapesHandler.pvPanelSelected = true;
     });
 }
 

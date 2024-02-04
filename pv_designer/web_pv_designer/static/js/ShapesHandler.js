@@ -8,6 +8,7 @@ class ShapesHandler {
         this.panelH = panelHeight;
         this.panelW = panelWidth;
         this.dragging = false;
+        this.pvPanelSelected = false;
     }
 
     getShapeObject(index) {
@@ -148,6 +149,8 @@ class ShapesHandler {
                     this.fillAreaWithPanels();
                 }
             }
+            setTimeout(function () {
+            }, 50);
         }
     }
 
