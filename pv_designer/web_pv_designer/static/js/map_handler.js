@@ -74,7 +74,6 @@ function initMap() {
     map.setOptions({streetViewControl: false});
     map.setOptions({mapTypeControl: false});
     map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-
 }
 
 function searchBoxInit(map) {
@@ -131,6 +130,8 @@ function searchBoxInit(map) {
             }
         });
         map.fitBounds(bounds);
+
+        map.setZoom(19);
     });
 }
 

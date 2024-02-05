@@ -98,7 +98,7 @@ function loadMapData() {
         mapDataLoaded = true;
     } else {
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 49.83137, lng: 18.16086}, zoom: 17, tilt: 0, rotateControl: false,
+            center: {lat: 49.83137, lng: 18.16086}, zoom: 18, tilt: 0, rotateControl: false,
         });
     }
 

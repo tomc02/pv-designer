@@ -179,5 +179,8 @@ def add_solar_panel(request):
 
 def get_solar_panels(request):
     solar_panels = SolarPanel.objects.all()
-    data = [{'model': panel.model, 'width': panel.width, 'height': panel.height, 'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)} for panel in solar_panels]
+    data = []
+    for panel in solar_panels:
+        if panel.user == request.user or panel.user is None:
+            data.append({'id': panel.id, 'model': panel.model, 'width': panel.width, 'height': panel.height, 'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)})
     return JsonResponse(data, safe=False)
