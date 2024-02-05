@@ -37,34 +37,39 @@ class MarkersHandler {
         }, 100);
     }
 
-    getMarkerPicture(position, imgUrl, angle) {
-        const angleAbs = Math.abs(this.clipAngle(angle));
-        const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
-        const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
-        let rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-        let rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
+getMarkerPicture(position, imgUrl, angle) {
+    const angleAbs = Math.abs(this.clipAngle(angle));
+    const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
+    const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
 
-        let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
-        let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+    const angleRad = angleAbs * Math.PI / 180;
+    const cosAngle = Math.cos(angleRad);
+    const sinAngle = Math.sin(angleRad);
 
-        if (angle < 120) {
-            if (angle > 0) {
-                anchorX = 0;
-            } else {
-                anchorY = 0;
-            }
+    let rotatedPanelWidth = Math.abs(panelWidthPix * cosAngle) + panelHeightPix * sinAngle;
+    let rotatedPanelHeight = panelWidthPix * sinAngle + Math.abs(panelHeightPix * cosAngle);
+
+    let anchorY = panelWidthPix * sinAngle;
+    let anchorX = panelHeightPix * sinAngle;
+
+    if (angle < 120) {
+        anchorX = angle > 0 ? 0 : anchorX;
+        anchorY = angle > 0 ? anchorY : 0;
+    } else {
+        if (angle > 180) {
+            anchorX = panelWidthPix * cosAngle + panelHeightPix * sinAngle;
+            anchorY = rotatedPanelHeight;
         } else {
-            if (angle > 180) {
-            } else {
-                anchorY = rotatedPanelHeight;
-            }
+            anchorY = rotatedPanelHeight;
         }
-        return {
-            url: imgUrl,
-            scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
-            anchor: new google.maps.Point(anchorX, anchorY),
-        };
     }
+
+    return {
+        url: imgUrl,
+        scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
+        anchor: new google.maps.Point(anchorX, anchorY),
+    };
+}
 
     selectMarker(marker) {
         this.clearMarkerSelection();
