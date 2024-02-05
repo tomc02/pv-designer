@@ -171,8 +171,13 @@ def add_solar_panel(request):
             solar_panel = form.save()
             solar_panel.user = request.user
             solar_panel.save()
-            return redirect('add_solar_panel')
+            return render(request, 'success.html', {'message': 'Solar panel added successfully'})
     else:
         form = AddSolarPanelForm()
 
     return render(request, 'add_solar_panel.html', {'form': form})
+
+def get_solar_panels(request):
+    solar_panels = SolarPanel.objects.all()
+    data = [{'model': panel.model, 'width': panel.width, 'height': panel.height, 'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)} for panel in solar_panels]
+    return JsonResponse(data, safe=False)

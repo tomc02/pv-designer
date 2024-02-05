@@ -140,4 +140,24 @@ function lightMode() {
     label.innerHTML = '<i class="bi bi-sun"></i>';
 }
 
+function updateSolarPanels() {
+    $.ajax({
+        url: '/get_solar_panels/',  // Update with your actual URL
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Update the content of the solar panel select
+            const solarPanelSelect = $('#solarPanelSelect');
+            solarPanelSelect.empty();
+            solarPanelSelect.append('<option value="" selected disabled hidden>Select a solar panel</option>');
+            data.forEach(function (panel) {
+                solarPanelSelect.append(`<option value="${panel.id}" data-width="${panel.width}" data-height="${panel.height}" data-power="${panel.power}" data-img-src="${panel.image}">${panel.str}</option>`);
+            });
+        },
+        error: function (error) {
+            console.log('Error fetching solar panels:', error);
+        }
+    });
+}
+
 

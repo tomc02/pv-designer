@@ -120,9 +120,9 @@ function searchBoxInit(map) {
             };
 
             // Create a marker for each place.
-            markers.push(new google.maps.Marker({
+            /*markers.push(new google.maps.Marker({
                 map, icon, title: place.name, position: place.geometry.location,
-            }),);
+            }),);*/
             if (place.geometry.viewport) {
                 // Only geocodes have viewport.
                 bounds.union(place.geometry.viewport);

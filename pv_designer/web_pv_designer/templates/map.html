@@ -40,7 +40,7 @@
                             <div id="map_content">
                                 <div class="row">
                                     <div class="col-md-12">
-                                            <div id="map" style="resize: vertical"></div>
+                                        <div id="map" style="resize: vertical"></div>
                                     </div>
                                     <div class="col-sm" style="display: none">
                                         <div class="custom-box d-flex flex-column justify-content-between">
@@ -109,7 +109,7 @@
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="top"
                                                     title="Choose the pv panel, you can change it any time">
-                                                <option value="" disabled selected>Choose Solar Panel</option>
+                                                <option value="" disabled selected>Select a solar panel</option>
                                                 {% for panel in solar_panels %}
                                                     {% if panel.user == request.user or panel.user is null %}
                                                         <option value="{{ panel.id }}"
@@ -171,6 +171,11 @@
                 </div>
                 <div class="modal-body">
                     <embed src="{% url 'add_solar_panel' %}" type="text/html" width="100%" height="400px">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            onclick="updateSolarPanels()">Close
+                    </button>
                 </div>
             </div>
         </div>

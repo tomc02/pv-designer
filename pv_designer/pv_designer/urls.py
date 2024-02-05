@@ -33,4 +33,5 @@ urlpatterns = [
     path('data/', views.data_page, name='data_page'),
     path('delete_record/', views.delete_record, name='delete_record'),
     path('add_solar_panel/', views.add_solar_panel, name='add_solar_panel'),
+    path('get_solar_panels/', views.get_solar_panels, name='get_solar_panels'),
 ]
