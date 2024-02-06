@@ -109,7 +109,6 @@ function fillPolygon(index) {
 
 
     let angle = 90 - headingLTR;
-    angle = angle > 180 ? angle - 180 : angle;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
     console.log('url: ' + pvPanelUrl);
 

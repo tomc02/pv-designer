@@ -37,36 +37,44 @@ class MarkersHandler {
         }, 100);
     }
 
-getMarkerPicture(position, imgUrl, angle) {
-    const angleAbs = Math.abs(this.clipAngle(angle));
+getMarkerPicture(position, imgUrl, theta) {
     const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
     const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
 
-    const angleRad = angleAbs * Math.PI / 180;
-    const cosAngle = Math.cos(angleRad);
-    const sinAngle = Math.sin(angleRad);
+    const width = shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex);
+    const height = shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex);
 
-    let rotatedPanelWidth = Math.abs(panelWidthPix * cosAngle) + panelHeightPix * sinAngle;
-    let rotatedPanelHeight = panelWidthPix * sinAngle + Math.abs(panelHeightPix * cosAngle);
+    let radians = (theta * Math.PI) / 180;
 
-    let anchorY = panelWidthPix * sinAngle;
-    let anchorX = panelHeightPix * sinAngle;
+    // Calculate bounding box dimensions
+    let cosTheta = Math.abs(Math.cos(radians));
+    let sinTheta = Math.abs(Math.sin(radians));
+    let newWidth = panelWidthPix * cosTheta + panelHeightPix * sinTheta;
+    let newHeight = panelWidthPix * sinTheta + panelHeightPix * cosTheta;
 
-    if (angle < 120) {
-        anchorX = angle > 0 ? 0 : anchorX;
-        anchorY = angle > 0 ? anchorY : 0;
+    // Initialize anchor points
+    let anchorX = 0;
+    let anchorY = 0;
+
+    // Adjust anchor points based on the quadrant
+    if (theta <= 0) {
+        anchorX = panelHeightPix * sinTheta;
+        anchorY = 0;
+    }else if (theta <= 90) {
+        anchorX = 0;
+        anchorY = panelWidthPix * sinTheta;
+    } else if (theta <= 180) {
+        anchorX = 0;
+        anchorY = panelHeightPix * cosTheta;
+    } else if (theta <= 270) {
+        anchorX = panelWidthPix * cosTheta + panelHeightPix * sinTheta;
+        anchorY = newHeight;
     } else {
-        if (angle > 180) {
-            anchorX = panelWidthPix * cosAngle + panelHeightPix * sinAngle;
-            anchorY = rotatedPanelHeight;
-        } else {
-            anchorY = rotatedPanelHeight;
-        }
     }
 
     return {
         url: imgUrl,
-        scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
+        scaledSize: new google.maps.Size(newWidth, newHeight),
         anchor: new google.maps.Point(anchorX, anchorY),
     };
 }
@@ -104,7 +112,8 @@ getMarkerPicture(position, imgUrl, angle) {
     }
 
     clipAngle(angle) {
-        return angle > 180 ? angle - 180 : angle;
+        //return angle > 180 ? angle - 180 : angle;
+        return angle;
     }
 }
 
