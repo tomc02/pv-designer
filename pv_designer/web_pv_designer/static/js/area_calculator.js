@@ -73,7 +73,7 @@ function fillPolygon(index) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
     } else {
-    cornerPoints = getCornerPoints(shapesHandler.getShape(index));
+        cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     }
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
@@ -115,19 +115,27 @@ function fillPolygon(index) {
     let azimuth = 0;
     if (headingLTR < -90) {
         azimuth = 90 + 180 + headingLTR;
-    }else{
-        azimuth = headingLTR-90;
+    } else {
+        azimuth = headingLTR - 90;
     }
     azimuth = Math.round(azimuth);
 
     let topPoints = [];
     let panelsCount = 0;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 100; i++) {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
-        topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, colsCount);
+        if (headingLTR > 0) {
+            topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
+        } else {
+            topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
+        }
         // move corner points
         cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
         cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
+
+        if (!google.maps.geometry.poly.containsLocation(cornerPoints.leftTop, polygon) && !google.maps.geometry.poly.containsLocation(cornerPoints.rightTop, polygon)) {
+            break;
+        }
         if (panelsCount > 0) {
             panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD, pvPanelUrl, index);
         } else {
@@ -182,13 +190,19 @@ function fillPolygon2(index) {
     return new areaData(panelsCount, azimuth);
 }
 */
-function generatePointsBetween(startPoint, endPoint, numPoints) {
+function generatePointsBetween(startPoint, endPoint, panleWidth, heading) {
     const points = [];
-    for (let i = 1; i < numPoints; i++) {
-        const fraction = i / numPoints;
-        const lat = startPoint.lat() + fraction * (endPoint.lat() - startPoint.lat());
-        const lng = startPoint.lng() + fraction * (endPoint.lng() - startPoint.lng());
-        points.push(new google.maps.LatLng(lat, lng));
+    let position = startPoint;
+    let index = 0;
+    while (google.maps.geometry.spherical.computeDistanceBetween(position, endPoint) > panleWidth) {
+        console.log('distance: ' + google.maps.geometry.spherical.computeDistanceBetween(position, endPoint));
+        points.push(position);
+        position = google.maps.geometry.spherical.computeOffset(position, panleWidth, heading);
+        index++;
+        if (index > 100) {
+            console.error('Infinite loop');
+            break;
+        }
     }
     return points;
 }
