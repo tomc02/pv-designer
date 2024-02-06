@@ -32,9 +32,15 @@ class ShapesHandler {
     }
 
     recalculatePanelHeight(index, slope) {
+        const shape = this.shapesObjects[index];
         slope = 90 - slope;
-        this.shapesObjects[index].panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
-        this.shapesObjects[index].panelWidth = this.panelW;
+        if (shape.orientation) {
+            shape.panelHeight = this.panelW * Math.sin(slope * Math.PI / 180);
+            shape.panelWidth = this.panelH;
+        } else {
+            shape.panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
+            shape.panelWidth = this.panelW;
+        }
     }
 
     addShape(shape) {
@@ -101,7 +107,7 @@ class ShapesHandler {
     }
 
     clearFilledPanels() {
-        if(this.selectedShape) {
+        if (this.selectedShape) {
             markerHandler.clearMarkers(this.selectedShapeIndex);
         }
     }
@@ -185,6 +191,10 @@ class ShapesHandler {
         return shapesData;
     }
 
+    changePanelsOrientation() {
+        this.selectedShape.changeOrientation();
+        this.fillAreaWithPanels();
+    }
 }
 
 

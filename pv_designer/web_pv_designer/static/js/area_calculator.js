@@ -89,6 +89,7 @@ function fillPolygon(index) {
             shapesHandler.fillAreaWithPanels();
         }
     });
+    addInsertPointListener(shape);
     shapesHandler.selectedShape.updateHighlightedEdge();
 
     let polygon = shapesHandler.getShape(index);
@@ -109,7 +110,7 @@ function fillPolygon(index) {
 
     let angle = 90 - headingLTR;
     angle = angle > 180 ? angle - 180 : angle;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
     console.log('url: ' + pvPanelUrl);
 
     let azimuth = 0;
@@ -122,7 +123,7 @@ function fillPolygon(index) {
 
     let topPoints = [];
     let panelsCount = 0;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
         topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, colsCount);
         // move corner points
@@ -215,13 +216,14 @@ function calculatePixelSize(map, meters, latitude) {
     return meters / metersPerPixel;
 }
 
-function rotateImage(angle, slope) {
+function rotateImage(angle, slope, orientation) {
     console.log(angle)
     $.ajax({
         url: rotateImgUrl,
         data: {
             'angle': angle,
-            'slope': slope
+            'slope': slope,
+            'orientation': orientation
         },
     });
     return getPvImgUrl(angle);

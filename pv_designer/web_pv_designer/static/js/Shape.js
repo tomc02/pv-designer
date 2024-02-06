@@ -14,6 +14,7 @@ class Shape {
         this.highlightedEdge = null;
         this.dragging = false;
         this.listenerSet = false;
+        this.orientation = 0;
     }
 
     rotateShape() {
@@ -87,6 +88,13 @@ class Shape {
 
     getSlope() {
         return this.slope;
+    }
+
+    changeOrientation() {
+        this.orientation = this.orientation === 0 ? 1 : 0;
+        const tmp = this.panelHeight;
+        this.panelHeight = this.panelWidth;
+        this.panelWidth = tmp;
     }
 
 }
