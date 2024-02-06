@@ -124,9 +124,11 @@ function fillPolygon(index) {
     let panelsCount = 0;
     for (let i = 0; i < 100; i++) {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
-        if (headingLTR > 0) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
+            console.log('headingLTR: ' + headingLTR);
             topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
+            console.log('headingLTR: ' + headingLTR);
             topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
         }
         // move corner points

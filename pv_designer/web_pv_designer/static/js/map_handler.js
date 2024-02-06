@@ -16,7 +16,7 @@ function initMap() {
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
         const shape = event.overlay;
         // if shape has 4 points
-        if (shape.getPath().getLength() != 4 || shape.getPath().getLength() != 3) {
+        if (shape.getPath().getLength() == 4 || shape.getPath().getLength() == 3) {
             if (shapesHandler.shapesCount < 4) {
                 addControlPanel();
                 shapesHandler.addShape(shape);
@@ -32,7 +32,7 @@ function initMap() {
             }
         } else {
             shape.setMap(null);
-            alert('Area must have 4 points');
+            alert('Area must have only 4 points');
         }
     });
 
