@@ -216,7 +216,7 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
     //angle = angle > 180 ? angle - 180 : angle;
     for (let i = 0; i < points.length; i++) {
         const leftTop = points[i];
-        if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
+        if (google.maps.geometry.poly.containsLocation(leftTop, polygon)) {
             markerHandler.putMarker(points[i], picture, angle, polygonIndex);
             panelCount++;
         }
