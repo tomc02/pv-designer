@@ -124,7 +124,7 @@ function fillPolygon(index) {
     let panelsCount = 0;
     for (let i = 0; i < 100; i++) {
         const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
-        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160))   {
             console.log('headingLTR: ' + headingLTR);
             topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
