@@ -68,6 +68,7 @@ function setListenerForShapeChange(shape) {
 }
 
 function fillPolygon(index) {
+    const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
@@ -93,10 +94,10 @@ function fillPolygon(index) {
     shapesHandler.selectedShape.updateHighlightedEdge();
 
     let polygon = shapesHandler.getShape(index);
-    let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
-    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
-    let headingLTD = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.leftBottom);
-    let headingRTD = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
+    let headingLTR = gMaps.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
+    let headingRTL = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
+    let headingLTD = gMaps.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.leftBottom);
+    let headingRTD = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
 
     let angleLTR_LTD = calculateAngle(headingLTR, headingLTD);
     angleLTR_LTD = Math.abs(angleLTR_LTD - 90);
@@ -123,7 +124,7 @@ function fillPolygon(index) {
     let topPoints = [];
     let panelsCount = 0;
     for (let i = 0; i < 100; i++) {
-        const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
+        const colsCount = Math.floor(gMaps.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
         if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160))   {
             console.log('headingLTR: ' + headingLTR);
             topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
@@ -132,10 +133,10 @@ function fillPolygon(index) {
             topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
         }
         // move corner points
-        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
+        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
+        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
 
-        if (!google.maps.geometry.poly.containsLocation(cornerPoints.leftTop, polygon) && !google.maps.geometry.poly.containsLocation(cornerPoints.rightTop, polygon)) {
+        if (!gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) && !gMaps.poly.containsLocation(cornerPoints.rightTop, polygon)) {
             break;
         }
         if (panelsCount > 0) {

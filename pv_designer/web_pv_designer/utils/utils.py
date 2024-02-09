@@ -2,14 +2,16 @@ import json
 import os
 
 import matplotlib
-from django.conf import settings
 import requests
+from django.conf import settings
 from django.http import JsonResponse
 
 from .images import save_map_img, delete_rotated_images
-from ..models import MapData, PVPowerPlant, Area, CustomUser, SolarPanel
+from ..models import MapData, Area, CustomUser, SolarPanel
 
 matplotlib.use('Agg')
+
+
 def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
@@ -35,7 +37,8 @@ def process_map_data(data, user_id):
             user_obj = CustomUser.objects.get(id=user_id)
             map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
                                areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path, solar_panel=pv_panel)
+                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
+                               solar_panel=pv_panel)
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
             delete_rotated_images()
@@ -65,31 +68,11 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
     map_data.save()
 
 
-def set_params(data):
-    print('azimuth: ' + data['azimuth'])
-    params = {
-        'lat': data['latitude'],
-        'lon': data['longitude'],
-        'peakpower': data['installed_peak_power'],
-        'loss': data['system_loss'],
-        'mountingplace': data['mounting_position'] == 'option1' and 'free' or 'building',
-        'angle': data['slope'],
-        'aspect': data['azimuth'],
-        'pvprice': data['pv_system_cost'] == 'True' and '1' or '0',
-        'systemcost': data['pv_electricity_price'],
-        'interest': data['interest'],
-        'lifetime': data['lifetime'],
-        'components': '0',
-        'outputformat': 'json'
-    }
-    return params
-
-
 def get_pvgis_response(params):
-    print(params)
     base_url = 'https://re.jrc.ec.europa.eu/api/PVcalc'
     response = requests.get(base_url, params=params)
     return response
+
 
 def get_pvgis_response_off_grid(params):
     base_url = 'https://re.jrc.ec.europa.eu/api/SHScalc'
@@ -107,6 +90,7 @@ def make_api_calling(data_id, user_id):
     map_data = MapData.objects.get(id=data_id)
     areas = map_data.areasObjects.all()
     pv_power_plant = map_data.pv_power_plant
+    sum_power = 0
     params = []
     index = 0
     for area in areas:
@@ -127,20 +111,19 @@ def make_api_calling(data_id, user_id):
         }
         params.append(param)
         save_response("response", get_pvgis_response(param), user_id, index)
-
-        if pv_power_plant.off_grid:
-            param = {
-                'lat': map_data.latitude,
-                'lon': map_data.longitude,
-                'peakpower': area.installed_peak_power / 1000,
-                'angle': area.slope,
-                'aspect': area.azimuth,
-                'batterysize': pv_power_plant.battery_capacity,
-                'cutoff': pv_power_plant.discharge_cutoff_limit,
-                'consumptionday': pv_power_plant.consumption_per_day,
-                'outputformat': 'json'
-            }
-            save_response("response_off_grid", get_pvgis_response_off_grid(param), user_id, index)
-
         index += 1
+        sum_power += area.installed_peak_power
 
+    if pv_power_plant.off_grid:
+        param = {
+            'lat': map_data.latitude,
+            'lon': map_data.longitude,
+            'peakpower': sum_power / 1000,
+            'angle': areas[0].slope,
+            'aspect': areas[0].azimuth,
+            'batterysize': pv_power_plant.battery_capacity,
+            'cutoff': pv_power_plant.discharge_cutoff_limit,
+            'consumptionday': pv_power_plant.consumption_per_day,
+            'outputformat': 'json'
+        }
+        save_response("response_off_grid", get_pvgis_response_off_grid(param), user_id, 0)

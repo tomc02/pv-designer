@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Add this if it's not already there
     'allauth',
     'allauth.account',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
