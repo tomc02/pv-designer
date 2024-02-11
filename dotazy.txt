@@ -1,0 +1,4 @@
+Text:
+    -Zkratky - cesky anglicky?
+    -Používání obrázků?? Odkud?
+    -Kam všude dávat ukázky kódu?

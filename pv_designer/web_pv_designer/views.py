@@ -3,7 +3,7 @@ import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +13,7 @@ from .models import MapData, SolarPanel
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling
+import requests
 
 @login_required
 def data_page(request):
@@ -185,3 +186,11 @@ def get_solar_panels(request):
         if panel.user == request.user or panel.user is None:
             data.append({'id': panel.id, 'model': panel.model, 'width': panel.width, 'height': panel.height, 'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)})
     return JsonResponse(data, safe=False)
+
+
+def google_maps_js(request):
+    api_key = settings.GOOGLE_MAPS_API_KEY
+    google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
+    response = requests.get(google_maps_js_url)
+
+    return HttpResponse(response.content, content_type="application/javascript")
