@@ -2,5 +2,38 @@
 {% load static %}
 
 {% block content %}
-  <h2>Home</h2>
+    <div class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4">Welcome to PV Designer</h1>
+            <p class="lead">Your comprehensive tool for designing and calculating parameters for Photovoltaic Power
+                Plants.</p>
+        </div>
+    </div>
+
+    <div class="container features">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Design with Precision</h2>
+                <p>Utilize our interactive map to draw and define areas for potential solar panel installation, making
+                    planning easy and accurate.</p>
+            </div>
+            <div class="col-md-4">
+                <h2>Calculate Efficiently</h2>
+                <p>Input your parameters and let our application calculate the energy gains, providing you with detailed
+                    insights and projections.</p>
+            </div>
+            <div class="col-md-4">
+                <h2>Plan Sustainably</h2>
+                <p>Explore the impact of your PV power plant on household consumption and contribute to a greener
+                    future.</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="container text-center my-5">
+            <p class="lead">Ready to explore the potential of your photovoltaic power plant?</p>
+            <a href="{% url 'map' %}" class="btn btn-primary btn-lg">Get Started</a>
+        </div>
+    </div>
+
 {% endblock %}

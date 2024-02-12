@@ -20,7 +20,7 @@
 }
 
 .highlight {
-    border: 2px solid #007bff; /* Blue border for the highlighted panel */
+    border: 2px solid #007bff;
 }
 
 .editable-title {
@@ -48,9 +48,11 @@
         width: 100%;
     }
 }
-.bottom-input{
+
+.bottom-input {
     margin-top: 10px;
 }
+
 .gm-style-cc {
     display: none;
 }
@@ -103,3 +105,33 @@
 }
 
 
+.hero-section {
+    padding: 50px 0;
+}
+
+.features {
+    padding: 20px 0;
+}
+
+.step-content {
+    display: none;
+}
+
+.step-content.active {
+    display: block;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.navigation button {
+    margin: 0 5px;
+}
+
+.step-counter {
+    margin: 0 10px;
+}
