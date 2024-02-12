@@ -1,0 +1,71 @@
+{% extends 'empty_base.html' %}
+{% load static %}
+
+{% block title %}Tip{% endblock %}
+
+{% block head %}
+    <style>
+
+    </style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Tutorial Help Page</h2>
+    <div id="tutorialSteps">
+        <div class="step-content active" data-step="1">
+            <h3>Step 1: Introduction</h3>
+            <p>This is the first step of our tutorial.</p>
+            <img src="{% static 'gifs/tip.webp' %}" alt="Step 1" class="img-fluid">
+        </div>
+        <div class="step-content" data-step="2">
+            <h3>Step 2: Getting Started</h3>
+            <p>Here's how you get started with our application.</p>
+            <img src="{% static 'gifs/tip.webp' %}" alt="Step 2" class="img-fluid">
+        </div>
+        <div class="step-content" data-step="3">
+            <h3>Step 3: Feature Usage</h3>
+            <p>Learn how to use this feature in this step.</p>
+            <img src="{% static 'gifs/tip.webp' %}" alt="Step 3" class="img-fluid">
+        </div>
+        <div class="step-content" data-step="4">
+            <h3>Step 4: Advanced Features</h3>
+            <p>This step covers some of the advanced features.</p>
+            <img src="{% static 'gifs/tip.webp' %}" alt="Step 4" class="img-fluid">
+        </div>
+        <div class="step-content" data-step="5">
+            <h3>Step 5: Conclusion</h3>
+            <p>Congratulations! You've completed our tutorial.</p>
+            <img src="{% static 'gifs/tip.webp' %}" alt="Step 5" class="img-fluid">
+        </div>
+    </div>
+    <div class="navigation mt-3">
+        <button class="btn btn-primary" onclick="changeStep(-1)">Previous</button>
+        <span class="step-counter">Step <span id="currentStep">1</span> of 5</span>
+        <button class="btn btn-primary" onclick="changeStep(1)">Next</button>
+    </div>
+</div>
+<script>
+   let currentStep = 1;
+    const totalSteps = 5;
+
+    function showStep(step) {
+        $('.step-content').removeClass('active').hide();
+        $(`[data-step="${step}"]`).addClass('active').show();
+        $('#currentStep').text(step); // Update step counter
+    }
+
+    function changeStep(direction) {
+        currentStep += direction;
+        if (currentStep < 1) {
+            currentStep = 1;
+        } else if (currentStep > totalSteps) {
+            currentStep = totalSteps;
+        }
+        showStep(currentStep);
+    }
+
+    $(document).ready(function() {
+        showStep(currentStep);
+    });
+</script>
+{% endblock %}

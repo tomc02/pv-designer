@@ -200,3 +200,7 @@ def google_maps_js(request):
     google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type="application/javascript")
+
+
+def help_page(request):
+    return render(request, 'help_page.html')

@@ -33,6 +33,12 @@
                                                     style="margin-left: 5px">Search
                                             </button>
                                         </div>
+                                        <div class="input-group-append" id="helpButton">
+                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                                    data-bs-target="#helpModal" style="margin-left: 5px">
+                                                <i class="bi bi-question-lg"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -123,9 +129,9 @@
                                                 {% endfor %}
                                             </select>
 
-                                            <div class="input-group-append" id="searchButton">
+                                            <div class="input-group-append" id="newPanelButton">
                                                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                                        data-bs-target="#exampleModal" style="margin-left: 5px">
+                                                        data-bs-target="#newPanelModal" style="margin-left: 5px">
                                                     <i class="bi bi-plus-lg"></i>
                                                 </button>
                                             </div>
@@ -159,18 +165,39 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <!-- New Panel Modal -->
+    <div class="modal fade" id="newPanelModal" tabindex="-1" aria-labelledby="newPanelModalLabel"
          aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add PV panel</h5>
+                    <h5 class="modal-title" id="newPanelModalLabel">Add PV panel</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <embed src="{% url 'add_solar_panel' %}" type="text/html" width="100%" height="400px">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            onclick="updateSolarPanels()">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl   ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">Help</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <embed src="{% url 'help_page' %}" type="text/html" width="100%" height="900px">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
