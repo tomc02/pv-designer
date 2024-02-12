@@ -116,6 +116,7 @@ class ShapesHandler {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
                 const index = this.selectedShapeIndex;
+                this.selectedShape.deleteHighLightedEdge();
                 markerHandler.deleteMarkersArea(index);
                 this.selectedShape.deleteShape();
                 deleteControlPanel(index);

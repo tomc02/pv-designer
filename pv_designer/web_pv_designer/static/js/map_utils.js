@@ -62,18 +62,23 @@ function getMapPicture() {
                 moveToForm();
             });
         }, 1300);
-    }else {
+    } else {
         alert('Please select a PV panel type');
     }
 }
 
 function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
-        console.log(mapData);
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: mapData.latitude, lng: mapData.longitude}, zoom: mapData.zoom, tilt: 0, rotateControl: false,
+            center: {
+                lat: mapData.latitude,
+                lng: mapData.longitude
+            },
+            mapTypeId: 'satellite',
+            zoom: mapData.zoom,
+            tilt: 0,
+            rotateControl: false,
         });
-        map.setMapTypeId('satellite');
         let index = 0;
         mapData.areas.forEach(function (area) {
             let polygon = new google.maps.Polygon({
@@ -98,7 +103,7 @@ function loadMapData() {
         mapDataLoaded = true;
     } else {
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 49.83137, lng: 18.16086}, zoom: 18, tilt: 0, rotateControl: false,
+            center: {lat: 49.83137, lng: 18.16086}, zoom: 18, tilt: 0, rotateControl: false, mapTypeId: 'satellite',
         });
     }
 

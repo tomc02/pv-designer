@@ -5,12 +5,15 @@ function initMap() {
     map = loadMapData();
     drawingManager = new google.maps.drawing.DrawingManager({
         drawingControl: true, drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER, drawingModes: [google.maps.drawing.OverlayType.POLYGON,],
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['polygon'],
         }, polygonOptions: {
-            editable: true, draggable: true, strokeColor: '#0033ff', zIndex: 1,
+            editable: true,
+            draggable: true,
+            strokeColor: '#0033ff',
+            zIndex: 10,
         },
     });
-
     drawingManager.setMap(map);
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
@@ -73,7 +76,6 @@ function initMap() {
 
     map.setOptions({streetViewControl: false});
     map.setOptions({mapTypeControl: false});
-    map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
 }
 
 function searchBoxInit(map) {

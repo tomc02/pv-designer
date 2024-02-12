@@ -36,9 +36,15 @@ class Shape {
             strokeOpacity: 2.0,
             strokeWeight: 6,
             map: map,
-            zIndex: 1000,
+            zIndex: 100,
             title: this.index,
         });
+    }
+
+    deleteHighLightedEdge(){
+        if (this.highlightedEdge) {
+            this.highlightedEdge.setMap(null);
+        }
     }
 
     getShape() {

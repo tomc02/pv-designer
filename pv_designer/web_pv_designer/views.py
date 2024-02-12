@@ -15,6 +15,7 @@ from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling
 import requests
 
+
 @login_required
 def data_page(request):
     if request.method == 'POST':
@@ -46,6 +47,7 @@ def data_page(request):
 
 def index(request):
     return render(request, 'home.html')
+
 
 @login_required
 def map_view(request):
@@ -119,6 +121,7 @@ def ajax_endpoint(request):
             return JsonResponse(response_msg)
     return JsonResponse({"error": "Invalid request method"})
 
+
 @login_required
 def calculation_result(request, id):
     make_api_calling(id, request.user.id)
@@ -132,6 +135,7 @@ def calculation_result(request, id):
     else:
         pass
         # something went wrong
+
 
 @login_required
 def calculations_list(request):
@@ -166,6 +170,7 @@ def delete_record(request):
         # Handle other HTTP methods if needed
         return redirect('calculations')
 
+
 def add_solar_panel(request):
     if request.method == 'POST':
         form = AddSolarPanelForm(request.POST)
@@ -179,12 +184,14 @@ def add_solar_panel(request):
 
     return render(request, 'add_solar_panel.html', {'form': form})
 
+
 def get_solar_panels(request):
     solar_panels = SolarPanel.objects.all()
     data = []
     for panel in solar_panels:
         if panel.user == request.user or panel.user is None:
-            data.append({'id': panel.id, 'model': panel.model, 'width': panel.width, 'height': panel.height, 'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)})
+            data.append({'id': panel.id, 'model': panel.model, 'width': panel.width, 'height': panel.height,
+                         'power': panel.power, 'pv_technology': panel.pv_technology, 'str': str(panel)})
     return JsonResponse(data, safe=False)
 
 
@@ -192,5 +199,4 @@ def google_maps_js(request):
     api_key = settings.GOOGLE_MAPS_API_KEY
     google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
     response = requests.get(google_maps_js_url)
-
     return HttpResponse(response.content, content_type="application/javascript")
