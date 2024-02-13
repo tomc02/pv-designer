@@ -1,6 +1,6 @@
 class MarkersHandler {
     constructor() {
-        this.markers = {'0': [], '1': [], '2': [], '3': []};
+        this.markers = {'0': [], '1': [], '2': [], '3': [], '4': [], '5': [], '6' : [], '7': [], '8': [], '9' : []};
         this.selectedMarker = null;
     }
 
@@ -15,7 +15,7 @@ class MarkersHandler {
 
     deleteMarkersArea(areaIndex) {
         this.clearMarkers(areaIndex);
-        for (let i = areaIndex; i < 3; i++) {
+        for (let i = areaIndex; i < 10; i++) {
             this.markers[i] = this.markers[i + 1];
         }
     }
@@ -29,6 +29,7 @@ class MarkersHandler {
                 map: map,
                 icon: markerIcon,
                 title: angle,
+                zIndex: 1,
             });
             this.markers[areaIndex].push(marker);
             google.maps.event.addListener(marker, 'click', () => {

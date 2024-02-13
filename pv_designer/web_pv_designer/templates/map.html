@@ -17,154 +17,161 @@
     <body>
     <div class="container mt-5">
         <div id="content">
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                    <div class="row">
-                        <!-- Modal -->
-                        <div class="col-md-12">
-                            <h1 class="text-center">Photovoltaic Calculator</h1>
+            <div class="heading-section text-center page-heading-section">
+                <h1>Photovoltaic Calculator</h1>
+                <p class="lead">Welcome to our interactive tool for planning your photovoltaic power plant. Here, you
+                    can
+                    draw potential sites on a satellite map and calculate the energy gains for your project. Not sure
+                    where
+                    to start? Click the help button <i class="bi bi-question-lg"></i> for guidance on how to use this
+                    tool
+                    effectively.</p>
+            </div>
+            <div class="map-container" id="mapContainer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <input id="searchInput" type="text" class="form-control"
+                                           placeholder="Search for an address...">
+                                    <div class="input-group-append" id="searchButton">
+                                        <button class="btn btn-primary" type="button" onclick="searchAddress()"
+                                                style="margin-left: 5px">Search
+                                        </button>
+                                    </div>
+                                    <div class="input-group-append" id="helpButton">
+                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                                data-bs-target="#helpModal" style="margin-left: 5px">
+                                            <i class="bi bi-question-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="map_content">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="input-group">
-                                        <input id="searchInput" type="text" class="form-control"
-                                               placeholder="Search for an address...">
-                                        <div class="input-group-append" id="searchButton">
-                                            <button class="btn btn-primary" type="button" onclick="searchAddress()"
-                                                    style="margin-left: 5px">Search
-                                            </button>
+                                    <div id="map" style="resize: vertical"></div>
+                                </div>
+                                <div class="col-sm" style="display: none">
+                                    <div class="custom-box d-flex flex-column justify-content-between">
+                                        <h4>Help</h4>
+                                        <!-- Bootstrap Nav Tabs -->
+                                        <ul class="nav nav-tabs mt-3" id="myTabs" style="display: none;">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="tab1" data-toggle="tab"
+                                                   href="#content1"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="tab2" data-toggle="tab"
+                                                   href="#content2"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="tab3" data-toggle="tab"
+                                                   href="#content3"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="tab4" data-toggle="tab"
+                                                   href="#content4"></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="tab5" data-toggle="tab"
+                                                   href="#content5"></a>
+                                            </li>
+                                        </ul>
+
+                                        <!-- Bootstrap Tab Content -->
+                                        <div class="tab-content mt-3">
+                                            <div class="tab-pane fade show active" id="content1">
+                                                <p>Content for Tab 1 goes here...</p>
+                                                <img src="{% static '/images/pv_panel.png' %}" alt="Image"
+                                                     style="height: 50px">
+                                            </div>
+                                            <div class="tab-pane fade" id="content2">
+                                                <p>Content for Tab 2 goes here...</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="content3">
+                                                <p>Content for Tab 3 goes here...</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="content4">
+                                                <p>Content for Tab 4 goes here...</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="content5">
+                                                <p>Content for Tab 5 goes here...</p>
+                                            </div>
                                         </div>
-                                        <div class="input-group-append" id="helpButton">
+                                        <!-- Buttons to switch tabs -->
+                                        <div class="mt-3 d-flex justify-content-center flex-column align-items-center">
+                                            <div>
+                                                <button class="btn btn-primary" id="prevTab"><i
+                                                        class="bi bi-arrow-left-short"></i></button>
+                                                <span id="currentTab">1</span>
+                                                <button class="btn btn-primary" id="nextTab"><i
+                                                        class="bi bi-arrow-right-short"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 bottom-input">
+                                    <div class="input-group">
+                                        <select class="form-control" id="solarPanelSelect"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="Choose the pv panel, you can change it any time">
+                                            <option value="" disabled selected>Select a solar panel</option>
+                                            {% for panel in solar_panels %}
+                                                {% if panel.user == request.user or panel.user is null %}
+                                                    <option value="{{ panel.id }}"
+                                                            data-width="{{ panel.width }}"
+                                                            data-height="{{ panel.height }}"
+                                                            data-power="{{ panel.power }}"
+                                                            data-img-src="{% static 'images/pv_panel' %}">
+                                                        {{ panel }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                        <div class="input-group-append" id="newPanelButton">
                                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                                    data-bs-target="#helpModal" style="margin-left: 5px">
-                                                <i class="bi bi-question-lg"></i>
+                                                    data-bs-target="#newPanelModal" style="margin-left: 5px">
+                                                <i class="bi bi-plus-lg"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="map_content">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div id="map" style="resize: vertical"></div>
-                                    </div>
-                                    <div class="col-sm" style="display: none">
-                                        <div class="custom-box d-flex flex-column justify-content-between">
-                                            <h4>Help</h4>
-                                            <!-- Bootstrap Nav Tabs -->
-                                            <ul class="nav nav-tabs mt-3" id="myTabs" style="display: none;">
-                                                <li class="nav-item">
-                                                    <a class="nav-link active" id="tab1" data-toggle="tab"
-                                                       href="#content1"></a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab2" data-toggle="tab"
-                                                       href="#content2"></a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab3" data-toggle="tab"
-                                                       href="#content3"></a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab4" data-toggle="tab"
-                                                       href="#content4"></a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link" id="tab5" data-toggle="tab"
-                                                       href="#content5"></a>
-                                                </li>
-                                            </ul>
-
-                                            <!-- Bootstrap Tab Content -->
-                                            <div class="tab-content mt-3">
-                                                <div class="tab-pane fade show active" id="content1">
-                                                    <p>Content for Tab 1 goes here...</p>
-                                                    <img src="{% static '/images/pv_panel.png' %}" alt="Image"
-                                                         style="height: 50px">
-                                                </div>
-                                                <div class="tab-pane fade" id="content2">
-                                                    <p>Content for Tab 2 goes here...</p>
-                                                </div>
-                                                <div class="tab-pane fade" id="content3">
-                                                    <p>Content for Tab 3 goes here...</p>
-                                                </div>
-                                                <div class="tab-pane fade" id="content4">
-                                                    <p>Content for Tab 4 goes here...</p>
-                                                </div>
-                                                <div class="tab-pane fade" id="content5">
-                                                    <p>Content for Tab 5 goes here...</p>
-                                                </div>
-                                            </div>
-                                            <!-- Buttons to switch tabs -->
-                                            <div class="mt-3 d-flex justify-content-center flex-column align-items-center">
-                                                <div>
-                                                    <button class="btn btn-primary" id="prevTab"><i
-                                                            class="bi bi-arrow-left-short"></i></button>
-                                                    <span id="currentTab">1</span>
-                                                    <button class="btn btn-primary" id="nextTab"><i
-                                                            class="bi bi-arrow-right-short"></i></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="row" style="padding-top: 10px" id="areaControlPanels">
+                            </div>
+                            <div class="row">
+                                <div id="actions" class="d-flex justify-content-end">
+                                    <button id="confirmationButton"
+                                            class="btn btn-success mb-2 big-mobile-button"
+                                            onclick="getMapPicture()" style="display: none">Confirm
+                                    </button>
+                                    <div id="areaDisplay"></div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12 bottom-input">
-                                        <div class="input-group">
-                                            <select class="form-control" id="solarPanelSelect"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title="Choose the pv panel, you can change it any time">
-                                                <option value="" disabled selected>Select a solar panel</option>
-                                                {% for panel in solar_panels %}
-                                                    {% if panel.user == request.user or panel.user is null %}
-                                                        <option value="{{ panel.id }}"
-                                                                data-width="{{ panel.width }}"
-                                                                data-height="{{ panel.height }}"
-                                                                data-power="{{ panel.power }}"
-                                                                data-img-src="{% static 'images/pv_panel' %}">
-                                                            {{ panel }}
-                                                        </option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-
-                                            <div class="input-group-append" id="newPanelButton">
-                                                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                                        data-bs-target="#newPanelModal" style="margin-left: 5px">
-                                                    <i class="bi bi-plus-lg"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" style="padding-top: 10px" id="areaControlPanels">
-                                </div>
-                                <div class="row">
-                                    <div id="actions" class="d-flex justify-content-end">
-                                        <button id="confirmationButton"
-                                                class="btn btn-success mb-2 big-mobile-button"
-                                                onclick="getMapPicture()" style="display: none">Confirm
-                                        </button>
-                                        <div id="areaDisplay"></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div id="canvas"></div>
-                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="canvas"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="loading" class="loading">
-                    <div class="processing-container">
-                        <div class="processing-animation"></div>
-                        <p class="processing-message">Processing...</p>
-                    </div>
+            </div>
+            <div id="loading" class="loading">
+                <div class="processing-container">
+                    <div class="processing-animation"></div>
+                    <p class="processing-message">Processing...</p>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- New Panel Modal -->
     <div class="modal fade" id="newPanelModal" tabindex="-1" aria-labelledby="newPanelModalLabel"
          aria-hidden="true">

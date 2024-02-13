@@ -126,6 +126,11 @@ function darkMode() {
     navbar.classList.add('navbar-dark');
     const label = document.getElementById('darkModeSwitchLabel');
     label.innerHTML = '<i class="bi bi-moon"></i>';
+
+    // get all elemnets with class "page-heading-section" and remove class "heading-section" and add class "heading-section-dark" use jQuery
+    $('.page-heading-section').removeClass('heading-section').addClass('heading-section-dark');
+    $('#mapContainer').removeClass('map-container').addClass('map-container-dark');
+
 }
 
 function lightMode() {
@@ -138,6 +143,10 @@ function lightMode() {
     navbar.classList.add('navbar-light');
     const label = document.getElementById('darkModeSwitchLabel');
     label.innerHTML = '<i class="bi bi-sun"></i>';
+
+    $('.page-heading-section').removeClass('heading-section-dark').addClass('heading-section');
+    $('#mapContainer').removeClass('map-container-dark').addClass('map-container');
+
 }
 
 function updateSolarPanels() {

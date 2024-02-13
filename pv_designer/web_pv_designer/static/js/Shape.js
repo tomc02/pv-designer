@@ -34,9 +34,9 @@ class Shape {
             path: [this.shape.getPath().getAt(0), this.shape.getPath().getAt(1)],
             strokeColor: '#FF0000',
             strokeOpacity: 2.0,
-            strokeWeight: 6,
+            strokeWeight: 4,
             map: map,
-            zIndex: 100,
+            zIndex: 20,
             title: this.index,
         });
     }

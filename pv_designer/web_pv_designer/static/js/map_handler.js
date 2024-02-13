@@ -20,7 +20,7 @@ function initMap() {
         const shape = event.overlay;
         // if shape has 4 points
         if (shape.getPath().getLength() == 4 || shape.getPath().getLength() == 3) {
-            if (shapesHandler.shapesCount < 4) {
+            if (shapesHandler.shapesCount < 10) {
                 addControlPanel();
                 shapesHandler.addShape(shape);
                 google.maps.event.addListener(shape, 'click', function () {
@@ -31,7 +31,7 @@ function initMap() {
                 addInsertPointListener(shape);
             } else {
                 shape.setMap(null);
-                alert('You can draw only 4 areas');
+                alert('You can draw only 10 areas');
             }
         } else {
             shape.setMap(null);
