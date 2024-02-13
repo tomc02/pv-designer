@@ -189,7 +189,7 @@
     <!-- Help Modal -->
     <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog modal-xl   ">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="helpModalLabel">Help</h5>
@@ -197,12 +197,68 @@
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="height: 80vh">
-                    <embed src="{% url 'help_page' %}" type="text/html" style="width: 100%; height:100%">
+                    <div class="container">
+                        <div id="tutorialSteps">
+                            <div class="step-content active" data-step="1">
+                                <h3>Step 1: Locate Your Address</h3>
+                                <p>Begin by using the search bar to find your address. Zoom into the map to precisely
+                                    locate the area
+                                    where you envision installing the solar panels.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/1.webp' %}" alt="Locate Address" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="step-content" data-step="2">
+                                <h3>Step 2: Mark the Installation Area</h3>
+                                <p>Select the 'Add New Area' option and draw on the map to outline where you wish to
+                                    place the solar
+                                    panels. This area represents your future solar installation.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/1.webp' %}" alt="Mark Installation Area"
+                                         class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="step-content" data-step="3">
+                                <h3>Step 3: Populate the Area with Panels</h3>
+                                <p>Click on 'Fill Area with Panels'. A red edge indicates the top of the roof. Should
+                                    the orientation
+                                    need adjusting, utilize the rotate button to align the panels properly.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/2.webp' %}" alt="Populate Area with Panels"
+                                         class="img-fluid">
+                                </div>
+                                .
+                            </div>
+                            <div class="step-content" data-step="4">
+                                <h3>Step 4: Specify Panel Details</h3>
+                                <p>Now, select your PV panel type from the available options, fill in the slope value,
+                                    and choose the
+                                    panel's orientation to ensure optimal solar gain.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/3.webp' %}" alt="Specify Panel Details" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="step-content" data-step="5">
+                                <h3>Step 5: Adjust Panel Placement</h3>
+                                <p>Should you need to reposition or remove a panel, simply click on the panel in
+                                    question. Use the
+                                    provided buttons to either move it to a new location or delete it entirely.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/4.webp' %}" alt="Adjust Panel Placement"
+                                         class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            onclick="updateSolarPanels()">Close
-                    </button>
+                    <div class="navigation">
+                        <button class="btn btn-secondary" onclick="changeStep(-1)"><i class="bi bi-chevron-left"></i>
+                        </button>
+                        <span class="step-counter">Step <span id="currentStep">1</span> of 5</span>
+                        <button class="btn btn-secondary" onclick="changeStep(1)"><i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -223,10 +279,14 @@
         var solarPanelID = 0;
         var panelSize = {{ panel_size|safe }};
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
+        let currentStep = 1;
+        const totalSteps = 5;
+
         addBackButtonListener();
         initMap();
         //showChoosePanel();
         addSelectListener();
+        showStep(currentStep);
         if (panelId > 0) {
             const panel = document.getElementById('solarPanelSelect');
             panel.value = panelId;
@@ -256,6 +316,8 @@
                 showTab();
             }
         });
+
+
     </script>
     </html>
 

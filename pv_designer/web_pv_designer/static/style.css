@@ -125,7 +125,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
 }
 
 .navigation button {
@@ -134,4 +133,10 @@
 
 .step-counter {
     margin: 0 10px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center; /* Center children horizontally */
+    align-items: center; /* Center children vertically (if needed) */
 }

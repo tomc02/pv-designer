@@ -160,4 +160,18 @@ function updateSolarPanels() {
     });
 }
 
+function showStep(step) {
+    $('.step-content').removeClass('active').hide();
+    $(`[data-step="${step}"]`).addClass('active').show();
+    $('#currentStep').text(step); // Update step counter
+}
 
+function changeStep(direction) {
+    currentStep += direction;
+    if (currentStep < 1) {
+        currentStep = 1;
+    } else if (currentStep > totalSteps) {
+        currentStep = totalSteps;
+    }
+    showStep(currentStep);
+}
