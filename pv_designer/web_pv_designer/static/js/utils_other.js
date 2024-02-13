@@ -57,32 +57,19 @@ function getPower(shapes, kwPerPanel) {
 }
 
 function showProcessing() {
-    document.getElementById('content').style.display = 'none';
-    document.getElementById('loading').style.display = 'block';
+    $('#content').hide();
+    $('#loading').show();
     processing = true;
 }
 
 function hideProcessing() {
     if (processing) {
-        document.getElementById('content').style.display = 'block';
-        document.getElementById('loading').style.display = 'none';
+        $('#content').show();
+        $('#loading').hide();
         processing = false;
     }
 }
 
-function showChoosePanel() {
-    document.getElementById('choose').style.display = 'block';
-    document.getElementById('map_content').style.display = 'none';
-    document.getElementById('searchInput').style.display = 'none';
-    document.getElementById('searchButton').style.display = 'none';
-}
-
-function hideChoosePanel() {
-    document.getElementById('choose').style.display = 'none';
-    document.getElementById('map_content').style.display = 'block';
-    document.getElementById('searchInput').style.display = 'block';
-    document.getElementById('searchButton').style.display = 'block';
-}
 
 function addBackButtonListener() {
     window.addEventListener('pageshow', function (event) {
@@ -99,14 +86,14 @@ function showCalculationResult(id) {
 }
 
 function addSelectListener() {
-    document.getElementById('solarPanelSelect').addEventListener('change', function () {
+    $('#solarPanelSelect').change(function () {
         //hideChoosePanel();
-        var selectedPanelId = this.value;
+        var selectedPanelId = $(this).val();
         solarPanelID = selectedPanelId;
-        var selectedPanelWidth = this.options[this.selectedIndex].getAttribute('data-width');
-        var selectedPanelHeight = this.options[this.selectedIndex].getAttribute('data-height');
-        var selectedPanelPower = this.options[this.selectedIndex].getAttribute('data-power');
-        var selectedPanelImgSrc = this.options[this.selectedIndex].getAttribute('data-img-src');
+        var selectedPanelWidth = $(this).find(':selected').data('width');
+        var selectedPanelHeight = $(this).find(':selected').data('height');
+        var selectedPanelPower = $(this).find(':selected').data('power');
+        var selectedPanelImgSrc = $(this).find(':selected').data('img-src');
 
         shapesHandler.panelW = selectedPanelWidth;
         shapesHandler.panelH = selectedPanelHeight;
@@ -116,38 +103,29 @@ function addSelectListener() {
     });
 }
 
-function darkMode() {
-    document.body.classList.toggle("dark-mode");
-    const navbar = document.getElementById('main_nav');
-    document.documentElement.setAttribute('data-bs-theme', 'dark');
-    navbar.classList.remove('bg-light');
-    navbar.classList.remove('navbar-light');
-    navbar.classList.add('bg-dark');
-    navbar.classList.add('navbar-dark');
-    const label = document.getElementById('darkModeSwitchLabel');
-    label.innerHTML = '<i class="bi bi-moon"></i>';
 
-    // get all elemnets with class "page-heading-section" and remove class "heading-section" and add class "heading-section-dark" use jQuery
+function darkMode() {
+    $('body').toggleClass("dark-mode");
+    const navbar = $('#main_nav');
+    $('html').attr('data-bs-theme', 'dark');
+    navbar.removeClass('bg-light navbar-light').addClass('bg-dark navbar-dark');
+    $('#darkModeSwitchLabel').html('<i class="bi bi-moon"></i>');
+
     $('.page-heading-section').removeClass('heading-section').addClass('heading-section-dark');
     $('#mapContainer').removeClass('map-container').addClass('map-container-dark');
-
 }
 
 function lightMode() {
-    document.body.classList.toggle("light-mode");
-    const navbar = document.getElementById('main_nav');
-    document.documentElement.setAttribute('data-bs-theme', 'light');
-    navbar.classList.remove('bg-dark');
-    navbar.classList.remove('navbar-dark');
-    navbar.classList.add('bg-light');
-    navbar.classList.add('navbar-light');
-    const label = document.getElementById('darkModeSwitchLabel');
-    label.innerHTML = '<i class="bi bi-sun"></i>';
+    $('body').toggleClass("light-mode");
+    const navbar = $('#main_nav');
+    $('html').attr('data-bs-theme', 'light');
+    navbar.removeClass('bg-dark navbar-dark').addClass('bg-light navbar-light');
+    $('#darkModeSwitchLabel').html('<i class="bi bi-sun"></i>');
 
     $('.page-heading-section').removeClass('heading-section-dark').addClass('heading-section');
     $('#mapContainer').removeClass('map-container-dark').addClass('map-container');
-
 }
+
 
 function updateSolarPanels() {
     $.ajax({

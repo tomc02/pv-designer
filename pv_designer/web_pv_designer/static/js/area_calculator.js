@@ -228,8 +228,12 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
 }
 
 function calculatePixelSize(map, meters, latitude) {
-    const metersPerPixel = (40075000 * Math.cos(latitude * Math.PI / 180)) / (256 * Math.pow(2, map.getZoom()));
-    return meters / metersPerPixel;
+    zoom = map.getZoom();
+    var earthRadius = 6378137;
+    var latRadians = latitude * (Math.PI / 180);
+    var metersPerPixel = (Math.cos(latRadians) * 2 * Math.PI * earthRadius) / (256 * Math.pow(2, zoom));
+    var pixelSize = meters / metersPerPixel;
+    return pixelSize;
 }
 
 function rotateImage(angle, slope, orientation) {
