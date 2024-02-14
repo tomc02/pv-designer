@@ -56,8 +56,9 @@ class Area(models.Model):
     panels_count = models.IntegerField()
     installed_peak_power = models.FloatField()
     mounting_position = models.CharField(max_length=20, choices=(
-        ('option1', 'Free standing'),
-        ('option2', 'Roof added'),
+        ('free', 'Free standing'),
+        ('building', 'Roof added'),
+        ('optimize', 'Optimize position'),
     ))
     slope = models.FloatField()
     azimuth = models.FloatField()

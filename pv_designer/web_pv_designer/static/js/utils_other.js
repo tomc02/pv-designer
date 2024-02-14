@@ -113,6 +113,14 @@ function darkMode() {
 
     $('.page-heading-section').removeClass('heading-section').addClass('heading-section-dark');
     $('#mapContainer').removeClass('map-container').addClass('map-container-dark');
+
+    $('.help-gif').each(function() {
+        var src = $(this).attr('src');
+        var index = src.lastIndexOf('/');
+        var filename = src.substring(index + 1);
+        var newSrc = src.replace(filename, filename.replace('.webp', '-dark.webp'));
+        $(this).attr('src', newSrc);
+    });
 }
 
 function lightMode() {
@@ -124,6 +132,14 @@ function lightMode() {
 
     $('.page-heading-section').removeClass('heading-section-dark').addClass('heading-section');
     $('#mapContainer').removeClass('map-container-dark').addClass('map-container');
+
+    $('.help-gif').each(function() {
+        var src = $(this).attr('src');
+        var index = src.lastIndexOf('/');
+        var filename = src.substring(index + 1);
+        var newSrc = src.replace(filename, filename.replace('-dark.webp', '.webp'));
+        $(this).attr('src', newSrc);
+    });
 }
 
 

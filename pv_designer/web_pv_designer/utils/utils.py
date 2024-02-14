@@ -56,7 +56,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
         area_instance = Area(
             panels_count=area['panelsCount'],
             installed_peak_power=int(area['panelsCount']) * pv_panel_power,
-            mounting_position=area['mountingType'] == '1' and 'option1' or 'option2',
+            mounting_position=area['mountingType'],
             slope=area['slope'],
             azimuth=area['azimuth'],
             title=area['title'],
@@ -100,14 +100,16 @@ def make_api_calling(data_id, user_id):
             'pvtechchoice': map_data.solar_panel.pv_technology,
             'peakpower': area.installed_peak_power / 1000,
             'loss': pv_power_plant.system_loss,
-            'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',
+            'mountingplace': area.mounting_position == 'optimize' and 'free' or area.mounting_position,
             'angle': area.slope,
             'aspect': area.azimuth,
             'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
             'systemcost': pv_power_plant.pv_system_cost,
             'interest': pv_power_plant.interest,
             'lifetime': pv_power_plant.lifetime,
-            'outputformat': 'json'
+            'outputformat': 'json',
+            'optimalinclination': area.mounting_position == 'optimize' and '1' or '0',
+            'optimalangles': area.mounting_position == 'optimize' and '1' or '0',
         }
         params.append(param)
         save_response("response", get_pvgis_response(param), user_id, index)

@@ -22,8 +22,9 @@ function addControlPanel() {
                          <div class="input-group mt-3" style="padding-bottom: 10px">
                             <label class="input-group-text" for="roofSlopeInput">Mounting position</label>
                             <select class="form-select" id="mountingPosition${areaIndex}" onchange="updateMountingPosition(this)">
-                                <option value="0">Roof added</option>
-                                <option value="1">Free standing</option>
+                                <option value="building">Roof added</option>
+                                <option value="free">Free standing</option>
+                                <option value="optimize">Optimize position</option>
                             </select>
                         </div>
                         <button class="btn btn-primary" onclick="shapesHandler.fillAreaWithPanels()">Fill with panels</button>
