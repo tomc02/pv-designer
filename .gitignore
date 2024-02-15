@@ -10,4 +10,6 @@ pv_designer/web_pv_designer/static/images/pv_panel_rotated*.png
 pv_designer/web_pv_designer/static/images/pv_panel_selected_rotated*.png
 pv_designer/web_pv_designer/static/pv_data_report.pdf
 pv_designer/web_pv_designer/utils/__pycache__/
+pv_designer/web_pv_designer/management/commands/__pycache__/
+
 

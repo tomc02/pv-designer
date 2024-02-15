@@ -82,6 +82,7 @@ class Area(models.Model):
 
 
 class SolarPanel(models.Model):
+    manufacturer = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     width = models.FloatField()
     height = models.FloatField()
@@ -97,4 +98,4 @@ class SolarPanel(models.Model):
     def __str__(self):
         pv_technology_display = dict(self._meta.get_field('pv_technology').flatchoices).get(self.pv_technology,
                                                                                             self.pv_technology)
-        return f"{self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}"
+        return f"{self.manufacturer} - {self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}"

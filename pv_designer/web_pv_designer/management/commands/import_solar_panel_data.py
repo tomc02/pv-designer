@@ -1,30 +1,26 @@
-import json
-import requests
 from django.core.management.base import BaseCommand
-from pv_designer.web_pv_designer.models import SolarPanel
+from web_pv_designer.models import SolarPanel
+import csv
 
 class Command(BaseCommand):
-    help = 'Import solar panel data from an external source'
+    help = 'Fill SolarPanel model from CSV file'
 
-    def handle(self, *args, **options):
-        # You can replace the URL with the actual URL of the data source
-        api_url = 'https://example.com/api/solar_panels'
+    def add_arguments(self, parser):
+        parser.add_argument('csv_file', type=str, help='Path to the CSV file')
 
-        try:
-            response = requests.get(api_url)
-            response.raise_for_status()
-            data = response.json()
-
-            # Assuming data is a list of dictionaries with 'model', 'width', 'height', and 'power' keys
-            for panel_data in data:
+    def handle(self, *args, **kwargs):
+        csv_file_path = kwargs['csv_file']
+        with open(csv_file_path, 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip header
+            for row in reader:
+                manufacturer, model, width, height, power, pv_technology = row
                 SolarPanel.objects.create(
-                    model=panel_data['model'],
-                    width=panel_data['width'],
-                    height=panel_data['height'],
-                    power=panel_data['power']
+                    manufacturer=manufacturer,
+                    model=model,
+                    width=float(width)/1000,
+                    height=float(height)/1000,
+                    power=float(power),
+                    pv_technology=pv_technology
                 )
-
-            self.stdout.write(self.style.SUCCESS('Successfully imported solar panel data'))
-
-        except requests.exceptions.RequestException as e:
-            self.stdout.write(self.style.ERROR(f'Failed to import solar panel data. Error: {e}'))
+        self.stdout.write(self.style.SUCCESS('SolarPanel model filled successfully from CSV.'))

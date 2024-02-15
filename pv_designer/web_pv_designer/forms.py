@@ -55,9 +55,10 @@ class SolarPanelForm(forms.ModelForm):
 class AddSolarPanelForm(forms.ModelForm):
     class Meta:
         model = SolarPanel
-        fields = ['model', 'width', 'height', 'power', 'pv_technology']
+        fields = ['manufacturer', 'model', 'width', 'height', 'power', 'pv_technology']
 
         widgets = {
+            'manufacturer': forms.TextInput(attrs={'class': 'form-control'}),
             'model': forms.TextInput(attrs={'class': 'form-control'}),
             'width': forms.NumberInput(attrs={'class': 'form-control'}),
             'height': forms.NumberInput(attrs={'class': 'form-control'}),
