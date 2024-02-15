@@ -132,7 +132,12 @@ class ShapesHandler {
     fillAreaWithPanels() {
         if (this.selectedShape) {
             markerHandler.clearMarkers(this.selectedShapeIndex);
-            const data = fillPolygon(this.selectedShapeIndex);
+            let data;
+            if (this.selectedShape.getPath().getLength() === 3) {
+                data = fillTriangle(this.selectedShapeIndex);
+            } else {
+                data = fillPolygon(this.selectedShapeIndex);
+            }
             const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
             console.log('area: ' + this.selectedShapeIndex);
             const p = document.getElementById("panelCount" + (this.selectedShapeIndex));

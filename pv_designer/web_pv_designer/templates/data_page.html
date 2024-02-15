@@ -46,9 +46,9 @@
 
                 <div id="consumptionInput" style="display:none;">
                     <div class="form-group">
-                        <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [KWh]
+                        <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
                             <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Enter your yearly electricity consumption in kWh. This helps in designing a system that can cover your energy needs.
+                               title="Enter your yearly electricity consumption in MWh. This helps in designing a system that can cover your energy needs.
                                 It's a key factor in determining the optimal size for your PV power plant."></i></label>
                         {{ form.consumption_per_year }}
 
@@ -104,7 +104,7 @@
                     <div class="form-group">
                         <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity [Wh]
                             <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="YTotal energy storage capacity of the battery(ies) in watt-hours (Wh).
+                               title="Total energy storage capacity of the battery(ies) in watt-hours (Wh).
                                 Adequate capacity is critical for ensuring energy availability during periods without sunlight."></i></label>
                         {{ form.battery_capacity }}
                     </div>

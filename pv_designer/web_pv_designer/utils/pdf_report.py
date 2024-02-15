@@ -56,12 +56,12 @@ def create_pdf_report(user_id, areas, pv_data):
     for area in areas:
         total_peak_power += area.installed_peak_power
     total_peak_power = round(total_peak_power / 1000, 2)
-
+    year_production = round(float(data["outputs"]["totals"]["fixed"]["E_y"]) / 1000, 2)
     table_data = [
         ["PV Panel Type", "Location Information", "Totals"],
-        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {data["outputs"]["totals"]["fixed"]["E_y"]:.2f} kWh'],
+        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {year_production} MWh'],
         [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
-        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {consumption_per_year} kWh'],
+        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {consumption_per_year} MWh'],
         [f'Power: {pv_data.solar_panel.power} W', ''],
     ]
 
@@ -112,7 +112,6 @@ def create_pdf_report(user_id, areas, pv_data):
     story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
     year_energy_data = data['outputs']['totals']['fixed']
-    year_production = year_energy_data['E_y']
 
     monthly_energy_data = data['outputs']['monthly']['fixed']
 
@@ -157,7 +156,7 @@ def create_pdf_report(user_id, areas, pv_data):
         bars = plt.bar(['Production', 'Consumption'], [year_production, year_consumption], color=['#4285F4', '#EA4335'],
                        edgecolor='black', linewidth=1.2)
         plt.title('Yearly Energy Production vs Consumption')
-        plt.ylabel('Energy (kWh)')
+        plt.ylabel('Energy (MWh)')
         plt.ylim(0, max(year_production, year_consumption) * 1.1)  # Adjust y-axis limit for better visualization
 
         percentage = year_production / year_consumption * 100
@@ -168,7 +167,7 @@ def create_pdf_report(user_id, areas, pv_data):
 
         # Put values into the bars with better styling, NOT above the bars
         for bar, value in zip(bars, [year_production, year_consumption]):
-            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.0f} kWh', ha='center',
+            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f} kWh', ha='center',
                      va='center',
                      color='black', fontweight='bold', fontsize=10)
 

@@ -18,7 +18,11 @@ class Shape {
     }
 
     rotateShape() {
-        rotatePolygon(this);
+        if (this.shape.getPath().getLength() === 3) {
+            rotateTriangle(this);
+        } else {
+            rotatePolygon(this);
+        }
         this.updateHighlightedEdge();
         this.rotations++;
         if (this.rotations === 4) {
@@ -41,7 +45,7 @@ class Shape {
         });
     }
 
-    deleteHighLightedEdge(){
+    deleteHighLightedEdge() {
         if (this.highlightedEdge) {
             this.highlightedEdge.setMap(null);
         }
