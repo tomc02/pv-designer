@@ -99,23 +99,21 @@
     $(document).ready(function () {
         $('[data-bs-toggle="tooltip"]').tooltip();
 
-        var isDarkMode = localStorage.getItem('darkMode') === 'enabled';
-
-        if (isDarkMode) {
-            darkMode();
-            document.getElementById('darkModeSwitch').checked = true;
-        } else {
+        
+        var isLightMode = localStorage.getItem('lightMode') === 'enabled';
+        if (isLightMode) {
             lightMode();
             document.getElementById('darkModeSwitch').checked = false;
+        } else {
+            darkMode();
+            document.getElementById('darkModeSwitch').checked = true;
         }
 
         document.getElementById('darkModeSwitch').addEventListener('change', function () {
             if (this.checked) {
                 darkMode();
-                localStorage.setItem('darkMode', 'enabled');
             } else {
                 lightMode();
-                localStorage.setItem('darkMode', 'disabled');
             }
         });
     });

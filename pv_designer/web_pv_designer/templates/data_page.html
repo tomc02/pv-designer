@@ -18,8 +18,7 @@
                         <i class="bi bi-question-lg"
                            data-bs-toggle="tooltip"
                            data-bs-placement="right"
-                           title="Give your project a unique name for easy identification and future reference.
-                            This name will help you distinguish between different calculations if you plan to explore multiple scenarios."></i></label>
+                           title="Give your project a unique name for easy identification and future reference."></i></label>
                     {{ form.title }}
                 </div>
 
@@ -40,16 +39,14 @@
                     <label class="form-check-label" for="{{ form.known_consumption.id_for_label }}">I know my
                         consumption
                         <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                           title="Check this if you have an annual electricity consumption figure in kWh. Helps in estimating your energy needs and system size.
-                            This information is crucial for designing a system that meets your specific energy requirements."></i></label>
+                           title="Check this if you know your annual electricity consumption."></i></label>
                 </div>
 
                 <div id="consumptionInput" style="display:none;">
                     <div class="form-group">
                         <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
                             <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Enter your yearly electricity consumption in MWh. This helps in designing a system that can cover your energy needs.
-                                It's a key factor in determining the optimal size for your PV power plant."></i></label>
+                               title="Enter your yearly electricity consumption in MWh. This value will be used to visualize the coverage."></i></label>
                         {{ form.consumption_per_year }}
 
                     </div>
@@ -85,8 +82,7 @@
                     <div class="form-group">
                         <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]
                             <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The expected operational lifetime of your PV system. Typical values range from 25 to 30 years.
-                                This duration is used to project long-term energy production and financial returns."></i></label>
+                               title="The expected operational lifetime of your PV system. Typical values range from 25 to 30 years."></i></label>
                         {{ form.lifetime }}
                     </div>
                 </div>

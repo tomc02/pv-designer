@@ -149,7 +149,7 @@
                         <div id="tutorialSteps">
                             <div class="step-content active" data-step="1">
                                 <h3>Step 1: Introduction</h3>
-                                <p>Find the desired location using the search bar and then zoom in on the satellite map. 
+                                <p>Find the desired location using the search bar and then zoom in on the satellite map.
                                     You can resize the map by dragging the bottom right corner of the map.</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/0.webp' %}" alt="Introduction to the tool"
@@ -190,7 +190,7 @@
                                 <h3>Step 5: Specify Area Details</h3>
                                 <p>You can change the name of the area and also the mounting position of the panels.
                                     If you choose 'Optimize position', the model will optimize the slope and azimuth for best results.
-                                This optimization is recommended for locations where the slope and azimuth(orientation) of the panels do not matter 
+                                This optimization is recommended for locations where the slope and azimuth(orientation) of the panels do not matter
                                     (for example, a flat roof or a field where the panels will be mounted on a stand-alone structure).</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/4.webp' %}" alt="Specify Area Details"
@@ -199,7 +199,7 @@
                             </div>
                             <div class="step-content" data-step="6">
                                 <h3>Step 6: Adjust Panel Placement</h3>
-                                <p>Should you need to reposition or remove a panel, simply click on the panel and drag it to a new location or delete it entirely by button <i class="bi bi-trash"></i>. 
+                                <p>Should you need to reposition or remove a panel, simply click on the panel and drag it to a new location or delete it entirely by button <i class="bi bi-trash"></i>.
                                 Once everything is fine-tuned you can add another area, or confirm and continue using the 'Confirm' button.</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/5.webp' %}" alt="Adjust Panel Placement"
@@ -223,7 +223,7 @@
     </div>
     </body>
     <script>
-        var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
+    var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
         var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
@@ -239,6 +239,7 @@
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         let currentStep = 1;
         const totalSteps = 6;
+    window.onload = function () {
 
         addBackButtonListener();
         initMap();
@@ -274,7 +275,7 @@
                 showTab();
             }
         });
-
+    };
 
     </script>
     </html>

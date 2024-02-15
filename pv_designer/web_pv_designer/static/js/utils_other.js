@@ -105,6 +105,7 @@ function addSelectListener() {
 
 
 function darkMode() {
+    localStorage.setItem('lightMode', 'disabled');
     $('body').toggleClass("dark-mode");
     const navbar = $('#main_nav');
     $('html').attr('data-bs-theme', 'dark');
@@ -124,6 +125,7 @@ function darkMode() {
 }
 
 function lightMode() {
+    localStorage.setItem('lightMode', 'enabled');
     $('body').toggleClass("light-mode");
     const navbar = $('#main_nav');
     $('html').attr('data-bs-theme', 'light');
