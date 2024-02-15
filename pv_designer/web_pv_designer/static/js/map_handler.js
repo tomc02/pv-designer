@@ -41,10 +41,11 @@ function initMap() {
 
     google.maps.event.addListener(drawingManager, 'drawingmode_changed', shapesHandler.clearSelection);
 
-    google.maps.event.addListener(map, 'click', function () {
+    google.maps.event.addListener(map, 'click', function (event) {
         markerHandler.clearMarkerSelection();
         shapesHandler.clearSelectionAndHighlight();
     });
+
 
     searchBoxInit(map);
     google.maps.event.addDomListener(document, 'keyup', function (e) {
@@ -74,8 +75,36 @@ function initMap() {
         });
     }
 
+    var mapyCzType = new google.maps.ImageMapType({
+        getTileUrl: function (coord, zoom) {
+            return `/mapy-cz-tiles/${zoom}/${coord.x}/${coord.y}/`
+        },
+        tileSize: new google.maps.Size(256, 256),
+        maxZoom: 20,
+        name: 'Mapy.cz',
+        alt: 'Show Mapy.cz layer'
+    });
+    map.mapTypes.set('mapyCz', mapyCzType);
+
+
     map.setOptions({streetViewControl: false});
     map.setOptions({mapTypeControl: false});
+
+    //set listener for map location change
+    google.maps.event.addListener(map, 'center_changed', function () {
+        var maxZoomService = new google.maps.MaxZoomService();
+        maxZoomService.getMaxZoomAtLatLng(map.getCenter(), function (response) {
+            if (response.status === google.maps.MaxZoomStatus.OK) {
+                if (response.zoom < 20) {
+                    map.setMapTypeId('mapyCz');
+                } else {
+                    map.setMapTypeId('satellite');
+                }
+            } else {
+                console.error('Max zoom level not available at this location.');
+            }
+        });
+    });
 }
 
 function searchBoxInit(map) {
@@ -138,7 +167,7 @@ function searchBoxInit(map) {
 }
 
 function addInsertPointListener(shape) {
-    google.maps.event.addListener(shape.getPath(), 'insert_at', function(index) {
+    google.maps.event.addListener(shape.getPath(), 'insert_at', function (index) {
         shape.getPath().removeAt(index);
         alert('Area can have only 4 points');
     });

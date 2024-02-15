@@ -201,6 +201,14 @@ def google_maps_js(request):
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type="application/javascript")
 
+def mapy_cz_tiles(request, zoom, x, y):
+    api_key = settings.MAPY_CZ_API_KEY
+    url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={api_key}"
+    response = requests.get(url)
+    content_type = response.headers['Content-Type']
+    return HttpResponse(response.content, content_type=content_type)
+
+
 
 def help_page(request):
     return render(request, 'help_page.html')
