@@ -80,7 +80,12 @@ function setListenerForShapeDragging(shape) {
 }
 
 function setListenerForShapeChange(shape) {
-
+     google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+        shapesHandler.selectedShape.updateHighlightedEdge();
+        if (!shape.dragging) {
+            shapesHandler.fillAreaWithPanels();
+        }
+    });
 }
 
 function getHeadings(corners) {

@@ -19,7 +19,7 @@
         <div id="content">
             <div class="heading-section text-center page-heading-section">
                 <h1>Photovoltaic Calculator</h1>
-                <p class="lead">Welcome to our interactive tool for planning your photovoltaic power plant. Here, you
+                <p class="lead">Interactive tool for planning your photovoltaic power plant. Here, you
                     can
                     draw potential sites on a satellite map and calculate the energy gains for your project. Not sure
                     where
@@ -55,65 +55,6 @@
                                 <div class="col-md-12">
                                     <div id="map" style="resize: vertical"></div>
                                 </div>
-                                <div class="col-sm" style="display: none">
-                                    <div class="custom-box d-flex flex-column justify-content-between">
-                                        <h4>Help</h4>
-                                        <!-- Bootstrap Nav Tabs -->
-                                        <ul class="nav nav-tabs mt-3" id="myTabs" style="display: none;">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" id="tab1" data-toggle="tab"
-                                                   href="#content1"></a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="tab2" data-toggle="tab"
-                                                   href="#content2"></a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="tab3" data-toggle="tab"
-                                                   href="#content3"></a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="tab4" data-toggle="tab"
-                                                   href="#content4"></a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="tab5" data-toggle="tab"
-                                                   href="#content5"></a>
-                                            </li>
-                                        </ul>
-
-                                        <!-- Bootstrap Tab Content -->
-                                        <div class="tab-content mt-3">
-                                            <div class="tab-pane fade show active" id="content1">
-                                                <p>Content for Tab 1 goes here...</p>
-                                                <img src="{% static '/images/pv_panel.png' %}" alt="Image"
-                                                     style="height: 50px">
-                                            </div>
-                                            <div class="tab-pane fade" id="content2">
-                                                <p>Content for Tab 2 goes here...</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="content3">
-                                                <p>Content for Tab 3 goes here...</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="content4">
-                                                <p>Content for Tab 4 goes here...</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="content5">
-                                                <p>Content for Tab 5 goes here...</p>
-                                            </div>
-                                        </div>
-                                        <!-- Buttons to switch tabs -->
-                                        <div class="mt-3 d-flex justify-content-center flex-column align-items-center">
-                                            <div>
-                                                <button class="btn btn-primary" id="prevTab"><i
-                                                        class="bi bi-arrow-left-short"></i></button>
-                                                <span id="currentTab">1</span>
-                                                <button class="btn btn-primary" id="nextTab"><i
-                                                        class="bi bi-arrow-right-short"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 bottom-input">
@@ -121,7 +62,7 @@
                                         <select class="form-control" id="solarPanelSelect"
                                                 data-bs-toggle="tooltip"
                                                 data-bs-placement="top"
-                                                title="Choose the pv panel, you can change it any time">
+                                                title="">
                                             <option value="" disabled selected>Select a solar panel</option>
                                             {% for panel in solar_panels %}
                                                 {% if panel.user == request.user or panel.user is null %}
@@ -207,51 +148,61 @@
                     <div class="container">
                         <div id="tutorialSteps">
                             <div class="step-content active" data-step="1">
-                                <h3>Step 1: Locate Your Address</h3>
-                                <p>Begin by using the search bar to find your address. Zoom into the map to precisely
-                                    locate the area
-                                    where you envision installing the solar panels.</p>
+                                <h3>Step 1: Introduction</h3>
+                                <p>Find the desired location using the search bar and then zoom in on the satellite map. 
+                                    You can resize the map by dragging the bottom right corner of the map.</p>
                                 <div class="text-center">
-                                    <img src="{% static 'gifs/1.webp' %}" alt="Locate Address" class="img-fluid help-gif">
+                                    <img src="{% static 'gifs/0.webp' %}" alt="Introduction to the tool"
+                                         class="img-fluid help-gif">
                                 </div>
                             </div>
                             <div class="step-content" data-step="2">
                                 <h3>Step 2: Mark the Installation Area</h3>
-                                <p>Select the 'Add New Area' option and draw on the map to outline where you wish to
+                                <p>Select the 'Add area' option and draw on the map to outline where you wish to
                                     place the solar
-                                    panels. This area represents your future solar installation.</p>
+                                    panels. This area represents your future solar installation. An area can have 4 or 3
+                                    points, and you can draw as many areas as you need.</p>
                                 <div class="text-center">
-                                    <img src="{% static 'gifs/2.webp' %}" alt="Mark Installation Area"
+                                    <img src="{% static 'gifs/1.webp' %}" alt="Mark Installation Area"
                                          class="img-fluid help-gif">
                                 </div>
                             </div>
                             <div class="step-content" data-step="3">
-                                <h3>Step 3: Populate the Area with Panels</h3>
-                                <p>Click on 'Fill Area with Panels'. A red edge indicates the top of the roof. Should
-                                    the orientation
-                                    need adjusting, utilize the rotate button to align the panels properly.</p>
+                                <h3>Step 3: Fill the Area With Panels</h3>
+                                <p>Click on 'Fill with panels'. A red edge indicates the top of the area (roof). If you need to adjust the orientation,
+                                    use the 'Rotate' button to ensure the correct orientation of the panels.</p>
                                 <div class="text-center">
-                                    <img src="{% static 'gifs/2.webp' %}" alt="Populate Area with Panels"
+                                    <img src="{% static 'gifs/2.webp' %}" alt="Fill Area with Panels"
                                          class="img-fluid help-gif">
                                 </div>
                                 .
                             </div>
                             <div class="step-content" data-step="4">
                                 <h3>Step 4: Specify Panel Details</h3>
-                                <p>Now, select your PV panel type from the available options, fill in the slope value,
-                                    and choose the
-                                    panel's orientation to ensure optimal solar gain.</p>
+                                <p>Now select the solar panel module from the available options, fill in the slope value and select the panel orientation (horizontal/vertical) to ensure optimal solar gains.
+                                    If you want to use your specific solar panel module, you can add it using the <i class="bi bi-plus-lg"></i> button.</p>
                                 <div class="text-center">
-                                    <img src="{% static 'gifs/2.webp' %}" alt="Specify Panel Details" class="img-fluid help-gif">
+                                    <img src="{% static 'gifs/3.webp' %}" alt="Specify Panel Details"
+                                         class="img-fluid help-gif">
                                 </div>
                             </div>
-                            <div class="step-content" data-step="5">
-                                <h3>Step 5: Adjust Panel Placement</h3>
-                                <p>Should you need to reposition or remove a panel, simply click on the panel in
-                                    question. Use the
-                                    provided buttons to either move it to a new location or delete it entirely.</p>
+                             <div class="step-content" data-step="5">
+                                <h3>Step 5: Specify Area Details</h3>
+                                <p>You can change the name of the area and also the mounting position of the panels.
+                                    If you choose 'Optimize position', the model will optimize the slope and azimuth for best results.
+                                This optimization is recommended for locations where the slope and azimuth(orientation) of the panels do not matter 
+                                    (for example, a flat roof or a field where the panels will be mounted on a stand-alone structure).</p>
                                 <div class="text-center">
-                                    <img src="{% static 'gifs/2.webp' %}" alt="Adjust Panel Placement"
+                                    <img src="{% static 'gifs/4.webp' %}" alt="Specify Area Details"
+                                         class="img-fluid help-gif">
+                                </div>
+                            </div>
+                            <div class="step-content" data-step="6">
+                                <h3>Step 6: Adjust Panel Placement</h3>
+                                <p>Should you need to reposition or remove a panel, simply click on the panel and drag it to a new location or delete it entirely by button <i class="bi bi-trash"></i>. 
+                                Once everything is fine-tuned you can add another area, or confirm and continue using the 'Confirm' button.</p>
+                                <div class="text-center">
+                                    <img src="{% static 'gifs/5.webp' %}" alt="Adjust Panel Placement"
                                          class="img-fluid help-gif">
                                 </div>
                             </div>
@@ -262,7 +213,7 @@
                     <div class="navigation">
                         <button class="btn btn-secondary" onclick="changeStep(-1)"><i class="bi bi-chevron-left"></i>
                         </button>
-                        <span class="step-counter">Step <span id="currentStep">1</span> of 5</span>
+                        <span class="step-counter">Step <span id="currentStep">1</span> of 6</span>
                         <button class="btn btn-secondary" onclick="changeStep(1)"><i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
@@ -287,7 +238,7 @@
         var panelSize = {{ panel_size|safe }};
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6;
 
         addBackButtonListener();
         initMap();
