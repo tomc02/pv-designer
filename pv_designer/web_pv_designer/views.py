@@ -88,7 +88,7 @@ def map_view(request):
     return render(request, 'map.html', context)
 
 
- 
+@login_required
 def account_details(request):
     user = request.user
     return render(request, 'account/account_details.html', {'user': user})
@@ -156,7 +156,7 @@ def get_pdf_result(request):
             f.write(image.file.read())
         return redirect('calculation_result', id=calculation_id)
 
-
+@login_required
 def delete_record(request):
     if request.method == 'POST':
         print('delete record' + str(request.GET.get('id')))
@@ -172,7 +172,7 @@ def delete_record(request):
         # Handle other HTTP methods if needed
         return redirect('calculations')
 
-
+@login_required
 def add_solar_panel(request):
     if request.method == 'POST':
         form = AddSolarPanelForm(request.POST)
