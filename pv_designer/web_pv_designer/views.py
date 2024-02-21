@@ -9,14 +9,14 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SolarPanelForm, AddSolarPanelForm
-from .models import MapData, SolarPanel
+from .models import MapData, SolarPanel, CustomUser
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
-from .utils.utils import process_map_data, make_api_calling
+from .utils.utils import process_map_data, make_api_calling, get_user_id
 import requests
 
 
-@login_required
+ 
 def data_page(request):
     if request.method == 'POST':
         form = SolarPanelForm(request.POST)
@@ -49,7 +49,7 @@ def index(request):
     return render(request, 'home.html')
 
 
-@login_required
+ 
 def map_view(request):
     record_id = request.GET.get('record_id')
 
@@ -88,7 +88,7 @@ def map_view(request):
     return render(request, 'map.html', context)
 
 
-@login_required
+ 
 def account_details(request):
     user = request.user
     return render(request, 'account/account_details.html', {'user': user})
@@ -110,8 +110,9 @@ def ajax_endpoint(request):
         custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
         data_from_js = request.POST.get("data", "")
         response_msg = {"message": "Data received and processed in backend"}
+        user_id = get_user_id(request)
         if custom_header_value == "Map-Data":
-            result = process_map_data(data_from_js, str(request.user.id))
+            result = process_map_data(data_from_js, str(user_id))
             if result is not JsonResponse:
                 # save_response(get_pvgis_response(params), request.user.id)
                 return JsonResponse({'message': 'Data saved', 'id': result})
@@ -122,14 +123,15 @@ def ajax_endpoint(request):
     return JsonResponse({"error": "Invalid request method"})
 
 
-@login_required
+ 
 def calculation_result(request, id):
-    make_api_calling(id, request.user.id)
-    pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(request.user.id),
+    user_id = get_user_id(request)
+    make_api_calling(id, user_id)
+    pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str( user_id),
                             'pv_data_report.pdf')
     map_data = MapData.objects.get(id=id)
     areas = map_data.areasObjects.all()
-    pdf_created = create_pdf_report(request.user.id, areas, map_data)
+    pdf_created = create_pdf_report( user_id, areas, map_data)
     if pdf_created:
         return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
     else:
@@ -149,7 +151,7 @@ def get_pdf_result(request):
         calculation_id = request.GET.get('id')
         map_data = MapData.objects.get(id=calculation_id)
         image = map_data.map_image
-        image_path = './web_pv_designer/pdf_sources/' + str(request.user.id) + '/' + 'pv_image.png'
+        image_path = './web_pv_designer/pdf_sources/' + str(get_user_id(request)) + '/' + 'pv_image.png'
         with open(image_path, 'wb') as f:
             f.write(image.file.read())
         return redirect('calculation_result', id=calculation_id)

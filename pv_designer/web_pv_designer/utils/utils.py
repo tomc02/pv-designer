@@ -129,3 +129,9 @@ def make_api_calling(data_id, user_id):
             'outputformat': 'json'
         }
         save_response("response_off_grid", get_pvgis_response_off_grid(param), user_id, 0)
+
+def get_user_id(request):
+    if request.user.is_authenticated:
+        return request.user.id
+    else:
+        return CustomUser.objects.get(username='anonymous').id

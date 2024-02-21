@@ -77,9 +77,11 @@
                                             {% endfor %}
                                         </select>
 
-                                        <div class="input-group-append" id="newPanelButton">
+                                        <div class="input-group-append" id="newPanelInput" data-bs-toggle="tooltip"
+                           data-bs-placement="right" title="">
                                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                                                    data-bs-target="#newPanelModal" style="margin-left: 5px">
+                                                    data-bs-target="#newPanelModal" style="margin-left: 5px"
+                                                    id="newPanelButton">
                                                 <i class="bi bi-plus-lg"></i>
                                             </button>
                                         </div>
@@ -120,7 +122,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newPanelModalLabel">Add PV panel</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    <button type="button"
+                            class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -169,7 +172,8 @@
                             </div>
                             <div class="step-content" data-step="3">
                                 <h3>Step 3: Fill the Area With Panels</h3>
-                                <p>Click on 'Fill with panels'. A red edge indicates the top of the area (roof). If you need to adjust the orientation,
+                                <p>Click on 'Fill with panels'. A red edge indicates the top of the area (roof). If you
+                                    need to adjust the orientation,
                                     use the 'Rotate' button to ensure the correct orientation of the panels.</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/2.webp' %}" alt="Fill Area with Panels"
@@ -179,19 +183,25 @@
                             </div>
                             <div class="step-content" data-step="4">
                                 <h3>Step 4: Specify Panel Details</h3>
-                                <p>Now select the solar panel module from the available options, fill in the slope value and select the panel orientation (horizontal/vertical) to ensure optimal solar gains.
-                                    If you want to use your specific solar panel module, you can add it using the <i class="bi bi-plus-lg"></i> button.</p>
+                                <p>Now select the solar panel module from the available options, fill in the slope value
+                                    and select the panel orientation (horizontal/vertical) to ensure optimal solar
+                                    gains.
+                                    If you want to use your specific solar panel module, you can add it using the <i
+                                            class="bi bi-plus-lg"></i> button.</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/3.webp' %}" alt="Specify Panel Details"
                                          class="img-fluid help-gif">
                                 </div>
                             </div>
-                             <div class="step-content" data-step="5">
+                            <div class="step-content" data-step="5">
                                 <h3>Step 5: Specify Area Details</h3>
                                 <p>You can change the name of the area and also the mounting position of the panels.
-                                    If you choose 'Optimize position', the model will optimize the slope and azimuth for best results.
-                                This optimization is recommended for locations where the slope and azimuth(orientation) of the panels do not matter
-                                    (for example, a flat roof or a field where the panels will be mounted on a stand-alone structure).</p>
+                                    If you choose 'Optimize position', the model will optimize the slope and azimuth for
+                                    best results.
+                                    This optimization is recommended for locations where the slope and
+                                    azimuth(orientation) of the panels do not matter
+                                    (for example, a flat roof or a field where the panels will be mounted on a
+                                    stand-alone structure).</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/4.webp' %}" alt="Specify Area Details"
                                          class="img-fluid help-gif">
@@ -199,8 +209,10 @@
                             </div>
                             <div class="step-content" data-step="6">
                                 <h3>Step 6: Adjust Panel Placement</h3>
-                                <p>Should you need to reposition or remove a panel, simply click on the panel and drag it to a new location or delete it entirely by button <i class="bi bi-trash"></i>.
-                                Once everything is fine-tuned you can add another area, or confirm and continue using the 'Confirm' button.</p>
+                                <p>Should you need to reposition or remove a panel, simply click on the panel and drag
+                                    it to a new location or delete it entirely by button <i class="bi bi-trash"></i>.
+                                    Once everything is fine-tuned you can add another area, or confirm and continue
+                                    using the 'Confirm' button.</p>
                                 <div class="text-center">
                                     <img src="{% static 'gifs/5.webp' %}" alt="Adjust Panel Placement"
                                          class="img-fluid help-gif">
@@ -223,7 +235,7 @@
     </div>
     </body>
     <script>
-    var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
+        var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
         var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
         var rotateImgUrl = '{% url "rotate_img" %}';
         var ajaxUrl = '{% url "ajax_endpoint" %}';
@@ -239,43 +251,50 @@
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         let currentStep = 1;
         const totalSteps = 6;
-    window.onload = function () {
-
-        addBackButtonListener();
-        initMap();
-        //showChoosePanel();
-        addSelectListener();
-        showStep(currentStep);
-        if (panelId > 0) {
-            const panel = document.getElementById('solarPanelSelect');
-            panel.value = panelId;
-            solarPanelID = panelId;
-            panel.dispatchEvent(new Event('change'));
-        }
-        var currentTab = 1;
-
-        // Function to show the current tab content
-        function showTab() {
-            $('#myTabs a[href="#content' + currentTab + '"]').tab('show');
-            $('#currentTab').text(currentTab);
-        }
-
-        // Event listener for previous button
-        $('#prevTab').on('click', function () {
-            if (currentTab > 1) {
-                currentTab--;
-                showTab();
+        window.onload = function () {
+            $(function () {
+                $('#addPanelBtn').tooltip();
+            });
+            if ("{{ user.is_authenticated }}" === "False") {
+                $('#newPanelInput').attr('title', 'You need to be logged in to add a new panel');
+                $('#newPanelButton').prop('disabled', true);
+            
             }
-        });
-
-        // Event listener for next button
-        $('#nextTab').on('click', function () {
-            if (currentTab < 5) {
-                currentTab++;
-                showTab();
+            addBackButtonListener();
+            initMap();
+            //showChoosePanel();
+            addSelectListener();
+            showStep(currentStep);
+            if (panelId > 0) {
+                const panel = document.getElementById('solarPanelSelect');
+                panel.value = panelId;
+                solarPanelID = panelId;
+                panel.dispatchEvent(new Event('change'));
             }
-        });
-    };
+            var currentTab = 1;
+
+            // Function to show the current tab content
+            function showTab() {
+                $('#myTabs a[href="#content' + currentTab + '"]').tab('show');
+                $('#currentTab').text(currentTab);
+            }
+
+            // Event listener for previous button
+            $('#prevTab').on('click', function () {
+                if (currentTab > 1) {
+                    currentTab--;
+                    showTab();
+                }
+            });
+
+            // Event listener for next button
+            $('#nextTab').on('click', function () {
+                if (currentTab < 5) {
+                    currentTab++;
+                    showTab();
+                }
+            });
+        };
 
     </script>
     </html>
