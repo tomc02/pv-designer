@@ -14,7 +14,7 @@ class Command(BaseCommand):
         csv_file_path = kwargs.get('csv_file')
 
         if csv_file_path is None:
-            self.stdout.write('Please enter the path to the CSV file:')
+            self.stdout.write('Please enter the path to the CSV file with solar panels:')
             csv_file_path = input()
 
         with open(csv_file_path, 'r') as file:
