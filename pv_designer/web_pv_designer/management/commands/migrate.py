@@ -1,6 +1,6 @@
 from django.core.management.commands.migrate import Command as MigrateCommand
 from django.core.management import call_command
-from pv_designer.web_pv_designer.models import CustomUser
+from web_pv_designer.models import CustomUser
 
 
 class Command(MigrateCommand):
