@@ -26,17 +26,12 @@ function getPvImgSelectedUrl(angle) {
 
 function getMapPicture() {
     if (shapesHandler.pvPanelSelected) {
+        showProcessing(true);
         markerHandler.clearMarkerSelection();
         mapDataForm = shapesHandler.prepareAreasData();
         document.getElementById('markerDeleteButton').style.display = 'none';
         document.getElementById('drawShapeButton').style.display = 'none';
-
-        // extend height of the map
-        const width = document.getElementById('map').offsetWidth;
-        const height = width * 9 / 16;
-        // /document.getElementById('map').style.height = height + 'px';
-
-
+        $('.gm-style-cc').css('display', 'none');
         // lock map moving
         map.setOptions({
             zoomControl: false,

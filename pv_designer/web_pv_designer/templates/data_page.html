@@ -2,128 +2,137 @@
 {% load static %}
 {% block content %}
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="heading-section text-center page-heading-section">
-                    <h1>Finalize Your PV Power Plant Details</h1>
-                    <p class="lead">Complete the final steps to accurately calculate your photovoltaic power plant's potential. Each field comes with a helpful tooltip for further explanation.</p>
+        <div id="content">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="heading-section text-center page-heading-section">
+                        <h1>Finalize Your PV Power Plant Details</h1>
+                        <p class="lead">Complete the final steps to accurately calculate your photovoltaic power plant's
+                            potential. Each field comes with a helpful tooltip for further explanation.</p>
+                    </div>
                 </div>
-            </div>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.map_id }}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.map_id }}
 
-                <div class="form-group">
-                    <label for="{{ form.title.id_for_label }}">Name of your calculation
-                        <i class="bi bi-question-lg"
-                           data-bs-toggle="tooltip"
-                           data-bs-placement="right"
-                           title="Give your project a unique name for easy identification and future reference."></i></label>
-                    {{ form.title }}
-                </div>
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Name of your calculation
+                            <i class="bi bi-question-lg"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="right"
+                               title="Give your project a unique name for easy identification and future reference."></i></label>
+                        {{ form.title }}
+                    </div>
 
-                <div class="form-group">
-                    <label for="{{ form.system_loss.id_for_label }}">System loss [%]
-                        <i class="bi bi-question-lg"
-                           data-bs-toggle="tooltip"
-                           data-bs-placement="right"
-                           title="Estimate of system losses, including wiring, shading, and inverter losses, typically between 5% to 15%.
+                    <div class="form-group">
+                        <label for="{{ form.system_loss.id_for_label }}">System loss [%]
+                            <i class="bi bi-question-lg"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="right"
+                               title="Estimate of system losses, including wiring, shading, and inverter losses, typically between 5% to 15%.
                             Accurately estimating system loss improves the precision of energy production calculations."></i></label>
-                    {{ form.system_loss }}
-
-                </div>
-
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="{{ form.known_consumption.name }}"
-                           id="{{ form.known_consumption.id_for_label }}"></input>
-                    <label class="form-check-label" for="{{ form.known_consumption.id_for_label }}">I know my
-                        consumption
-                        <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                           title="Check this if you know your annual electricity consumption."></i></label>
-                </div>
-
-                <div id="consumptionInput" style="display:none;">
-                    <div class="form-group">
-                        <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Enter your yearly electricity consumption in MWh. This value will be used to visualize the coverage."></i></label>
-                        {{ form.consumption_per_year }}
+                        {{ form.system_loss }}
 
                     </div>
-                </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.known_consumption.name }}"
+                               id="{{ form.known_consumption.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.known_consumption.id_for_label }}">I know my
+                            consumption
+                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Check this if you know your annual electricity consumption."></i></label>
+                    </div>
+
+                    <div id="consumptionInput" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Enter your yearly electricity consumption in MWh. This value will be used to visualize the coverage."></i></label>
+                            {{ form.consumption_per_year }}
+
+                        </div>
+                    </div>
 
 
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="{{ form.pv_electricity_price.name }}"
-                           id="{{ form.pv_electricity_price.id_for_label }}"></input>
-                    <label class="form-check-label" for="{{ form.pv_electricity_price.id_for_label }}">PV system
-                        price
-                        <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                           title="Indicate if you want to include the cost of the PV system in your calculations.
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.pv_electricity_price.name }}"
+                               id="{{ form.pv_electricity_price.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.pv_electricity_price.id_for_label }}">PV system
+                            price
+                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Indicate if you want to include the cost of the PV system in your calculations.
                             This includes initial setup costs and can be used to calculate return on investment over time."></i></label>
-                </div>
-                <div id="pvElectricityPriceInputs" style="display:none;">
-                    <div class="form-group">
-                        <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Specify the total cost of your PV system installation in your local currency.
+                    </div>
+                    <div id="pvElectricityPriceInputs" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost (your currency)
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Specify the total cost of your PV system installation in your local currency.
                                 This should include all expenses related to hardware, installation, and any additional fees."></i></label>
-                        {{ form.pv_system_cost }}
-                    </div>
+                            {{ form.pv_system_cost }}
+                        </div>
 
-                    <div class="form-group">
-                        <label for="{{ form.interest.id_for_label }}">Interest [%/year]
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="If financing your PV system, enter the annual interest rate.
+                        <div class="form-group">
+                            <label for="{{ form.interest.id_for_label }}">Interest [%/year]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="If financing your PV system, enter the annual interest rate.
                                 This rate will be used to calculate the financial feasibility and payback period of your investment."></i></label>
-                        {{ form.interest }}
+                            {{ form.interest }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="The expected operational lifetime of your PV system. Typical values range from 25 to 30 years."></i></label>
+                            {{ form.lifetime }}
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ form.off_grid.name }}"
+                               id="{{ form.off_grid.id_for_label }}"></input>
+                        <label class="form-check-label" for="{{ form.off_grid.id_for_label }}">Include Battery
                             <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="The expected operational lifetime of your PV system. Typical values range from 25 to 30 years."></i></label>
-                        {{ form.lifetime }}
-                    </div>
-                </div>
-
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="{{ form.off_grid.name }}"
-                           id="{{ form.off_grid.id_for_label }}"></input>
-                    <label class="form-check-label" for="{{ form.off_grid.id_for_label }}">Include Battery
-                        <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                           title="Select this option if your PV system includes energy storage solutions like batteries.
+                               title="Select this option if your PV system includes energy storage solutions like batteries.
                             This is essential for off-grid systems or for adding energy resilience to grid-tied systems."></i></label>
-                </div>
+                    </div>
 
-                <div id="batteryFields" style="display:none;">
-                    <div class="form-group">
-                        <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity [Wh]
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Total energy storage capacity of the battery(ies) in watt-hours (Wh).
+                    <div id="batteryFields" style="display:none;">
+                        <div class="form-group">
+                            <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity [Wh]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Total energy storage capacity of the battery(ies) in watt-hours (Wh).
                                 Adequate capacity is critical for ensuring energy availability during periods without sunlight."></i></label>
-                        {{ form.battery_capacity }}
-                    </div>
+                            {{ form.battery_capacity }}
+                        </div>
 
-                    <div class="form-group">
-                        <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit
-                            [%]
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Minimum state of charge as a percentage before the system stops drawing power from the battery.
+                        <div class="form-group">
+                            <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit
+                                [%]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Minimum state of charge as a percentage before the system stops drawing power from the battery.
                                 Setting this limit helps in prolonging battery life."></i></label>
-                        {{ form.discharge_cutoff_limit }}
-                    </div>
+                            {{ form.discharge_cutoff_limit }}
+                        </div>
 
-                    <div class="form-group">
-                        <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day [Wh]
-                            <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Your daily energy consumption in watt-hours (Wh).
+                        <div class="form-group">
+                            <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day [Wh]
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Your daily energy consumption in watt-hours (Wh).
                                 This figure helps in sizing the battery system to ensure it can meet your daily energy demands."></i></label>
-                        {{ form.consumption_per_day }}
+                            {{ form.consumption_per_day }}
+                        </div>
                     </div>
-                </div>
-                <button class="btn btn-primary mt-3" type="submit">Continue</button>
-            </form>
+                    <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue</button>
+                </form>
+            </div>
+        </div>
+        <div id="loading" class="loading">
+            <div class="processing-container">
+                <div class="processing-animation"></div>
+                <p class="processing-message">Processing...</p>
+            </div>
         </div>
     </div>
 
@@ -157,8 +166,8 @@
     $(`#${'{{ form.known_consumption.id_for_label }}'}`).prop('checked', knownConsumptionDefaultValue === "True").trigger('change');
 
      $('#{{ form.system_loss.id_for_label }}').val(14);
-});
-
+        })
+        ;
 
 
     </script>

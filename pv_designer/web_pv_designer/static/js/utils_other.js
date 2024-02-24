@@ -56,8 +56,13 @@ function getPower(shapes, kwPerPanel) {
     return Math.round(panelsCount * kwPerPanel, 2);
 }
 
-function showProcessing() {
-    $('#content').hide();
+function showProcessing(controlPanelOnly = false) {
+    if (controlPanelOnly) {
+        // hide all content with class 'hide-able-content'
+        $('.hide-able-content').hide();
+    } else {
+        $('#content').hide();
+    }
     $('#loading').show();
     processing = true;
 }
