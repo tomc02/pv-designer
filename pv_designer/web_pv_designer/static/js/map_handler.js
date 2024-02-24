@@ -64,6 +64,7 @@ function initMap() {
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
             let index = 0;
             shapesHandler.fillAllAreasWithPanels();
+            console.log('mapData.areasObjects', mapData.areasObjects);
             mapData.areasData.forEach(function (areaData) {
                 shapesHandler.rotateShapeByIndex(index, areaData.rotations);
                 index++;

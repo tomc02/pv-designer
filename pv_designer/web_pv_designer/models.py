@@ -14,7 +14,6 @@ class MapData(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     areas = models.JSONField()
-    areasData = models.JSONField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
     pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
@@ -24,13 +23,17 @@ class MapData(models.Model):
     def __str__(self):
         return f"Map Data - ID: {self.id}"
 
+    def areas_objects_to_JSON(self):
+        return [area.to_JSON() for area in self.areasObjects.all()]
+
     def to_JSON(self):
+        areas = self.areas_objects_to_JSON()
         return {
             'id': self.id,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'areas': self.areas,
-            'areasData': self.areasData,
+            'areasData': areas,
             'zoom': self.zoom,
             'solar_panel_id': self.solar_panel.id,
         }

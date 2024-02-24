@@ -20,7 +20,6 @@ def process_map_data(data, user_id):
             map_data.latitude = parsed_data['lat']
             map_data.longitude = parsed_data['lng']
             map_data.areas = parsed_data['shapes']
-            map_data.areasData = parsed_data['shapesData']
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.areasObjects.clear()
@@ -37,7 +36,7 @@ def process_map_data(data, user_id):
             user_obj = CustomUser.objects.get(id=user_id)
             map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
                                areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
+                               zoom=parsed_data['zoom'], map_image=img_path,
                                solar_panel=pv_panel)
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
