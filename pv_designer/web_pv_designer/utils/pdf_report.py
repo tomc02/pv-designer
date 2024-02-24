@@ -9,6 +9,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as ImagePlatypus, TableStyle, Table
+import seaborn as sns
 
 
 def create_pdf_report(user_id, areas, pv_data):
@@ -78,6 +79,121 @@ def create_pdf_report(user_id, areas, pv_data):
     story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
     # Table with Area Information
+    table_data = create_table(areas, page_content_width)
+    story.append(table_data)
+    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+
+    year_energy_data = data['outputs']['totals']['fixed']
+
+    # Create a chart with the monthly energy production
+    chart = create_monthly_energy_chart(data['outputs']['monthly']['fixed'])
+    add_graph_to_report(chart, story, page_content_width)
+
+    # If consumption is known, create a chart with the yearly energy production and consumption
+    known_consumption = pv_data.pv_power_plant.known_consumption
+    if known_consumption:
+        year_consumption = pv_data.pv_power_plant.consumption_per_year
+        chart = create_consumption_chart(year_consumption, year_production)
+        add_graph_to_report(chart, story, page_content_width)
+
+        coverage_percentage = year_production / year_consumption * 100
+        coverage_percentage = round(coverage_percentage, 2)
+        story.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
+
+    # Create a chart with the losses
+    chart = create_looses_chart(year_energy_data, input_values)
+    add_graph_to_report(chart, story, page_content_width)
+
+    doc.build(story)
+
+    print(f"Report generated and saved as {pdf_file}")
+
+    return True
+
+
+def create_looses_chart(year_energy_data, input_values):
+    # Create nice graph with losses
+    l_aoi = year_energy_data['l_aoi']  # Losses due to angle of incidence
+    l_spec = year_energy_data['l_spec']  # Losses due to spectral effects
+    l_tg = year_energy_data['l_tg']  # Losses due Temperature and irradiance losses
+    l_system = input_values['pv_module']['system_loss']  # System losses
+    l_system = l_system * -1
+    l_total = year_energy_data['l_total']  # Total losses
+
+    # Negative values will be red, positive values will be green
+    colors_plt = ['red' if value < 0 else 'green' for value in [l_spec, l_aoi, l_tg, l_system, l_total]]
+
+    losses = [l_spec, l_aoi, l_tg, l_system, l_total]
+    labels = ['Spectral Effects', 'Angle of Incidence', 'Temperature and Irradiance', 'System', 'Total']
+
+    plt.figure(figsize=(12, 8))
+    bars = plt.bar(labels, losses, color=colors_plt, edgecolor='black', linewidth=1.2)
+    plt.title('Losses', fontsize=16)
+    plt.ylabel('Percentage (%)')
+
+    # Put values into the bars with better styling, NOT above the bars
+    for bar, value in zip(bars, losses):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
+                 color='black', fontweight='bold', fontsize=10)
+
+    return plt
+
+
+def create_consumption_chart(year_consumption, year_production):
+    categories = ['Production', 'Consumption']
+    values = [year_production, year_consumption]
+
+    # Create a horizontal bar chart for better visualization
+    plt.figure(figsize=(10, 6))
+    bars = plt.barh(categories, values, color=['#4285F4', '#EA4335'], edgecolor='black', linewidth=1.2)
+    plt.xlabel('Energy (MWh)')
+    plt.title('Yearly Energy Production vs Consumption')
+
+    # Adding a line to indicate coverage percentage
+    percentage = year_production / year_consumption * 100 if year_consumption else 0
+    percentage = round(percentage, 2)
+
+    # Put values into the bars for immediate readability
+    for bar, value in zip(bars, [year_production, year_consumption]):
+        plt.text(bar.get_width(), bar.get_y() + bar.get_height() / 2, f'{value:.2f} MWh',
+                 va='center', ha='right', fontweight='bold', color='black', fontsize=10)
+
+    plt.tight_layout()  # Adjust layout to make room for the added elements
+    return plt
+
+
+def create_monthly_energy_chart(monthly_energy_data):
+    months = [entry['month'] for entry in monthly_energy_data]
+    energy_values = [entry['E_m'] for entry in monthly_energy_data]
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2)
+
+    plt.xlabel('Month')
+    plt.ylabel('Energy Production (kWh/mo)')
+    plt.title('Monthly Energy Production')
+
+    # Add values above the bars with better styling
+    for bar, value in zip(bars, energy_values):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2, f'{value:.2f}', ha='center', va='bottom',
+                 color='black', fontweight='bold', fontsize=10)
+
+    plt.xticks(months)
+    plt.ylim(0, max(energy_values) * 1.1)  # Adjust y-axis limit for better visualization
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # Beautify the chart
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['left'].set_linewidth(0.5)
+    plt.gca().spines['bottom'].set_linewidth(0.5)
+
+    plt.tight_layout()
+
+    return plt
+
+
+def create_table(areas, page_content_width):
     area_info = [['Area', 'Panels Count', 'Peak Power [kW]', 'Slope [°]', 'Azimuth']]
     total_values = [0, 0, 0, 0, 0]  # Initialize total values
 
@@ -108,103 +224,8 @@ def create_pdf_report(user_id, areas, pv_data):
     ])
     table_data = Table(area_info, colWidths=[page_content_width / len(area_info[0])])
     table_data.setStyle(table_style)
-    story.append(table_data)
-    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
-    year_energy_data = data['outputs']['totals']['fixed']
-
-    monthly_energy_data = data['outputs']['monthly']['fixed']
-
-    months = [entry['month'] for entry in monthly_energy_data]
-    energy_values = [entry['E_m'] for entry in monthly_energy_data]
-
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2)
-
-    plt.xlabel('Month')
-    plt.ylabel('Energy Production (kWh/mo)')
-    plt.title('Monthly Energy Production')
-
-    # Add values above the bars with better styling
-    for bar, value in zip(bars, energy_values):
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2, f'{value:.2f}', ha='center', va='bottom',
-                 color='black', fontweight='bold', fontsize=10)
-
-    plt.xticks(months)
-    plt.ylim(0, max(energy_values) * 1.1)  # Adjust y-axis limit for better visualization
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-
-    # Beautify the chart
-    plt.gca().spines['top'].set_visible(False)
-    plt.gca().spines['right'].set_visible(False)
-    plt.gca().spines['left'].set_linewidth(0.5)
-    plt.gca().spines['bottom'].set_linewidth(0.5)
-
-    plt.tight_layout()
-
-    add_graph_to_report(plt, story, page_content_width)
-
-    known_consumption = pv_data.pv_power_plant.known_consumption
-    if known_consumption:
-        year_consumption = pv_data.pv_power_plant.consumption_per_year
-
-        print(f"year_consumption: {year_consumption}")
-        print(f"year_production: {year_production}")
-
-        # Create a chart with the yearly energy production and consumption
-        plt.figure(figsize=(10, 6))
-        bars = plt.bar(['Production', 'Consumption'], [year_production, year_consumption], color=['#4285F4', '#EA4335'],
-                       edgecolor='black', linewidth=1.2)
-        plt.title('Yearly Energy Production vs Consumption')
-        plt.ylabel('Energy (MWh)')
-        plt.ylim(0, max(year_production, year_consumption) * 1.1)  # Adjust y-axis limit for better visualization
-
-        percentage = year_production / year_consumption * 100
-        percentage = round(percentage, 2)
-        plt.text(bars[0].get_x() + bars[0].get_width() / 2, bars[0].get_height() + 0.2, f'Coverage: {percentage:.0f}%',
-                 ha='center', va='bottom',
-                 color='black', fontweight='bold', fontsize=14)
-
-        # Put values into the bars with better styling, NOT above the bars
-        for bar, value in zip(bars, [year_production, year_consumption]):
-            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f} kWh', ha='center',
-                     va='center',
-                     color='black', fontweight='bold', fontsize=10)
-
-        add_graph_to_report(plt, story, page_content_width)
-
-    # Create nice graph with losses
-    l_aoi = year_energy_data['l_aoi']  # Losses due to angle of incidence
-    l_spec = year_energy_data['l_spec']  # Losses due to spectral effects
-    l_tg = year_energy_data['l_tg']  # Losses due Temperature and irradiance losses
-    l_system = input_values['pv_module']['system_loss']  # System losses
-    l_system = l_system * -1
-    l_total = year_energy_data['l_total']  # Total losses
-
-    # Negative values will be red, positive values will be green
-    colors_plt = ['red' if value < 0 else 'green' for value in [l_aoi, l_spec, l_tg, l_system, l_total]]
-
-    losses = [l_aoi, l_spec, l_tg, l_system, l_total]
-    labels = ['Angle of Incidence', 'Spectral Effects', 'Temperature and Irradiance', 'System', 'Total']
-
-    plt.figure(figsize=(12, 8))
-    bars = plt.bar(labels, losses, color=colors_plt, edgecolor='black', linewidth=1.2)
-    plt.title('Losses', fontsize=16)
-    plt.ylabel('Percentage (%)')
-
-    # Put values into the bars with better styling, NOT above the bars
-    for bar, value in zip(bars, losses):
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
-                 color='black', fontweight='bold', fontsize=10)
-
-    add_graph_to_report(plt, story, page_content_width)
-
-    doc.build(story)
-
-    print(f"Report generated and saved as {pdf_file}")
-
-    return True
-
+    return table_data
 
 def add_graph_to_report(plt, story, width=500, height=300):
     buffer = BytesIO()
