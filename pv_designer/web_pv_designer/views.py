@@ -49,7 +49,6 @@ def index(request):
     return render(request, 'home.html')
 
 
- 
 def map_view(request):
     record_id = request.GET.get('record_id')
 
@@ -59,15 +58,18 @@ def map_view(request):
 
     if record_id:
         print("record_id: " + record_id)
-        map_data = get_object_or_404(MapData, id=record_id).to_JSON()
-        areasObjects = MapData.objects.get(id=record_id).areasObjects.all()
-        areasObjects = [area.to_JSON() for area in areasObjects]
+        map_data = get_object_or_404(MapData, id=record_id)
+        if map_data.user != request.user:
+            return redirect('home')
+        map_data = map_data.to_JSON()
+        areas_objects = MapData.objects.get(id=record_id).areasObjects.all()
+        areas_objects = [area.to_JSON() for area in areas_objects]
 
         context = {
             'latitude': map_data['latitude'],
             'longitude': map_data['longitude'],
             'map_data': json.dumps(map_data),
-            'areas_objects': areasObjects,
+            'areas_objects': areas_objects,
             'instance_id': 0,
             'panel_size': panel_size,
             'solar_panels': SolarPanel.objects.all(),
@@ -104,7 +106,6 @@ def rotate_img(request):
     return JsonResponse({'result': result})
 
 
-@csrf_exempt
 def ajax_endpoint(request):
     if request.method == "POST":
         custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
@@ -122,16 +123,17 @@ def ajax_endpoint(request):
             return JsonResponse(response_msg)
     return JsonResponse({"error": "Invalid request method"})
 
-
  
 def calculation_result(request, id):
+    map_data = MapData.objects.get(id=id)
+    if map_data.user != request.user:
+        return redirect('home')
     user_id = get_user_id(request)
     make_api_calling(id, user_id)
     pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str( user_id),
                             'pv_data_report.pdf')
-    map_data = MapData.objects.get(id=id)
     areas = map_data.areasObjects.all()
-    pdf_created = create_pdf_report( user_id, areas, map_data)
+    pdf_created = create_pdf_report(user_id, areas, map_data)
     if pdf_created:
         return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
     else:
@@ -156,6 +158,7 @@ def get_pdf_result(request):
             f.write(image.file.read())
         return redirect('calculation_result', id=calculation_id)
 
+
 @login_required
 def delete_record(request):
     if request.method == 'POST':
@@ -171,6 +174,7 @@ def delete_record(request):
     else:
         # Handle other HTTP methods if needed
         return redirect('calculations')
+
 
 @login_required
 def add_solar_panel(request):
@@ -203,13 +207,13 @@ def google_maps_js(request):
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type="application/javascript")
 
+
 def mapy_cz_tiles(request, zoom, x, y):
     api_key = settings.MAPY_CZ_API_KEY
     url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={api_key}"
     response = requests.get(url)
     content_type = response.headers['Content-Type']
     return HttpResponse(response.content, content_type=content_type)
-
 
 
 def help_page(request):
