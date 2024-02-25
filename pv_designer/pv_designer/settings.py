@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'web_pv_designer.apps.WebPvDesignerConfig',
-    'django.contrib.sites',  # Add this if it's not already there
+    'django.contrib.sites',
+    'django.contrib.gis',
     'allauth',
     'allauth.account',
     'django_extensions',
@@ -81,11 +82,12 @@ WSGI_APPLICATION = 'pv_designer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
+SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
