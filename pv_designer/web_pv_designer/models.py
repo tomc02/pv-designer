@@ -68,6 +68,7 @@ class Area(models.Model):
     azimuth = models.FloatField()
     title = models.CharField(max_length=255)
     rotations = models.IntegerField()
+    polygon = models.PolygonField(blank=True, null=True)
 
     def __str__(self):
         return f"Area - ID: {self.id}"

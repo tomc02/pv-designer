@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib.gis import admin
 from .models import CustomUser, MapData, PVPowerPlant, Area, SolarPanel
 
 # Register your models here.
@@ -9,6 +9,6 @@ admin.site.index_title = "Welcome to PV Designer Portal"
 admin.site.register(CustomUser)
 admin.site.register(MapData)
 admin.site.register(PVPowerPlant)
-admin.site.register(Area)
+admin.site.register(Area, admin.OSMGeoAdmin)
 admin.site.register(SolarPanel)
 

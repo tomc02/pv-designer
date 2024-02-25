@@ -190,6 +190,7 @@ class ShapesHandler {
                 'title': title,
                 'mountingType': mountingPosition,
                 'rotations': shapeObject.rotations,
+                'polygon': shape.getPath().getArray(),
             };
             console.log(shapeData);
             shapesData.push(shapeData);

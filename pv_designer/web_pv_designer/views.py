@@ -51,7 +51,6 @@ def index(request):
 
 def map_view(request):
     record_id = request.GET.get('record_id')
-
     panel_size = json.dumps(
         {'width': 1,
          'height': 2})

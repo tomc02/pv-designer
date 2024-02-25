@@ -4,6 +4,7 @@ import os
 import matplotlib
 import requests
 from django.conf import settings
+from django.contrib.gis.geos import Polygon, Point
 from django.http import JsonResponse
 
 from .images import save_map_img, delete_rotated_images
@@ -24,7 +25,8 @@ def process_map_data(data, user_id):
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.areasObjects.clear()
             map_data.save()
-            parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.solar_panel.power))
+            parse_areas_data(parsed_data['shapesData'], map_data,
+                             float(map_data.solar_panel.power))
         else:
             last_map_data = MapData.objects.last()
             if last_map_data is None:
@@ -47,11 +49,19 @@ def process_map_data(data, user_id):
     return map_data.id
 
 
+def create_polygon_from_coordinates(coordinates):
+    points = [(coord['lng'], coord['lat']) for coord in coordinates]
+    point_objects = [Point(lon, lat) for lon, lat in points]
+    point_objects.append(point_objects[0])
+    polygon = Polygon(point_objects)
+
+    return polygon
+
+
 def parse_areas_data(areas_data_list, map_data, pv_panel_power):
-    print(areas_data_list)
     areas = []
     for area in areas_data_list:
-        print("area: " + area['title'] + " " + str(area['mountingType']))
+        polygon = create_polygon_from_coordinates(area['polygon'])
         area_instance = Area(
             panels_count=area['panelsCount'],
             installed_peak_power=int(area['panelsCount']) * pv_panel_power,
@@ -60,6 +70,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
             azimuth=area['azimuth'],
             title=area['title'],
             rotations=area['rotations'],
+            polygon = polygon
         )
         area_instance.save()
         print(area_instance)
@@ -128,6 +139,7 @@ def make_api_calling(data_id, user_id):
             'outputformat': 'json'
         }
         save_response("response_off_grid", get_pvgis_response_off_grid(param), user_id, 0)
+
 
 def get_user_id(request):
     if request.user.is_authenticated:
