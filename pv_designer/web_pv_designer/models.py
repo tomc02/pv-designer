@@ -74,6 +74,7 @@ class Area(models.Model):
         return f"Area - ID: {self.id}"
 
     def to_JSON(self):
+        polygon_coords = self.polygon.coords[0]
         return {
             'id': self.id,
             'panels_count': self.panels_count,
@@ -83,6 +84,7 @@ class Area(models.Model):
             'azimuth': self.azimuth,
             'title': self.title,
             'rotations': self.rotations,
+            'polygon': polygon_coords,
         }
 
 

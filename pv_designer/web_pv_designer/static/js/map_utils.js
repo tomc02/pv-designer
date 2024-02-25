@@ -61,7 +61,17 @@ function getMapPicture() {
         alert('Please select a PV panel type');
     }
 }
-
+function convertGeoJSONToGoogleMapsPath(coordinates) {
+    let path = [];
+    for (let i = 0; i < coordinates.length; i++) {
+        let lngLat = {
+            lat: coordinates[i][1],
+            lng: coordinates[i][0]
+        };
+        path.push(lngLat);
+    }
+    return path;
+}
 function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -75,9 +85,10 @@ function loadMapData() {
             rotateControl: false,
         });
         let index = 0;
-        mapData.areas.forEach(function (area) {
+        console.log('data ' + mapData.areasData[0].polygon);
+        mapData.areasData.forEach(function (area) {
             let polygon = new google.maps.Polygon({
-                paths: area,
+                paths: convertGeoJSONToGoogleMapsPath(area.polygon),
                 strokeColor: '#0033ff',
                 draggable: false,
                 editable: false,
