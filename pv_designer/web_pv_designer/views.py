@@ -13,6 +13,7 @@ from .models import MapData, SolarPanel, CustomUser
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id
+from .signals import solar_panel_added
 import requests
 
 
@@ -183,7 +184,8 @@ def add_solar_panel(request):
             solar_panel = form.save()
             solar_panel.user = request.user
             solar_panel.save()
-            return render(request, 'success.html', {'message': 'Solar panel added successfully'})
+            solar_panel_added.send(sender=solar_panel.__class__, instance=solar_panel, request=request)
+            return redirect('add_solar_panel')
     else:
         form = AddSolarPanelForm()
 
