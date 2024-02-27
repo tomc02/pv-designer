@@ -1,4 +1,4 @@
-from allauth.account.forms import SignupForm, LoginForm
+from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
 
 from .models import PVPowerPlant, SolarPanel
