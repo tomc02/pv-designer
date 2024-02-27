@@ -61,14 +61,14 @@ function getMapPicture() {
         alert('Please select a PV panel type');
     }
 }
-function convertGeoJSONToGoogleMapsPath(coordinates) {
-    let path = [];
-    for (let i = 0; i < coordinates.length; i++) {
-        let lngLat = {
-            lat: coordinates[i][1],
-            lng: coordinates[i][0]
-        };
-        path.push(lngLat);
+function convertToGoogleMapsPolygonPath(coordsObj) {
+    const path = [];
+    for (const key in coordsObj) {
+        if (coordsObj.hasOwnProperty(key)) {
+            const point = coordsObj[key];
+            const latLng = {lat: point[0], lng: point[1]};
+            path.push(latLng);
+        }
     }
     return path;
 }
@@ -85,10 +85,9 @@ function loadMapData() {
             rotateControl: false,
         });
         let index = 0;
-        console.log('data ' + mapData.areasData[0].polygon);
         mapData.areasData.forEach(function (area) {
             let polygon = new google.maps.Polygon({
-                paths: convertGeoJSONToGoogleMapsPath(area.polygon),
+                paths: convertToGoogleMapsPolygonPath(area.polygon),
                 strokeColor: '#0033ff',
                 draggable: false,
                 editable: false,

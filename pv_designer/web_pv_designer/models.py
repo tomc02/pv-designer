@@ -14,7 +14,6 @@ class MapData(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    areas = models.JSONField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
     pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
@@ -73,8 +72,13 @@ class Area(models.Model):
     def __str__(self):
         return f"Area - ID: {self.id}"
 
+    def get_polygon_coords(self):
+        dict_coords = {}
+        for i in range(len(self.polygon.coords[0]) - 1):
+            dict_coords[i] = [self.polygon.coords[0][i][1], self.polygon.coords[0][i][0]] # lat, lon
+        return dict_coords
+
     def to_JSON(self):
-        polygon_coords = self.polygon.coords[0]
         return {
             'id': self.id,
             'panels_count': self.panels_count,
@@ -84,7 +88,7 @@ class Area(models.Model):
             'azimuth': self.azimuth,
             'title': self.title,
             'rotations': self.rotations,
-            'polygon': polygon_coords,
+            'polygon': self.get_polygon_coords(),
         }
 
 
