@@ -32,7 +32,6 @@ class MapData(models.Model):
             'id': self.id,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'areas': self.areas,
             'areasData': areas,
             'zoom': self.zoom,
             'solar_panel_id': self.solar_panel.id,

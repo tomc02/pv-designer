@@ -37,7 +37,6 @@ def process_map_data(data, user_id):
             pv_panel = SolarPanel.objects.get(id=parsed_data['solarPanelID'])
             user_obj = CustomUser.objects.get(id=user_id)
             map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
-                               areas=parsed_data['shapes'],
                                zoom=parsed_data['zoom'], map_image=img_path,
                                solar_panel=pv_panel)
             map_data.save()

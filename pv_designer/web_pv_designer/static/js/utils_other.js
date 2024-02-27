@@ -29,7 +29,6 @@ function moveToForm() {
         'lat': map.getCenter().lat(),
         'lng': map.getCenter().lng(),
         'shapesData': shapesHandler.prepareAreasData(),
-        'shapes': convertShapesToJSON(shapesHandler.shapesObjects),
         'imageUrl': imageUrl,
         'zoom': map.zoom,
         'mapDataID': mapDataID,
