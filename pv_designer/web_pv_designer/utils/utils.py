@@ -20,7 +20,6 @@ def process_map_data(data, user_id):
             map_data = MapData.objects.get(id=parsed_data['mapDataID'])
             map_data.latitude = parsed_data['lat']
             map_data.longitude = parsed_data['lng']
-            map_data.areas = parsed_data['shapes']
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.areasObjects.clear()
