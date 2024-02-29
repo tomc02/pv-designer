@@ -4,7 +4,7 @@
 {% block content %}
     <script src="/api/google-maps-js"></script>
     <script src="{% static 'js/map_handler.js' %}"></script>
-    
+
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -20,13 +20,15 @@
                                 <input id="searchInput" type="text" class="form-control"
                                        placeholder="Search for an address...">
                                 <div class="input-group-append" id="searchButton">
-                                    <button class="btn btn-primary" type="button" onclick="searchAddress()"
+                                    <button class="btn btn-primary" type="button"
                                             style="margin-left: 5px">Search
                                     </button>
                                 </div>
                             </div>
                             <div id="simple_map"></div>
                             <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                            <button type="button" class="btn btn-danger mt-3 float-end"
+                                    onclick="window.location.href = '/accounts/details/'">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -37,5 +39,6 @@
         let lat = parseFloat("{{ form.latitude.value }}");
         let lng = parseFloat("{{ form.longitude.value}}");
         initSimpleMap(false, lat, lng);
+        searchBoxInit(simpleMap, true);
     </script>
 {% endblock %}

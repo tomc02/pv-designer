@@ -77,10 +77,11 @@ def map_view(request):
 
         return render(request, 'map.html', context)
     # if users home location is set
-    custom_user = CustomUser.objects.get(id=request.user.id)
-    if custom_user.home_location:
-        latitude = custom_user.home_location.y
-        longitude = custom_user.home_location.x
+    if request.user.is_authenticated:
+        custom_user = CustomUser.objects.get(id=request.user.id)
+        if custom_user.home_location:
+            latitude = custom_user.home_location.y
+            longitude = custom_user.home_location.x
     else:
         latitude = 49.83137
         longitude = 18.16086

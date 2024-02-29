@@ -7,13 +7,9 @@ function initMap() {
     map = loadMapData();
     drawingManager = new google.maps.drawing.DrawingManager({
         drawingControl: true, drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: ['polygon'],
+            position: google.maps.ControlPosition.TOP_CENTER, drawingModes: ['polygon'],
         }, polygonOptions: {
-            editable: true,
-            draggable: true,
-            strokeColor: '#0033ff',
-            zIndex: 10,
+            editable: true, draggable: true, strokeColor: '#0033ff', zIndex: 10,
         },
     });
     drawingManager.setMap(map);
@@ -81,11 +77,7 @@ function initMap() {
     var mapyCzType = new google.maps.ImageMapType({
         getTileUrl: function (coord, zoom) {
             return `/mapy-cz-tiles/${zoom}/${coord.x}/${coord.y}/`
-        },
-        tileSize: new google.maps.Size(256, 256),
-        maxZoom: 20,
-        name: 'Mapy.cz',
-        alt: 'Show Mapy.cz layer'
+        }, tileSize: new google.maps.Size(256, 256), maxZoom: 20, name: 'Mapy.cz', alt: 'Show Mapy.cz layer'
     });
     map.mapTypes.set('mapyCz', mapyCzType);
 
@@ -110,7 +102,7 @@ function initMap() {
     });
 }
 
-function searchBoxInit(map) {
+function searchBoxInit(map, putMarker = false) {
     // Create the search box and link it to the UI element.
     const input = document.getElementById("searchInput");
     const searchBox = new google.maps.places.SearchBox(input);
@@ -119,31 +111,19 @@ function searchBoxInit(map) {
     map.addListener("bounds_changed", () => {
         searchBox.setBounds(map.getBounds());
     });
-    let markers = [];
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
+
     searchBox.addListener("places_changed", () => {
         const places = searchBox.getPlaces();
 
         if (places.length == 0) {
             return;
         }
-
-        // Clear out the old markers.
-        markers.forEach((marker) => {
-            marker.setMap(null);
-        });
-        markers = [];
-
-        // For each place, get the icon, name and location.
         const bounds = new google.maps.LatLngBounds();
-
         places.forEach((place) => {
             if (!place.geometry || !place.geometry.location) {
                 console.log("Returned place contains no geometry");
                 return;
             }
-
             const icon = {
                 url: place.icon,
                 size: new google.maps.Size(71, 71),
@@ -151,13 +131,7 @@ function searchBoxInit(map) {
                 anchor: new google.maps.Point(17, 34),
                 scaledSize: new google.maps.Size(25, 25),
             };
-
-            // Create a marker for each place.
-            /*markers.push(new google.maps.Marker({
-                map, icon, title: place.name, position: place.geometry.location,
-            }),);*/
             if (place.geometry.viewport) {
-                // Only geocodes have viewport.
                 bounds.union(place.geometry.viewport);
             } else {
                 bounds.extend(place.geometry.location);
@@ -166,22 +140,61 @@ function searchBoxInit(map) {
         map.fitBounds(bounds);
 
         map.setZoom(19);
+        if (putMarker) {
+            setHomeLocationMarker(simpleMap.getCenter().lat(), simpleMap.getCenter().lng());
+        }
     });
 
-    // Add listener for search button
     const searchButton = document.getElementById('searchButton');
     searchButton.addEventListener('click', function () {
-        const input = document.getElementById('searchInput');
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({'address': input.value}, function (results, status) {
-            if (status === 'OK') {
-                map.setCenter(results[0].geometry.location);
+        const placesService = new google.maps.places.PlacesService(map);
+        const query = input.value;
+        if (!query) {
+            return;
+        }
+        placesService.findPlaceFromQuery({
+            query: query,
+            fields: ['name', 'geometry'],
+        }, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                const bounds = new google.maps.LatLngBounds();
+                results.forEach((place) => {
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+
+                map.fitBounds(bounds);
                 map.setZoom(19);
+
+                if (putMarker) {
+                    setHomeLocationMarker(simpleMap.getCenter().lat(), simpleMap.getCenter().lng());
+                }
             } else {
-                alert('Geocode was not successful for the following reason: ' + status);
+                console.error('Place search did not return any results.');
             }
         });
     });
+}
+
+
+function setHomeLocationMarker(lat, lng) {
+    if (homeLocationMarker) {
+        homeLocationMarker.setMap(null);
+    }
+    console.log('setting marker', lat, lng);
+    homeLocationMarker = new google.maps.Marker({
+        position: {lat: lat, lng: lng}, map: simpleMap, draggable: true,
+    });
+
+    $('#id_latitude').val(lat);
+    $('#id_longitude').val(lng);
 }
 
 function addInsertPointListener(shape) {
@@ -194,8 +207,7 @@ function addInsertPointListener(shape) {
 function initSimpleMap(locked = false, lat, lng) {
     simpleMap = new google.maps.Map(document.getElementById('simple_map'), {
         center: {
-            lat: lat,
-            lng: lng
+            lat: lat, lng: lng
         },
         mapTypeId: 'satellite',
         zoom: 19,
@@ -206,32 +218,21 @@ function initSimpleMap(locked = false, lat, lng) {
         streetViewControl: false,
         fullscreenControl: false,
         mapTypeControl: !locked,
+        tilt: 0,
+        rotateControl: false,
     });
 
     // place home location marker to the center of the map
     homeLocationMarker = new google.maps.Marker({
-        position: {lat: lat, lng: lng},
-        map: simpleMap,
-        draggable: !locked,
+        position: {lat: lat, lng: lng}, map: simpleMap, draggable: !locked,
     });
 
     //set listener for click on map to add marker
     if (!locked) {
         google.maps.event.addListener(simpleMap, 'click', function (event) {
-            if (homeLocationMarker) {
-                homeLocationMarker.setMap(null);
-            }
-            homeLocationMarker = new google.maps.Marker({
-                position: event.latLng,
-                map: simpleMap,
-                draggable: !locked,
-            });
-            $('#id_latitude').val(event.latLng.lat());
-            $('#id_longitude').val(event.latLng.lng());
+            setHomeLocationMarker(event.latLng.lat(), event.latLng.lng());
         });
     }
-
-    searchBoxInit(simpleMap);
 }
 
 function updateMapMessage(hasLocation) {
