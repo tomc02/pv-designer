@@ -1,7 +1,8 @@
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
+from django.contrib.gis.geos import Point
 
-from .models import PVPowerPlant, SolarPanel
+from .models import PVPowerPlant, SolarPanel, CustomUser
 
 
 class CustomSignupForm(SignupForm):
@@ -65,3 +66,28 @@ class AddSolarPanelForm(forms.ModelForm):
             'power': forms.NumberInput(attrs={'class': 'form-control'}),
             'pv_technology': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class UserAccountForm(forms.ModelForm):
+    latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    longitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'latitude', 'longitude']
+    def __init__(self, *args, **kwargs):
+        super(UserAccountForm, self).__init__(*args, **kwargs)
+        self.fields['latitude'].initial = self.instance.home_location.y
+        self.fields['longitude'].initial = self.instance.home_location.x
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['email'].widget.attrs['class'] = 'form-control'
+
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        latitude = self.cleaned_data.get('latitude')
+        longitude = self.cleaned_data.get('longitude')
+        if latitude and longitude:
+            user.home_location = Point(longitude, latitude)
+        if commit:
+            user.save()
+        return user

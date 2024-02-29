@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import SolarPanelForm, AddSolarPanelForm
+from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm
 from .models import MapData, SolarPanel, CustomUser
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
@@ -76,8 +76,14 @@ def map_view(request):
         }
 
         return render(request, 'map.html', context)
-    latitude = 49.83137
-    longitude = 18.16086
+    # if users home location is set
+    custom_user = CustomUser.objects.get(id=request.user.id)
+    if custom_user.home_location:
+        latitude = custom_user.home_location.y
+        longitude = custom_user.home_location.x
+    else:
+        latitude = 49.83137
+        longitude = 18.16086
     context = {
         'latitude': latitude,
         'longitude': longitude,
@@ -219,3 +225,14 @@ def mapy_cz_tiles(request, zoom, x, y):
 
 def help_page(request):
     return render(request, 'help_page.html')
+
+def account_update(request):
+    if request.method == 'POST':
+        form = UserAccountForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('account_details')  # Redirect to a new URL
+    else:
+        form = UserAccountForm(instance=request.user)
+
+    return render(request, 'account/update_account.html', {'form': form})

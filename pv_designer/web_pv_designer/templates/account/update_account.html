@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <script src="/api/google-maps-js"></script>
+    <script src="{% static 'js/map_handler.js' %}"></script>
+    
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2>Update Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="input-group">
+                                <input id="searchInput" type="text" class="form-control"
+                                       placeholder="Search for an address...">
+                                <div class="input-group-append" id="searchButton">
+                                    <button class="btn btn-primary" type="button" onclick="searchAddress()"
+                                            style="margin-left: 5px">Search
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="simple_map"></div>
+                            <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let lat = parseFloat("{{ form.latitude.value }}");
+        let lng = parseFloat("{{ form.longitude.value}}");
+        initSimpleMap(false, lat, lng);
+    </script>
+{% endblock %}

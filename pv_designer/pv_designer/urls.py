@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('map/', views.map_view, name='map'),
     path('accounts/details/', views.account_details, name='account_details'),
+    path('accounts/update/', views.account_update, name='account_update'),
     path('rotate_img/', views.rotate_img, name='rotate_img'),
     path('ajax_endpoint/', views.ajax_endpoint, name='ajax_endpoint'),
     path('calculation_result/<int:id>/', views.calculation_result, name='calculation_result'),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('api/google-maps-js', views.google_maps_js, name='google-maps-js'),
     path('help_page/', views.help_page, name='help_page'),
     path('mapy-cz-tiles/<int:zoom>/<int:x>/<int:y>/', views.mapy_cz_tiles, name='mapy_cz_tiles'),
+
 ]

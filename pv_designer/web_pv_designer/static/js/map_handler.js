@@ -167,6 +167,21 @@ function searchBoxInit(map) {
 
         map.setZoom(19);
     });
+
+    // Add listener for search button
+    const searchButton = document.getElementById('searchButton');
+    searchButton.addEventListener('click', function () {
+        const input = document.getElementById('searchInput');
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({'address': input.value}, function (results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                map.setZoom(19);
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    });
 }
 
 function addInsertPointListener(shape) {
@@ -188,6 +203,9 @@ function initSimpleMap(locked = false, lat, lng) {
         zoomControl: true,
         scrollwheel: true,
         disableDoubleClickZoom: locked,
+        streetViewControl: false,
+        fullscreenControl: false,
+        mapTypeControl: !locked,
     });
 
     // place home location marker to the center of the map
@@ -208,9 +226,12 @@ function initSimpleMap(locked = false, lat, lng) {
                 map: simpleMap,
                 draggable: !locked,
             });
+            $('#id_latitude').val(event.latLng.lat());
+            $('#id_longitude').val(event.latLng.lng());
         });
     }
 
+    searchBoxInit(simpleMap);
 }
 
 function updateMapMessage(hasLocation) {
