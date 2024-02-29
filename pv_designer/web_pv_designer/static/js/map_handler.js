@@ -1,4 +1,6 @@
 var map;
+var simpleMap;
+var homeLocationMarker;
 var drawingManager;
 
 function initMap() {
@@ -172,4 +174,50 @@ function addInsertPointListener(shape) {
         shape.getPath().removeAt(index);
         alert('Area can have only 4 points');
     });
+}
+
+function initSimpleMap(locked = false, lat, lng) {
+    simpleMap = new google.maps.Map(document.getElementById('simple_map'), {
+        center: {
+            lat: lat,
+            lng: lng
+        },
+        mapTypeId: 'satellite',
+        zoom: 19,
+        draggable: !locked,
+        zoomControl: true,
+        scrollwheel: true,
+        disableDoubleClickZoom: locked,
+    });
+
+    // place home location marker to the center of the map
+    homeLocationMarker = new google.maps.Marker({
+        position: {lat: lat, lng: lng},
+        map: simpleMap,
+        draggable: !locked,
+    });
+
+    //set listener for click on map to add marker
+    if (!locked) {
+        google.maps.event.addListener(simpleMap, 'click', function (event) {
+            if (homeLocationMarker) {
+                homeLocationMarker.setMap(null);
+            }
+            homeLocationMarker = new google.maps.Marker({
+                position: event.latLng,
+                map: simpleMap,
+                draggable: !locked,
+            });
+        });
+    }
+
+}
+
+function updateMapMessage(hasLocation) {
+    const messageElement = document.getElementById('map-message');
+    if (hasLocation) {
+        messageElement.innerHTML = '';
+    } else {
+        messageElement.innerHTML = '<p class="text-warning">Update your profile to set your home location.</p>';
+    }
 }

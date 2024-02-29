@@ -3,6 +3,11 @@
     width: 100%;
 }
 
+#simple_map {
+    height: max(35vh, 350px);
+    width: 100%;
+}
+
 #actions {
     margin-top: 10px;
 }
