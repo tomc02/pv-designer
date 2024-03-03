@@ -3,5 +3,10 @@ Text:
     -Používání obrázků?? Odkud?
     -Kam všude dávat ukázky kódu?
     -Zkracování kódu na pouze důležité části
-    -Nazvy pormennych/funkci? Odlisovat?
+    -Nazvy pormennych/funkci? Odlišovat? Nazvy celkove..
+    - Používání GPT?
+    - Používání obrázků z map??? Dům pana Gaury? :D
+Appka:
+    - Baterky
+    - testy?
 
