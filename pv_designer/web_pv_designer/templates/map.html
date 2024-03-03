@@ -19,10 +19,8 @@
         <div id="content">
             <div class="heading-section text-center page-heading-section">
                 <h1>Photovoltaic Calculator</h1>
-                <p class="lead">Interactive tool for planning your photovoltaic power plant. Here, you
-                    can
-                    draw potential sites on a satellite map and calculate the energy gains for your project. Not sure
-                    where
+                <p class="lead">Interactive tool for planning your photovoltaic power plant. Here, you can
+                    draw potential areas on a satellite map and these areas will be filled with pv panels, and then you can configure them. Not sure where
                     to start? Click the help button <i class="bi bi-question-lg"></i> for guidance on how to use this
                     tool
                     effectively.</p>
@@ -32,7 +30,7 @@
                     <div class="col-md-12">
                         <div class="row hide-able-content">
                             <div class="col-md-12">
-                                <div class="input-group">
+                                <div class="input-group" style="margin-bottom: 10px">
                                     <input id="searchInput" type="text" class="form-control"
                                            placeholder="Search for an address...">
                                     <div class="input-group-append" id="searchButton">
@@ -258,7 +256,7 @@
             if ("{{ user.is_authenticated }}" === "False") {
                 $('#newPanelInput').attr('title', 'You need to be logged in to add a new panel');
                 $('#newPanelButton').prop('disabled', true);
-            
+
             }
             addBackButtonListener();
             initMap();

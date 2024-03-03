@@ -1,4 +1,7 @@
 Text:
-    -Zkratky - cesky anglicky?
+    -Zkratky - cesky anglicky? Kombinace? Zminit pri prvnim pouzit?
     -Používání obrázků?? Odkud?
     -Kam všude dávat ukázky kódu?
+    -Zkracování kódu na pouze důležité části
+    -Nazvy pormennych/funkci? Odlisovat?
+

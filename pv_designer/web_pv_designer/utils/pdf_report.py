@@ -16,8 +16,8 @@ def create_pdf_report(user_id, areas, pv_data):
     pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'pv_data_report.pdf')
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
-
-    lat, long = None, None
+    style_sheet = getSampleStyleSheet()
+    elements = []
 
     response_file_paths = [path_to_source + f'response{index}.json' for index in range(len(areas))]
     sum_responses(response_file_paths, path_to_source)
@@ -28,11 +28,10 @@ def create_pdf_report(user_id, areas, pv_data):
         lat = round(location_data['latitude'], 4)
         long = round(location_data['longitude'], 4)
 
-    story = []
     input_values = data['inputs']
     # Title
-    title_style = getSampleStyleSheet()['Title']
-    story.append(Paragraph('Photovoltaic System Performance Report', title_style))
+    title_style = style_sheet['Title']
+    elements.append(Paragraph('Photovoltaic System Performance Report', title_style))
 
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
@@ -47,8 +46,8 @@ def create_pdf_report(user_id, areas, pv_data):
     img_width = page_content_width
     img_height = img_width * aspect
     img = ImagePlatypus(pv_panel_img_path, width=img_width, height=img_height)
-    story.append(img)
-    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+    elements.append(img)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     consumption_per_year = pv_data.pv_power_plant.consumption_per_year
     if consumption_per_year is None:
@@ -74,37 +73,37 @@ def create_pdf_report(user_id, areas, pv_data):
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')])
     table.setStyle(table_style)
 
-    # Add the table to the story
-    story.append(table)
-    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+    # Add the table to the elements
+    elements.append(table)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     # Table with Area Information
     table_data = create_table(areas, page_content_width)
-    story.append(table_data)
-    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+    elements.append(table_data)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     year_energy_data = data['outputs']['totals']['fixed']
 
     # Create a chart with the monthly energy production
     chart = create_monthly_energy_chart(data['outputs']['monthly']['fixed'])
-    add_graph_to_report(chart, story, page_content_width)
+    add_graph_to_report(chart, elements, page_content_width)
 
     # If consumption is known, create a chart with the yearly energy production and consumption
     known_consumption = pv_data.pv_power_plant.known_consumption
     if known_consumption:
         year_consumption = pv_data.pv_power_plant.consumption_per_year
         chart = create_consumption_chart(year_consumption, year_production)
-        add_graph_to_report(chart, story, page_content_width)
+        add_graph_to_report(chart, elements, page_content_width)
 
         coverage_percentage = year_production / year_consumption * 100
         coverage_percentage = round(coverage_percentage, 2)
-        story.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
+        elements.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
 
     # Create a chart with the losses
     chart = create_looses_chart(year_energy_data, input_values)
-    add_graph_to_report(chart, story, page_content_width)
+    add_graph_to_report(chart, elements, page_content_width)
 
-    doc.build(story)
+    doc.build(elements)
 
     print(f"Report generated and saved as {pdf_file}")
 
@@ -143,22 +142,16 @@ def create_consumption_chart(year_consumption, year_production):
     categories = ['Production', 'Consumption']
     values = [year_production, year_consumption]
 
-    # Create a horizontal bar chart for better visualization
     plt.figure(figsize=(10, 6))
     bars = plt.barh(categories, values, color=['#4285F4', '#EA4335'], edgecolor='black', linewidth=1.2)
     plt.xlabel('Energy (MWh)')
     plt.title('Yearly Energy Production vs Consumption')
 
-    # Adding a line to indicate coverage percentage
-    percentage = year_production / year_consumption * 100 if year_consumption else 0
-    percentage = round(percentage, 2)
-
-    # Put values into the bars for immediate readability
     for bar, value in zip(bars, [year_production, year_consumption]):
         plt.text(bar.get_width(), bar.get_y() + bar.get_height() / 2, f'{value:.2f} MWh',
                  va='center', ha='right', fontweight='bold', color='black', fontsize=10)
 
-    plt.tight_layout()  # Adjust layout to make room for the added elements
+    plt.tight_layout()
     return plt
 
 
@@ -227,16 +220,16 @@ def create_table(areas, page_content_width):
 
     return table_data
 
-def add_graph_to_report(plt, story, width=500, height=300):
+
+def add_graph_to_report(plt, elements, width=500, height=300):
     buffer = BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
     plt.close()
 
     chart_img = ImagePlatypus(buffer, width=width, height=height)
-    story.append(chart_img)
-
-    story.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
+    elements.append(chart_img)
+    elements.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
 
 def sum_responses(file_paths, path_to_source):

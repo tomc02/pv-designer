@@ -14,7 +14,6 @@
 
 #searchInput {
     padding: 5px;
-    margin-bottom: 10px;
 }
 
 #pdf_view {
@@ -23,7 +22,7 @@
     min-height: 600px;
 }
 
-.heading-section-dark{
+.heading-section-dark {
     border-bottom: 2px solid #495057;
     padding-bottom: 20px;
     margin-bottom: 30px;
@@ -33,7 +32,7 @@
     padding: 20px;
     background-color: #23272b;
     border: 1px solid #495057;
-    box-shadow: 0 2px 4px rgba(255,255,255,.05);
+    box-shadow: 0 2px 4px rgba(255, 255, 255, .05);
 }
 
 .heading-section {
@@ -46,7 +45,7 @@
     padding: 20px;
     background-color: #fff;
     border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
 }
 
 /* Additional styling for visual enhancement */
@@ -171,4 +170,9 @@
     display: flex;
     justify-content: center; /* Center children horizontally */
     align-items: center; /* Center children vertically (if needed) */
+}
+
+.search-bar-line {
+    border-top: 1px solid;
+    padding-top: 20px;
 }

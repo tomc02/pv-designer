@@ -80,6 +80,7 @@ class UserAccountForm(forms.ModelForm):
         self.fields['longitude'].initial = self.instance.home_location.x
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs['class'] = 'form-control'
+        self.fields['username'].help_text = ''
 
 
     def save(self, commit=True):

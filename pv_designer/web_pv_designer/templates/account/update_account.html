@@ -1,35 +1,45 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load form_tags %}
 {% block content %}
     <script src="/api/google-maps-js"></script>
     <script src="{% static 'js/map_handler.js' %}"></script>
 
-    <div class="container mt-5">
+    <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
+                <div class="card shadow-lg">
                     <div class="card-header text-center">
-                        <h2>Update Profile</h2>
+                        <h3>Update Profile</h3>
                     </div>
                     <div class="card-body">
-                        <form method="post">
+                        <form method="post" class="needs-validation" novalidate>
                             {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="input-group">
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}"
+                                       class="form-label">{{ form.username.label }}</label>
+                                {{ form.username|add_class:"form-control" }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}"
+                                       class="form-label">{{ form.email.label }}</label>
+                                {{ form.email|add_class:"form-control" }}
+                            </div>
+                            {{ form.latitude|add_class:"d-none" }}
+                            {{ form.longitude|add_class:"d-none" }}
+                        </form>
+                        <label class="form-label">Home location</label>
+                        <div class="search-bar-line">
+                            <div class="input-group mb-3">
                                 <input id="searchInput" type="text" class="form-control"
                                        placeholder="Search for an address...">
-                                <div class="input-group-append" id="searchButton">
-                                    <button class="btn btn-primary" type="button"
-                                            style="margin-left: 5px">Search
-                                    </button>
-                                </div>
+                                <button class="btn btn-outline-secondary" type="button" id="searchButton">Search
+                                </button>
                             </div>
-                            <div id="simple_map"></div>
-                            <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-                            <button type="button" class="btn btn-danger mt-3 float-end"
-                                    onclick="window.location.href = '/accounts/details/'">Cancel</button>
-                        </form>
+                            <div id="simple_map" class="mb-3"></div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="/accounts/details/" class="btn btn-danger float-end">Cancel</a>
+                        </div>
                     </div>
                 </div>
             </div>
