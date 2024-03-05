@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from .models import CustomUser, MapData, PVPowerPlant, Area, SolarPanel
+from .models import CustomUser, MapData, PVPowerPlant, Area, SolarPanel, MonthlyConsumption
 
 # Register your models here.
 admin.site.site_header = "PV Designer Admin"
@@ -11,4 +11,5 @@ admin.site.register(MapData)
 admin.site.register(PVPowerPlant)
 admin.site.register(Area, admin.OSMGeoAdmin)
 admin.site.register(SolarPanel)
+admin.site.register(MonthlyConsumption)
 
