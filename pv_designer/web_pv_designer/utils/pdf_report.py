@@ -86,15 +86,37 @@ def create_pdf_report(user_id, areas, pv_data):
     year_energy_data = data['outputs']['totals']['fixed']
 
     # Create a chart with the monthly energy production
+    monthly_consumption_array = []
     known_consumption = pv_data.pv_power_plant.known_consumption
     if known_consumption:
         monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.pv_power_plant)
-        if monthly_consumption.count() != 12:
-            monthly_consumption = pv_data.pv_power_plant.consumption_per_year
-    else:
-        monthly_consumption = None
-    chart = create_monthly_energy_chart(data['outputs']['monthly']['fixed'], monthly_consumption)
+        if monthly_consumption.count() < 12:
+            monthly_consumption_array = [(pv_data.pv_power_plant.consumption_per_year*1000)/12] * 12
+        else:
+            for month in monthly_consumption:
+                monthly_consumption_array.append(month.consumption)
+
+    monthly_energy_data = data['outputs']['monthly']['fixed']
+
+    chart = create_monthly_energy_chart(monthly_energy_data, monthly_consumption_array)
     add_graph_to_report(chart, elements, page_content_width)
+
+
+    totals = {'consumed': 0, 'unused': 0, 'excess': 0}
+    for i in range(0, 12):
+        production = monthly_energy_data[i]['E_m']
+        if monthly_consumption_array[i] >= production:
+            totals['consumed'] += production
+            totals['excess'] += monthly_consumption_array[i] - production
+        else:
+            totals['consumed'] += monthly_consumption_array[i]
+            totals['unused'] += production - monthly_consumption_array[i]
+
+    chart = create_energy_balance_chart(totals)
+    add_graph_to_report(chart, elements, page_content_width)
+
+
+
 
     # If consumption is known, create a chart with the yearly energy production and consumption
     known_consumption = pv_data.pv_power_plant.known_consumption
@@ -116,6 +138,32 @@ def create_pdf_report(user_id, areas, pv_data):
     print(f"Report generated and saved as {pdf_file}")
 
     return True
+
+
+def create_energy_balance_chart(totals):
+    labels = ['Consumed', 'Unused', 'Excess']
+    sizes = [totals['consumed'], totals['unused'], totals['excess']]
+    # Some nice colors green, yellow, red
+    colors = ['#4CAF50', '#FFC107', '#F44336']
+
+    explode = (0.1, 0, 0)  # only "explode" the first slice (Consumed)
+
+
+    # Convert sizes to kWh for display in the legend
+    labels_with_values = [f"{label}: {size} kWh" for label, size in zip(labels, sizes)]
+
+    fig1, ax1 = plt.subplots()
+    patches, texts, autotexts = ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=colors,
+                                        autopct='%1.1f%%',
+                                        shadow=True, startangle=90)
+
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.title('Overall Energy Balance: Consumed vs. Unused vs. Excess', fontsize=14)
+
+    return plt
+
+
+
 
 
 def create_looses_chart(year_energy_data, input_values):
@@ -175,13 +223,7 @@ def create_monthly_energy_chart(monthly_energy_data, consumption=None):
     bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2, label='Energy Production')
 
     if consumption:
-        consumption_values = []
-        if not isinstance(consumption, float):
-            for consumption_entry in consumption:
-                consumption_values.append(consumption_entry.consumption)
-        else:
-            consumption_values = [(consumption*1000)/12] * 12
-        plt.plot(months, consumption_values, color='red', marker='o', linestyle='-', linewidth=2, label='Consumption')
+        plt.plot(months, consumption, color='red', marker='o', linestyle='-', linewidth=2, label='Consumption')
 
     plt.xlabel('Month')
     plt.ylabel('Energy (kWh/mo)')
@@ -193,7 +235,7 @@ def create_monthly_energy_chart(monthly_energy_data, consumption=None):
     plt.legend()
 
     plt.xticks(months, labels=month_labels)
-    plt.ylim(0, max(energy_values + (consumption_values if consumption else [0])) * 1.1)
+    plt.ylim(0, max(energy_values + (consumption if consumption else [0])) * 1.1)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
     plt.gca().spines['top'].set_visible(False)
