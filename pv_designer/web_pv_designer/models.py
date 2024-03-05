@@ -109,3 +109,12 @@ class SolarPanel(models.Model):
         pv_technology_display = dict(self._meta.get_field('pv_technology').flatchoices).get(self.pv_technology,
                                                                                             self.pv_technology)
         return f"{self.manufacturer} - {self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}"
+
+
+class MonthlyConsumption(models.Model):
+    power_plant = models.ForeignKey(PVPowerPlant, on_delete=models.CASCADE, related_name='monthly_consumptions')
+    month = models.IntegerField()
+    consumption = models.FloatField()
+
+    class Meta:
+        unique_together = ('power_plant', 'month')

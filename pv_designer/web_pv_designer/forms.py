@@ -2,7 +2,7 @@ from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
 from django.contrib.gis.geos import Point
 
-from .models import PVPowerPlant, SolarPanel, CustomUser
+from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
 
 
 class CustomSignupForm(SignupForm):
@@ -92,3 +92,14 @@ class UserAccountForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class MonthlyConsumptionForm(forms.ModelForm):
+    class Meta:
+        model = MonthlyConsumption
+        fields = ['month', 'consumption']
+
+        widgets = {
+            'month': forms.Select(attrs={'class': 'form-control'}),
+            'consumption': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

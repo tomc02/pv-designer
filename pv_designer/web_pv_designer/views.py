@@ -3,13 +3,14 @@ import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.forms import modelformset_factory
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm
-from .models import MapData, SolarPanel, CustomUser
+from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyConsumptionForm
+from .models import MapData, SolarPanel, CustomUser, MonthlyConsumption
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id
@@ -19,6 +20,11 @@ import requests
 
  
 def data_page(request):
+    MonthlyConsumptionFormSet = modelformset_factory(MonthlyConsumption, form=MonthlyConsumptionForm, extra=12)
+    month_names = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
     if request.method == 'POST':
         form = SolarPanelForm(request.POST)
         if form.is_valid():
@@ -26,10 +32,17 @@ def data_page(request):
             form.instance.user = request.user
             saved_instance = form.save()
             map_data_id = form.cleaned_data['map_id']
+            consumption_formset = MonthlyConsumptionFormSet(request.POST)
+            if consumption_formset.is_valid():
+                for consumption_form in consumption_formset:
+                    consumption = consumption_form.save(commit=False)
+                    consumption.pv_power_plant = saved_instance
+                    consumption.save()
             if map_data_id:
                 map_data = MapData.objects.get(id=map_data_id)
                 map_data.pv_power_plant = saved_instance
                 map_data.save()
+
                 return redirect('calculation_result', id=map_data_id)
         else:
             print(form.errors)
@@ -43,7 +56,9 @@ def data_page(request):
             if map_data.pv_power_plant:
                 form = SolarPanelForm(instance=map_data.pv_power_plant)
             form.fields['map_id'].initial = req_id
-            return render(request, 'data_page.html', {'form': form})
+            initial_months = [{'month': i + 1} for i in range(12)]
+            consumption_formset = MonthlyConsumptionFormSet(queryset=MonthlyConsumption.objects.none(), initial=initial_months)
+            return render(request, 'data_page.html', {'form': form, 'consumption_formset': consumption_formset, 'month_names': month_names})
 
 
 def index(request):

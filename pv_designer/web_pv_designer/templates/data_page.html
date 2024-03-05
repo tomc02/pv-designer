@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load form_tags %}
 {% block content %}
     <div class="container mt-5">
         <div id="content">
@@ -50,11 +51,21 @@
                                 <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
                                    title="Enter your yearly electricity consumption in MWh. This value will be used to visualize the coverage."></i></label>
                             {{ form.consumption_per_year }}
-
                         </div>
+
+<div class="row" id="consumption-formset">
+    {{ consumption_formset.management_form }}
+    {% for form in consumption_formset.forms %}
+      <div class="col-md-6 col-lg-3 mb-3">
+        <!-- Using forloop.counter0 to get month name from the list passed to the template -->
+        <label class="form-label">{{ form.month.value|get_month_name }}</label>
+        {{ form.month.as_hidden }}
+        {{ form.consumption }}
+      </div>
+    {% endfor %}
+</div>
+                        <div id="monthlyConsumption" style="display: none"></div>
                     </div>
-
-
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" name="{{ form.pv_electricity_price.name }}"
                                id="{{ form.pv_electricity_price.id_for_label }}"></input>
@@ -136,39 +147,47 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function () {
-            function toggleElementVisibility(checkbox, targetId) {
-                const target = $(`#${targetId}`);
-                checkbox.on('change', function () {
-                    if ($(this).prop('checked')) {
-                        target.show();
-                    } else {
-                        target.hide();
-                    }
-                });
-                // Trigger change event to set initial state
-                checkbox.trigger('change');
-            }
-        
-            toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
-    toggleElementVisibility($('#{{ form.off_grid.auto_id }}'), 'batteryFields');
-    toggleElementVisibility($('#{{ form.known_consumption.auto_id }}'), 'consumptionInput');
+<script>
+    $(document).ready(function () {
+        function toggleElementVisibility(checkbox, targetId) {
+            const target = $(`#${targetId}`);
+            checkbox.on('change', function () {
+                if ($(this).prop('checked')) {
+                    target.show();
+                } else {
+                    target.hide();
+                }
+            });
+            checkbox.trigger('change');
+        }
+        toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
+        toggleElementVisibility($('#{{ form.off_grid.auto_id }}'), 'batteryFields');
+        toggleElementVisibility($('#{{ form.known_consumption.auto_id }}'), 'consumptionInput');
 
-    // Set default values
-    const offGridDefaultValue = "{{ form.off_grid.value }}";
-    $(`#${'{{ form.off_grid.id_for_label }}'}`).prop('checked', offGridDefaultValue === "True").trigger('change');
+        // Set default values
+        const offGridDefaultValue = "{{ form.off_grid.value }}";
+        $(`#${'{{ form.off_grid.id_for_label }}'}`).prop('checked', offGridDefaultValue === "True").trigger('change');
 
-    const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
-    const knownConsumptionDefaultValue = "{{ form.known_consumption.value }}";
+        const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
+        const knownConsumptionDefaultValue = "{{ form.known_consumption.value }}";
 
-    $(`#${'{{ form.pv_electricity_price.id_for_label }}'}`).prop('checked', pvElectricityPriceDefaultValue === "True").trigger('change');
-    $(`#${'{{ form.known_consumption.id_for_label }}'}`).prop('checked', knownConsumptionDefaultValue === "True").trigger('change');
+        $(`#${'{{ form.pv_electricity_price.id_for_label }}'}`).prop('checked', pvElectricityPriceDefaultValue === "True").trigger('change');
+        $(`#${'{{ form.known_consumption.id_for_label }}'}`).prop('checked', knownConsumptionDefaultValue === "True").trigger('change');
 
-     $('#{{ form.system_loss.id_for_label }}').val(14);
-        })
-        ;
+        $('#{{ form.system_loss.id_for_label }}').val(14);
 
 
-    </script>
+        $('#monthlyConsumption').html(`
+
+        <div class="row">
+          ${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((mesic, index) => `
+          <div class="col-md-6 col-lg-3 mb-6">
+            <label for="{{ consumption_formset.month.id_for_label }}" class="form-label">${mesic}</label>
+            <input type="number" class="form-control" id="mesic-${index+1}" name="mesic-${index+1}">
+          </div>
+          `).join('')}
+        </div>
+  `);
+    });
+</script>
 {% endblock %}
