@@ -34,10 +34,10 @@ def data_page(request):
             saved_instance = form.save()
             map_data_id = form.cleaned_data['map_id']
             consumption_formset = MonthlyConsumptionFormSet(request.POST)
+            print(str(saved_instance.id) + 'saved_instance')
             if consumption_formset.is_valid():
                 instances = consumption_formset.save(commit=False)
                 for instance in instances:
-                    print(str(saved_instance.id) + 'saved_instance')
                     instance.power_plant = saved_instance
                     instance.save()
             if map_data_id:
@@ -53,10 +53,12 @@ def data_page(request):
         if req_id:
             form = SolarPanelForm()
             map_data = get_object_or_404(MapData, id=req_id)
+            pv_power_plant = map_data.pv_power_plant
             initial_months = [{'month': i + 1} for i in range(12)]
             if map_data.pv_power_plant:
-                form = SolarPanelForm(instance=map_data.pv_power_plant)
-                consumption_objects = MonthlyConsumption.objects.filter(power_plant=map_data.pv_power_plant)
+                form = SolarPanelForm(instance=pv_power_plant)
+                consumption_objects = MonthlyConsumption.objects.filter(power_plant=pv_power_plant)
+                print(str(consumption_objects.count()) + 'consumption_objects')
                 if consumption_objects.count() > 0:
                     consumption_formset = MonthlyConsumptionFormSetZero(queryset=consumption_objects)
                 else:

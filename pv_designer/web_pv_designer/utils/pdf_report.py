@@ -10,6 +10,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as ImagePlatypus, TableStyle, Table
 import seaborn as sns
+from ..models import MonthlyConsumption
 
 
 def create_pdf_report(user_id, areas, pv_data):
@@ -85,7 +86,14 @@ def create_pdf_report(user_id, areas, pv_data):
     year_energy_data = data['outputs']['totals']['fixed']
 
     # Create a chart with the monthly energy production
-    chart = create_monthly_energy_chart(data['outputs']['monthly']['fixed'])
+    known_consumption = pv_data.pv_power_plant.known_consumption
+    if known_consumption:
+        monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.pv_power_plant)
+        if monthly_consumption.count() != 12:
+            monthly_consumption = pv_data.pv_power_plant.consumption_per_year
+    else:
+        monthly_consumption = None
+    chart = create_monthly_energy_chart(data['outputs']['monthly']['fixed'], monthly_consumption)
     add_graph_to_report(chart, elements, page_content_width)
 
     # If consumption is known, create a chart with the yearly energy production and consumption
@@ -155,27 +163,39 @@ def create_consumption_chart(year_consumption, year_production):
     return plt
 
 
-def create_monthly_energy_chart(monthly_energy_data):
+def create_monthly_energy_chart(monthly_energy_data, consumption=None):
     months = [entry['month'] for entry in monthly_energy_data]
     energy_values = [entry['E_m'] for entry in monthly_energy_data]
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    # Convert month indices to names for better readability on the chart
+    month_labels = [month_names[month - 1] for month in months]
 
     plt.figure(figsize=(10, 6))
-    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2)
+    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2, label='Energy Production')
+
+    if consumption:
+        consumption_values = []
+        if not isinstance(consumption, float):
+            for consumption_entry in consumption:
+                consumption_values.append(consumption_entry.consumption)
+        else:
+            consumption_values = [(consumption*1000)/12] * 12
+        plt.plot(months, consumption_values, color='red', marker='o', linestyle='-', linewidth=2, label='Consumption')
 
     plt.xlabel('Month')
-    plt.ylabel('Energy Production (kWh/mo)')
-    plt.title('Monthly Energy Production')
+    plt.ylabel('Energy (kWh/mo)')
+    plt.title('Monthly Energy Production vs. Consumption')
 
-    # Add values above the bars with better styling
     for bar, value in zip(bars, energy_values):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2, f'{value:.2f}', ha='center', va='bottom',
                  color='black', fontweight='bold', fontsize=10)
+    plt.legend()
 
-    plt.xticks(months)
-    plt.ylim(0, max(energy_values) * 1.1)  # Adjust y-axis limit for better visualization
+    plt.xticks(months, labels=month_labels)
+    plt.ylim(0, max(energy_values + (consumption_values if consumption else [0])) * 1.1)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # Beautify the chart
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['left'].set_linewidth(0.5)
@@ -184,6 +204,7 @@ def create_monthly_energy_chart(monthly_energy_data):
     plt.tight_layout()
 
     return plt
+
 
 
 def create_table(areas, page_content_width):
