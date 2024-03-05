@@ -105,7 +105,24 @@
 
 .processing-message {
     font-size: 18px;
-    color: #333;
+}
+
+.accordion-button {
+    height: 38px;
+    padding: 6px 12px;
+}
+
+.accordion-body {
+    padding: 15px;
+}
+.last-input {
+    margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+    .accordion-button {
+        height: 45px;
+        padding: 8px 15px;
+    }
 }
 
 @keyframes spin {
