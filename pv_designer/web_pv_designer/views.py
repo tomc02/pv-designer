@@ -21,54 +21,53 @@ import requests
 
 def data_page(request):
     MonthlyConsumptionFormSet = modelformset_factory(MonthlyConsumption, form=MonthlyConsumptionForm, extra=12)
-    MonthlyConsumptionFormSetZero = modelformset_factory(MonthlyConsumption, form=MonthlyConsumptionForm, extra=0)
-    month_names = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]
     if request.method == 'POST':
-        form = SolarPanelForm(request.POST)
+        map_data_id = request.POST.get('map_id')
+        map_data = None
+        instance = None
+        if map_data_id:
+            map_data = get_object_or_404(MapData, id=map_data_id)
+            if map_data.pv_power_plant:
+                instance = map_data.pv_power_plant
+        form = SolarPanelForm(request.POST, instance=instance)
         if form.is_valid():
-            print(form.cleaned_data)
             form.instance.user = request.user
             saved_instance = form.save()
-            map_data_id = form.cleaned_data['map_id']
-            consumption_formset = MonthlyConsumptionFormSet(request.POST)
-            print(str(saved_instance.id) + 'saved_instance')
-            if consumption_formset.is_valid():
-                instances = consumption_formset.save(commit=False)
-                for instance in instances:
-                    instance.power_plant = saved_instance
-                    instance.save()
-            if map_data_id:
-                map_data = MapData.objects.get(id=map_data_id)
+            for i in range(0, 12):
+                consumption = request.POST.get(f'form-{i}-consumption')
+                month_obj = MonthlyConsumption.objects.filter(power_plant=saved_instance, month=i + 1)
+                if month_obj and consumption:
+                    month_obj.update(consumption=consumption)
+                elif consumption:
+                    month_obj = MonthlyConsumption(power_plant=saved_instance, month=i + 1, consumption=consumption)
+                    month_obj.save()
+            if map_data:
                 map_data.pv_power_plant = saved_instance
                 map_data.save()
-
                 return redirect('calculation_result', id=map_data_id)
         else:
             print(form.errors)
     else:
         req_id = request.GET.get('id')
         if req_id:
-            form = SolarPanelForm()
             map_data = get_object_or_404(MapData, id=req_id)
-            pv_power_plant = map_data.pv_power_plant
-            initial_months = [{'month': i + 1} for i in range(12)]
-            if map_data.pv_power_plant:
-                form = SolarPanelForm(instance=pv_power_plant)
-                consumption_objects = MonthlyConsumption.objects.filter(power_plant=pv_power_plant)
+            instance = map_data.pv_power_plant if map_data.pv_power_plant else None
+            form = SolarPanelForm()
+            initial_values = [{'month': i + 1} for i in range(12)]
+            if instance:
+                form = SolarPanelForm(instance=instance)
+                form.fields['map_id'].initial = req_id
+                consumption_objects = MonthlyConsumption.objects.filter(power_plant=instance)
                 print(str(consumption_objects.count()) + 'consumption_objects')
                 if consumption_objects.count() > 0:
-                    consumption_formset = MonthlyConsumptionFormSetZero(queryset=consumption_objects)
-                else:
-                    consumption_formset = MonthlyConsumptionFormSet(queryset=MonthlyConsumption.objects.none(),
-                                                                    initial=initial_months)
-            else:
-                consumption_formset = MonthlyConsumptionFormSet(queryset=MonthlyConsumption.objects.none(),
-                                                                initial=initial_months)
+                    initial_values = [{
+                        'month': consumption.month,
+                        'consumption': consumption.consumption
+                    } for consumption in consumption_objects]
+            consumption_formset = MonthlyConsumptionFormSet(queryset=MonthlyConsumption.objects.none(),
+                                                                initial=initial_values)
             form.fields['map_id'].initial = req_id
-            return render(request, 'data_page.html', {'form': form, 'consumption_formset': consumption_formset, 'month_names': month_names})
+            return render(request, 'data_page.html', {'form': form, 'consumption_formset': consumption_formset})
 
 
 def index(request):
