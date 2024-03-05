@@ -122,16 +122,16 @@ def create_pdf_report(user_id, areas, pv_data):
     known_consumption = pv_data.pv_power_plant.known_consumption
     if known_consumption:
         year_consumption = pv_data.pv_power_plant.consumption_per_year
-        chart = create_consumption_chart(year_consumption, year_production)
-        add_graph_to_report(chart, elements, page_content_width)
+        #chart = create_consumption_chart(year_consumption, year_production)
+        #add_graph_to_report(chart, elements, page_content_width)
 
         coverage_percentage = year_production / year_consumption * 100
         coverage_percentage = round(coverage_percentage, 2)
-        elements.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
+        #elements.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
 
     # Create a chart with the losses
-    chart = create_looses_chart(year_energy_data, input_values)
-    add_graph_to_report(chart, elements, page_content_width)
+    #chart = create_looses_chart(year_energy_data, input_values)
+    #add_graph_to_report(chart, elements, page_content_width)
 
     doc.build(elements)
 
@@ -143,21 +143,18 @@ def create_pdf_report(user_id, areas, pv_data):
 def create_energy_balance_chart(totals):
     labels = ['Consumed', 'Unused', 'Excess']
     sizes = [totals['consumed'], totals['unused'], totals['excess']]
-    # Some nice colors green, yellow, red
     colors = ['#4CAF50', '#FFC107', '#F44336']
 
-    explode = (0.1, 0, 0)  # only "explode" the first slice (Consumed)
+    explode = (0.1, 0, 0)
 
-
-    # Convert sizes to kWh for display in the legend
-    labels_with_values = [f"{label}: {size} kWh" for label, size in zip(labels, sizes)]
+    labels_with_values = [f'{label}: {round(size,2)} kWh' for label, size in zip(labels, sizes)]
 
     fig1, ax1 = plt.subplots()
-    patches, texts, autotexts = ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=colors,
+    ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=colors,
                                         autopct='%1.1f%%',
                                         shadow=True, startangle=90)
 
-    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    ax1.axis('equal')
     plt.title('Overall Energy Balance: Consumed vs. Unused vs. Excess', fontsize=14)
 
     return plt
