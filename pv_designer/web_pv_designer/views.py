@@ -6,8 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyConsumptionForm
 from .models import MapData, SolarPanel, CustomUser, MonthlyConsumption
@@ -16,7 +14,6 @@ from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
 from .signals import solar_panel_added
 import requests
-
 
 
 def data_page(request):
@@ -146,7 +143,6 @@ def ajax_endpoint(request):
         if custom_header_value == "Map-Data":
             result = process_map_data(data_from_js, str(user_id))
             if result is not JsonResponse:
-                # save_response(get_pvgis_response(params), request.user.id)
                 return JsonResponse({'message': 'Data saved', 'id': result})
             else:
                 return result
@@ -156,7 +152,6 @@ def ajax_endpoint(request):
 
  
 def calculation_result(request, id):
-    print('Waiting for calculation result')
     map_data = MapData.objects.get(id=id)
     user_id = get_user_id(request)
     if map_data.user.id != user_id:
@@ -167,9 +162,6 @@ def calculation_result(request, id):
     pdf_created = create_pdf_report(user_id, areas, map_data)
     if pdf_created:
         return render(request, 'calculation_result.html')
-    else:
-        print('PDF not created')
-        pass
 
 
 def serve_pdf(request):
@@ -179,6 +171,7 @@ def serve_pdf(request):
         raise Http404('PDF file does not exist')
 
     return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+
 
 @login_required
 def calculations_list(request):
@@ -251,9 +244,6 @@ def mapy_cz_tiles(request, zoom, x, y):
     content_type = response.headers['Content-Type']
     return HttpResponse(response.content, content_type=content_type)
 
-
-def help_page(request):
-    return render(request, 'help_page.html')
 
 def account_update(request):
     if request.method == 'POST':
