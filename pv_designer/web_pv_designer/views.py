@@ -13,7 +13,7 @@ from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyCo
 from .models import MapData, SolarPanel, CustomUser, MonthlyConsumption
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
-from .utils.utils import process_map_data, make_api_calling, get_user_id
+from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
 from .signals import solar_panel_added
 import requests
 
@@ -158,9 +158,10 @@ def ajax_endpoint(request):
 def calculation_result(request, id):
     print('Waiting for calculation result')
     map_data = MapData.objects.get(id=id)
-    if map_data.user != request.user:
-        return redirect('home')
     user_id = get_user_id(request)
+    if map_data.user.id != user_id:
+        return redirect('home')
+    load_image_from_db(user_id, map_data)
     make_api_calling(id, user_id)
     areas = map_data.areasObjects.all()
     pdf_created = create_pdf_report(user_id, areas, map_data)
@@ -168,11 +169,11 @@ def calculation_result(request, id):
         return render(request, 'calculation_result.html')
     else:
         print('PDF not created')
-        return render('home.html')
         pass
 
 
-def serve_pdf(request, user_id):
+def serve_pdf(request):
+    user_id = get_user_id(request)
     pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_data_report.pdf')
     if not os.path.exists(pdf_path):
         raise Http404('PDF file does not exist')
@@ -190,10 +191,6 @@ def get_pdf_result(request):
     if request.method == 'GET':
         calculation_id = request.GET.get('id')
         map_data = MapData.objects.get(id=calculation_id)
-        image = map_data.map_image
-        image_path = './web_pv_designer/pdf_sources/' + str(get_user_id(request)) + '/' + 'pv_image.png'
-        with open(image_path, 'wb') as f:
-            f.write(image.file.read())
         return redirect('calculation_result', id=calculation_id)
 
 

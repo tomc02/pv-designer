@@ -69,7 +69,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
             azimuth=area['azimuth'],
             title=area['title'],
             rotations=area['rotations'],
-            polygon = polygon
+            polygon=polygon
         )
         area_instance.save()
         print(area_instance)
@@ -126,8 +126,9 @@ def make_api_calling(data_id, user_id):
 
     with ThreadPoolExecutor(max_workers=4) as executor:
         results = list(executor.map(get_pvgis_response, params))
-
+    print(results)
     for i, response in enumerate(results):
+        print(response.text)
         save_response("response", response, user_id, i)
 
     if pv_power_plant.off_grid:
@@ -150,3 +151,9 @@ def get_user_id(request):
         return request.user.id
     else:
         return CustomUser.objects.get(username='anonymous').id
+
+
+def load_image_from_db(user_id, map_data):
+    image_path = './web_pv_designer/pdf_sources/' + str(user_id) + '/' + 'pv_image.png'
+    with open(image_path, 'wb') as f:
+        f.write(map_data.map_image.file.read())
