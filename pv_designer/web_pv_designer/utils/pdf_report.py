@@ -14,7 +14,7 @@ from ..models import MonthlyConsumption
 
 
 def create_pdf_report(user_id, areas, pv_data):
-    pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'pv_data_report.pdf')
+    pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_data_report.pdf')
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
     style_sheet = getSampleStyleSheet()

@@ -1,5 +1,6 @@
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 import matplotlib
 import requests
@@ -120,9 +121,14 @@ def make_api_calling(data_id, user_id):
             'optimalangles': area.mounting_position == 'optimize' and '1' or '0',
         }
         params.append(param)
-        save_response("response", get_pvgis_response(param), user_id, index)
         index += 1
         sum_power += area.installed_peak_power
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        results = list(executor.map(get_pvgis_response, params))
+
+    for i, response in enumerate(results):
+        save_response("response", response, user_id, i)
 
     if pv_power_plant.off_grid:
         param = {

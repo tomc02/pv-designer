@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -156,21 +156,28 @@ def ajax_endpoint(request):
 
  
 def calculation_result(request, id):
+    print('Waiting for calculation result')
     map_data = MapData.objects.get(id=id)
     if map_data.user != request.user:
         return redirect('home')
     user_id = get_user_id(request)
     make_api_calling(id, user_id)
-    pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str( user_id),
-                            'pv_data_report.pdf')
     areas = map_data.areasObjects.all()
     pdf_created = create_pdf_report(user_id, areas, map_data)
     if pdf_created:
-        return render(request, 'calculation_result.html', {'pdf_path': pdf_path})
+        return render(request, 'calculation_result.html')
     else:
+        print('PDF not created')
+        return render('home.html')
         pass
-        # something went wrong
 
+
+def serve_pdf(request, user_id):
+    pdf_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_data_report.pdf')
+    if not os.path.exists(pdf_path):
+        raise Http404('PDF file does not exist')
+
+    return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
 
 @login_required
 def calculations_list(request):
