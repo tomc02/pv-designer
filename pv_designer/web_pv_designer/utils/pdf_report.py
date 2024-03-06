@@ -273,8 +273,8 @@ def create_table(areas, page_content_width, optimized_areas):
             slope = f'{slope:.1f}'
             azimuth = f'{azimuth:.1f}'
             # Add cell style command for slope and azimuth values
-            cell_styles.append(('TEXTCOLOR', (3, index+1), (3, index+1), colors.green))  # Slope value
-            cell_styles.append(('TEXTCOLOR', (4, index+1), (4, index+1), colors.green))  # Azimuth value
+            cell_styles.append(('TEXTCOLOR', (3, index + 1), (3, index + 1), colors.green))  # Slope value
+            cell_styles.append(('TEXTCOLOR', (4, index + 1), (4, index + 1), colors.green))  # Azimuth value
         area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000,
                        slope, azimuth]
         area_info.append(area_values)
@@ -289,14 +289,15 @@ def create_table(areas, page_content_width, optimized_areas):
 
     # Initial table style configuration
     table_style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('BACKGROUND', (0, last_row_index), (-1, last_row_index), (222 / 255, 222 / 255, 182 / 255)),
-    ] + cell_styles)  # Add cell styles for optimized values
+                                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                 ('BACKGROUND', (0, last_row_index), (-1, last_row_index),
+                                  (222 / 255, 222 / 255, 182 / 255)),
+                             ] + cell_styles)  # Add cell styles for optimized values
 
     table_data = Table(area_info, colWidths=[page_content_width / len(area_info[0])])
     table_data.setStyle(table_style)
