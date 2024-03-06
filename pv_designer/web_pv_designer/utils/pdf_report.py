@@ -50,6 +50,20 @@ def create_pdf_report(user_id, areas, pv_data):
     elements.append(img)
     elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
+    yearly_consumption = 0
+    monthly_consumption_array = []
+    known_consumption = pv_data.pv_power_plant.known_consumption
+    if known_consumption:
+        monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.pv_power_plant)
+        if monthly_consumption.count() < 12:
+            monthly_consumption_array = [(pv_data.pv_power_plant.consumption_per_year * 1000) / 12] * 12
+            yearly_consumption = pv_data.pv_power_plant.consumption_per_year
+        else:
+            for month in monthly_consumption:
+                monthly_consumption_array.append(month.consumption)
+            yearly_consumption = round(sum(monthly_consumption_array) / 1000, 2)
+
+
     consumption_per_year = pv_data.pv_power_plant.consumption_per_year
     if consumption_per_year is None:
         consumption_per_year = '-'
@@ -62,7 +76,7 @@ def create_pdf_report(user_id, areas, pv_data):
         ["PV Panel Type", "Location Information", "Totals"],
         [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {year_production} MWh'],
         [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
-        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {consumption_per_year} MWh'],
+        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {yearly_consumption} MWh'],
         [f'Power: {pv_data.solar_panel.power} W', ''],
     ]
 
@@ -85,29 +99,18 @@ def create_pdf_report(user_id, areas, pv_data):
 
     year_energy_data = data['outputs']['totals']['fixed']
 
-    # Create a chart with the monthly energy production
-    monthly_consumption_array = []
-    known_consumption = pv_data.pv_power_plant.known_consumption
-    if known_consumption:
-        monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.pv_power_plant)
-        if monthly_consumption.count() < 12:
-            monthly_consumption_array = [(pv_data.pv_power_plant.consumption_per_year*1000)/12] * 12
-        else:
-            for month in monthly_consumption:
-                monthly_consumption_array.append(month.consumption)
-
     monthly_energy_data = data['outputs']['monthly']['fixed']
 
     chart = create_monthly_energy_chart(monthly_energy_data, monthly_consumption_array)
     add_graph_to_report(chart, elements, page_content_width)
 
 
-    totals = {'consumed': 0, 'unused': 0, 'excess': 0}
+    totals = {'consumed': 0, 'unused': 0, 'deficit': 0}
     for i in range(0, 12):
         production = monthly_energy_data[i]['E_m']
         if monthly_consumption_array[i] >= production:
             totals['consumed'] += production
-            totals['excess'] += monthly_consumption_array[i] - production
+            totals['deficit'] += monthly_consumption_array[i] - production
         else:
             totals['consumed'] += monthly_consumption_array[i]
             totals['unused'] += production - monthly_consumption_array[i]
@@ -141,8 +144,8 @@ def create_pdf_report(user_id, areas, pv_data):
 
 
 def create_energy_balance_chart(totals):
-    labels = ['Consumed', 'Unused', 'Excess']
-    sizes = [totals['consumed'], totals['unused'], totals['excess']]
+    labels = ['Consumed', 'Unused', 'Deficit']
+    sizes = [totals['consumed'], totals['unused'], totals['deficit']]
     colors = ['#4CAF50', '#FFC107', '#F44336']
 
     explode = (0.1, 0, 0)
@@ -155,7 +158,7 @@ def create_energy_balance_chart(totals):
                                         shadow=True, startangle=90)
 
     ax1.axis('equal')
-    plt.title('Overall Energy Balance: Consumed vs. Unused vs. Excess', fontsize=14)
+    plt.title('Overall Energy Balance', fontsize=14)
 
     return plt
 
@@ -164,7 +167,6 @@ def create_energy_balance_chart(totals):
 
 
 def create_looses_chart(year_energy_data, input_values):
-    # Create nice graph with losses
     l_aoi = year_energy_data['l_aoi']  # Losses due to angle of incidence
     l_spec = year_energy_data['l_spec']  # Losses due to spectral effects
     l_tg = year_energy_data['l_tg']  # Losses due Temperature and irradiance losses
@@ -172,7 +174,6 @@ def create_looses_chart(year_energy_data, input_values):
     l_system = l_system * -1
     l_total = year_energy_data['l_total']  # Total losses
 
-    # Negative values will be red, positive values will be green
     colors_plt = ['red' if value < 0 else 'green' for value in [l_spec, l_aoi, l_tg, l_system, l_total]]
 
     losses = [l_spec, l_aoi, l_tg, l_system, l_total]
@@ -183,7 +184,6 @@ def create_looses_chart(year_energy_data, input_values):
     plt.title('Losses', fontsize=16)
     plt.ylabel('Percentage (%)')
 
-    # Put values into the bars with better styling, NOT above the bars
     for bar, value in zip(bars, losses):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
                  color='black', fontweight='bold', fontsize=10)
