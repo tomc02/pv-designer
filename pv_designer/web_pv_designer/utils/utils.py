@@ -126,9 +126,7 @@ def make_api_calling(data_id, user_id):
 
     with ThreadPoolExecutor(max_workers=4) as executor:
         results = list(executor.map(get_pvgis_response, params))
-    print(results)
     for i, response in enumerate(results):
-        print(response.text)
         save_response("response", response, user_id, i)
 
     if pv_power_plant.off_grid:

@@ -9,7 +9,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as ImagePlatypus, TableStyle, Table
-import seaborn as sns
+
 from ..models import MonthlyConsumption
 
 
@@ -63,7 +63,6 @@ def create_pdf_report(user_id, areas, pv_data):
                 monthly_consumption_array.append(month.consumption)
             yearly_consumption = round(sum(monthly_consumption_array) / 1000, 2)
 
-
     consumption_per_year = pv_data.pv_power_plant.consumption_per_year
     if consumption_per_year is None:
         consumption_per_year = '-'
@@ -92,10 +91,31 @@ def create_pdf_report(user_id, areas, pv_data):
     elements.append(table)
     elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
+    # If azimuth and slope was optimized, add the optimized values to the areas
+    # For response in responses:
+    index = 0
+    optimized_areas = []
+    for response in response_file_paths:
+        with open(response, 'r') as json_file:
+            print(f"Reading response file: {response}")
+            data_response = json.load(json_file)
+            azimuth = data_response['inputs']['mounting_system']['fixed']['azimuth']
+            slope = data_response['inputs']['mounting_system']['fixed']['slope']
+            if azimuth['optimal'] and slope['optimal']:
+                areas[index].azimuth = azimuth['value']
+                areas[index].slope = slope['value']
+                optimized_areas.append(index)
+            index += 1
+
     # Table with Area Information
-    table_data = create_table(areas, page_content_width)
+    table_data = create_table(areas, page_content_width, optimized_areas)
     elements.append(table_data)
     elements.append(Paragraph('<br/>', style_sheet['BodyText']))
+
+    if optimized_areas:
+        optimized_text = 'The values highlighted in <font color="green">green</font> have been optimized for the best performance.'
+        elements.append(Paragraph(optimized_text, style_sheet['BodyText']))
+        elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     year_energy_data = data['outputs']['totals']['fixed']
 
@@ -103,7 +123,6 @@ def create_pdf_report(user_id, areas, pv_data):
 
     chart = create_monthly_energy_chart(monthly_energy_data, monthly_consumption_array)
     add_graph_to_report(chart, elements, page_content_width)
-
 
     totals = {'consumed': 0, 'unused': 0, 'deficit': 0}
     for i in range(0, 12):
@@ -118,23 +137,20 @@ def create_pdf_report(user_id, areas, pv_data):
     chart = create_energy_balance_chart(totals)
     add_graph_to_report(chart, elements, page_content_width)
 
-
-
-
     # If consumption is known, create a chart with the yearly energy production and consumption
     known_consumption = pv_data.pv_power_plant.known_consumption
     if known_consumption:
         year_consumption = pv_data.pv_power_plant.consumption_per_year
-        #chart = create_consumption_chart(year_consumption, year_production)
-        #add_graph_to_report(chart, elements, page_content_width)
+        # chart = create_consumption_chart(year_consumption, year_production)
+        # add_graph_to_report(chart, elements, page_content_width)
 
         coverage_percentage = year_production / year_consumption * 100
         coverage_percentage = round(coverage_percentage, 2)
-        #elements.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
+        # elements.append(Paragraph(f'Yearly energy production covers {coverage_percentage}% of the yearly consumption',))
 
     # Create a chart with the losses
-    #chart = create_looses_chart(year_energy_data, input_values)
-    #add_graph_to_report(chart, elements, page_content_width)
+    # chart = create_looses_chart(year_energy_data, input_values)
+    # add_graph_to_report(chart, elements, page_content_width)
 
     doc.build(elements)
 
@@ -150,20 +166,17 @@ def create_energy_balance_chart(totals):
 
     explode = (0.1, 0, 0)
 
-    labels_with_values = [f'{label}: {round(size,2)} kWh' for label, size in zip(labels, sizes)]
+    labels_with_values = [f'{label}: {round(size, 2)} kWh' for label, size in zip(labels, sizes)]
 
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=colors,
-                                        autopct='%1.1f%%',
-                                        shadow=True, startangle=90)
+            autopct='%1.1f%%',
+            shadow=True, startangle=90)
 
     ax1.axis('equal')
     plt.title('Overall Energy Balance', fontsize=14)
 
     return plt
-
-
-
 
 
 def create_looses_chart(year_energy_data, input_values):
@@ -245,27 +258,36 @@ def create_monthly_energy_chart(monthly_energy_data, consumption=None):
     return plt
 
 
-
-def create_table(areas, page_content_width):
+def create_table(areas, page_content_width, optimized_areas):
     area_info = [['Area', 'Panels Count', 'Peak Power [kW]', 'Slope [°]', 'Azimuth']]
     total_values = [0, 0, 0, 0, 0]  # Initialize total values
 
+    index = 0
+    cell_styles = []  # Initialize list to hold cell styles for optimized values
     for area in areas:
         data_json = area.to_JSON()
+        azimuth = data_json['azimuth']
+        slope = data_json['slope']
+        if index in optimized_areas:
+            # Instead of adding *, we'll change the text color later
+            slope = f'{slope:.1f}'
+            azimuth = f'{azimuth:.1f}'
+            # Add cell style command for slope and azimuth values
+            cell_styles.append(('TEXTCOLOR', (3, index+1), (3, index+1), colors.green))  # Slope value
+            cell_styles.append(('TEXTCOLOR', (4, index+1), (4, index+1), colors.green))  # Azimuth value
         area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000,
-                       data_json['slope'],
-                       data_json['azimuth']]
+                       slope, azimuth]
         area_info.append(area_values)
-        total_values = [sum(x) for x in zip(total_values, area_values[1:])]
+        total_values = [sum(x) for x in zip(total_values, area_values[1:3])]
+        index += 1
 
     # Add row for total values
     total_values = [round(x, 2) for x in total_values]
-    total_values[2] = '-'
-    total_values[3] = '-'
-    total_row = ['Total', *total_values]
+    total_row = ['Total', *total_values, '-', '-']
     area_info.append(total_row)
     last_row_index = len(area_info) - 1
 
+    # Initial table style configuration
     table_style = TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -274,7 +296,8 @@ def create_table(areas, page_content_width):
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
         ('BACKGROUND', (0, last_row_index), (-1, last_row_index), (222 / 255, 222 / 255, 182 / 255)),
-    ])
+    ] + cell_styles)  # Add cell styles for optimized values
+
     table_data = Table(area_info, colWidths=[page_content_width / len(area_info[0])])
     table_data.setStyle(table_style)
 
