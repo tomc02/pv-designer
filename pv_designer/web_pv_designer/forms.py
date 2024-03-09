@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.gis.geos import Point
 
 from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
+from pv_designer.settings import INITIAL_LATITUDE, INITIAL_LONGITUDE
 
 
 class CustomSignupForm(SignupForm):
@@ -76,8 +77,12 @@ class UserAccountForm(forms.ModelForm):
         fields = ['username', 'email', 'latitude', 'longitude']
     def __init__(self, *args, **kwargs):
         super(UserAccountForm, self).__init__(*args, **kwargs)
-        self.fields['latitude'].initial = self.instance.home_location.y
-        self.fields['longitude'].initial = self.instance.home_location.x
+        if self.instance.home_location:
+            self.fields['latitude'].initial = self.instance.home_location.y
+            self.fields['longitude'].initial = self.instance.home_location.x
+        else:
+            self.fields['latitude'].initial = INITIAL_LATITUDE
+            self.fields['longitude'].initial = INITIAL_LONGITUDE
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs['class'] = 'form-control'
         self.fields['username'].help_text = ''

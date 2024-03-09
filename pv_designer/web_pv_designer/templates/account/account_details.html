@@ -31,7 +31,8 @@
     </div>
     <script>
         user_location = "{{ user.home_location }}";
-        if (user_location) {
+        console.log(user_location);
+        if (user_location !== "None") {
             var matches = user_location.match(/POINT \(([^ ]+) ([^ ]+)\)/);
             if (matches && matches.length === 3) {
                 var longitude = parseFloat(matches[1]);

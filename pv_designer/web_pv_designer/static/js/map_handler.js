@@ -240,6 +240,6 @@ function updateMapMessage(hasLocation) {
     if (hasLocation) {
         messageElement.innerHTML = '';
     } else {
-        messageElement.innerHTML = '<p class="text-warning">Update your profile to set your home location.</p>';
+        messageElement.innerHTML = '<p class="text-warning">Update your account to set your home location.</p>';
     }
 }

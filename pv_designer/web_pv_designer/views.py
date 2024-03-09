@@ -14,6 +14,7 @@ from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
 from .signals import solar_panel_added
 import requests
+from pv_designer.settings import GOOGLE_MAPS_API_KEY, MAPY_CZ_API_KEY, INITIAL_LATITUDE, INITIAL_LONGITUDE
 
 
 def data_page(request):
@@ -97,25 +98,29 @@ def map_view(request):
         }
 
         return render(request, 'map.html', context)
-    # if users home location is set
-    if request.user.is_authenticated:
-        custom_user = CustomUser.objects.get(id=request.user.id)
-        if custom_user.home_location:
-            latitude = custom_user.home_location.y
-            longitude = custom_user.home_location.x
     else:
-        latitude = 49.83137
-        longitude = 18.16086
-    context = {
-        'latitude': latitude,
-        'longitude': longitude,
-        'map_data': {},
-        'areas_objects': [],
-        'instance_id': 0,
-        'panel_size': panel_size,
-        'solar_panels': SolarPanel.objects.all(),
-    }
-    return render(request, 'map.html', context)
+        # if users home location is set
+        if request.user.is_authenticated:
+            custom_user = CustomUser.objects.get(id=request.user.id)
+            if custom_user.home_location:
+                latitude = custom_user.home_location.y
+                longitude = custom_user.home_location.x
+            else:
+                latitude = INITIAL_LATITUDE
+                longitude = INITIAL_LONGITUDE
+        else:
+            latitude = INITIAL_LATITUDE
+            longitude = INITIAL_LONGITUDE
+        context = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'map_data': {},
+            'areas_objects': [],
+            'instance_id': 0,
+            'panel_size': panel_size,
+            'solar_panels': SolarPanel.objects.all(),
+        }
+        return render(request, 'map.html', context)
 
 
 @login_required
@@ -231,14 +236,14 @@ def get_solar_panels(request):
 
 
 def google_maps_js(request):
-    api_key = settings.GOOGLE_MAPS_API_KEY
+    api_key = GOOGLE_MAPS_API_KEY
     google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type="application/javascript")
 
 
 def mapy_cz_tiles(request, zoom, x, y):
-    api_key = settings.MAPY_CZ_API_KEY
+    api_key = MAPY_CZ_API_KEY
     url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={api_key}"
     response = requests.get(url)
     content_type = response.headers['Content-Type']
