@@ -25,8 +25,8 @@ def data_page(request):
         instance = None
         if map_data_id:
             map_data = get_object_or_404(PVPowerPlant, id=map_data_id)
-            if map_data.pv_power_plant:
-                instance = map_data.pv_power_plant
+            if map_data.system_details:
+                instance = map_data.system_details
         form = SolarPanelForm(request.POST, instance=instance)
         if form.is_valid():
             form.instance.user = request.user
@@ -40,7 +40,7 @@ def data_page(request):
                     month_obj = MonthlyConsumption(power_plant=saved_instance, month=i + 1, consumption=consumption)
                     month_obj.save()
             if map_data:
-                map_data.pv_power_plant = saved_instance
+                map_data.system_details = saved_instance
                 map_data.save()
                 return redirect('calculation_result', id=map_data_id)
         else:
@@ -49,7 +49,7 @@ def data_page(request):
         req_id = request.GET.get('id')
         if req_id:
             map_data = get_object_or_404(PVPowerPlant, id=req_id)
-            instance = map_data.pv_power_plant if map_data.pv_power_plant else None
+            instance = map_data.system_details if map_data.system_details else None
             form = SolarPanelForm()
             initial_values = [{'month': i + 1} for i in range(12)]
             if instance:
@@ -201,7 +201,7 @@ def delete_record(request):
         os.remove(os.path.join(settings.MEDIA_ROOT, record.map_image.name))
         for area in record.areas.all():
             area.delete()
-        record.pv_power_plant.delete()
+        record.system_details.delete()
         record.delete()
         return redirect('calculations')
     else:

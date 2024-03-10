@@ -98,7 +98,7 @@ def save_response(file_name, response, user_id, index=0):
 def make_api_calling(data_id, user_id):
     map_data = PVPowerPlant.objects.get(id=data_id)
     areas = map_data.areas.all()
-    pv_power_plant = map_data.pv_power_plant
+    pv_power_plant = map_data.system_details
     sum_power = 0
     params = []
     index = 0

@@ -21,10 +21,10 @@
                 </thead>
                 <tbody>
                 {% for record in records %}
-                    {% if record.pv_power_plant is not None %}
+                    {% if record.system_details is not None %}
                         <tr>
-                            <td>{{ record.pv_power_plant.created_at }}</td>
-                            <td>{{ record.pv_power_plant.title }}</td>
+                            <td>{{ record.system_details.created_at }}</td>
+                            <td>{{ record.system_details.title }}</td>
                             <td>
                                 <a href="{% url 'map' %}?record_id={{ record.id }}" class="btn btn-primary">Edit</a>
                                 <button onclick="showCalculationResult({{ record.id }})" class="btn btn-primary">Show

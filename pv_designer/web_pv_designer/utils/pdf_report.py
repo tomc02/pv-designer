@@ -52,18 +52,18 @@ def create_pdf_report(user_id, areas, pv_data):
 
     yearly_consumption = 0
     monthly_consumption_array = []
-    known_consumption = pv_data.pv_power_plant.known_consumption
+    known_consumption = pv_data.system_details.known_consumption
     if known_consumption:
-        monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.pv_power_plant)
+        monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.system_details)
         if monthly_consumption.count() < 12:
-            monthly_consumption_array = [(pv_data.pv_power_plant.consumption_per_year * 1000) / 12] * 12
-            yearly_consumption = pv_data.pv_power_plant.consumption_per_year
+            monthly_consumption_array = [(pv_data.system_details.consumption_per_year * 1000) / 12] * 12
+            yearly_consumption = pv_data.system_details.consumption_per_year
         else:
             for month in monthly_consumption:
                 monthly_consumption_array.append(month.consumption)
             yearly_consumption = round(sum(monthly_consumption_array) / 1000, 2)
 
-    consumption_per_year = pv_data.pv_power_plant.consumption_per_year
+    consumption_per_year = pv_data.system_details.consumption_per_year
     if consumption_per_year is None:
         consumption_per_year = '-'
     total_peak_power = 0
@@ -138,9 +138,9 @@ def create_pdf_report(user_id, areas, pv_data):
     add_graph_to_report(chart, elements, page_content_width)
 
     # If consumption is known, create a chart with the yearly energy production and consumption
-    known_consumption = pv_data.pv_power_plant.known_consumption
+    known_consumption = pv_data.system_details.known_consumption
     if known_consumption:
-        year_consumption = pv_data.pv_power_plant.consumption_per_year
+        year_consumption = pv_data.system_details.consumption_per_year
         # chart = create_consumption_chart(year_consumption, year_production)
         # add_graph_to_report(chart, elements, page_content_width)
 

@@ -14,7 +14,7 @@ class PVPowerPlant(models.Model):
     location = models.PointField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
-    pv_power_plant = models.ForeignKey('PVSystemDetails', null=True, on_delete=models.CASCADE)
+    system_details = models.ForeignKey('PVSystemDetails', null=True, on_delete=models.CASCADE)
     areas = models.ManyToManyField('Area', blank=True)
     solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
 
