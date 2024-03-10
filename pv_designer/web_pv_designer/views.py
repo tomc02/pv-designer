@@ -8,7 +8,7 @@ from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyConsumptionForm
-from .models import MapData, SolarPanel, CustomUser, MonthlyConsumption
+from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
@@ -24,7 +24,7 @@ def data_page(request):
         map_data = None
         instance = None
         if map_data_id:
-            map_data = get_object_or_404(MapData, id=map_data_id)
+            map_data = get_object_or_404(PVPowerPlant, id=map_data_id)
             if map_data.pv_power_plant:
                 instance = map_data.pv_power_plant
         form = SolarPanelForm(request.POST, instance=instance)
@@ -48,7 +48,7 @@ def data_page(request):
     else:
         req_id = request.GET.get('id')
         if req_id:
-            map_data = get_object_or_404(MapData, id=req_id)
+            map_data = get_object_or_404(PVPowerPlant, id=req_id)
             instance = map_data.pv_power_plant if map_data.pv_power_plant else None
             form = SolarPanelForm()
             initial_values = [{'month': i + 1} for i in range(12)]
@@ -80,11 +80,11 @@ def map_view(request):
 
     if record_id:
         print("record_id: " + record_id)
-        map_data = get_object_or_404(MapData, id=record_id)
+        map_data = get_object_or_404(PVPowerPlant, id=record_id)
         if map_data.user != request.user:
             return redirect('home')
         map_data = map_data.to_JSON()
-        areas_objects = MapData.objects.get(id=record_id).areasObjects.all()
+        areas_objects = PVPowerPlant.objects.get(id=record_id).areas.all()
         areas_objects = [area.to_JSON() for area in areas_objects]
 
         context = {
@@ -157,13 +157,13 @@ def ajax_endpoint(request):
 
  
 def calculation_result(request, id):
-    map_data = MapData.objects.get(id=id)
+    map_data = PVPowerPlant.objects.get(id=id)
     user_id = get_user_id(request)
     if map_data.user.id != user_id:
         return redirect('home')
     load_image_from_db(user_id, map_data)
     make_api_calling(id, user_id)
-    areas = map_data.areasObjects.all()
+    areas = map_data.areas.all()
     pdf_created = create_pdf_report(user_id, areas, map_data)
     if pdf_created:
         return render(request, 'calculation_result.html')
@@ -180,7 +180,7 @@ def serve_pdf(request):
 
 @login_required
 def calculations_list(request):
-    records = MapData.objects.filter(user=request.user)
+    records = PVPowerPlant.objects.filter(user=request.user)
     context = {'records': records}
     return render(request, 'user_calculations.html', context)
 
@@ -188,7 +188,7 @@ def calculations_list(request):
 def get_pdf_result(request):
     if request.method == 'GET':
         calculation_id = request.GET.get('id')
-        map_data = MapData.objects.get(id=calculation_id)
+        map_data = PVPowerPlant.objects.get(id=calculation_id)
         return redirect('calculation_result', id=calculation_id)
 
 
@@ -197,9 +197,9 @@ def delete_record(request):
     if request.method == 'POST':
         print('delete record' + str(request.GET.get('id')))
         record_id = request.GET.get('id')
-        record = get_object_or_404(MapData, id=record_id)
+        record = get_object_or_404(PVPowerPlant, id=record_id)
         os.remove(os.path.join(settings.MEDIA_ROOT, record.map_image.name))
-        for area in record.areasObjects.all():
+        for area in record.areas.all():
             area.delete()
         record.pv_power_plant.delete()
         record.delete()

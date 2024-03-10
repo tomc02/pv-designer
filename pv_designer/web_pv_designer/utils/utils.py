@@ -9,7 +9,7 @@ from django.contrib.gis.geos import Polygon, Point
 from django.http import JsonResponse
 
 from .images import save_map_img, delete_rotated_images
-from ..models import MapData, Area, CustomUser, SolarPanel
+from ..models import PVPowerPlant, Area, CustomUser, SolarPanel
 
 matplotlib.use('Agg')
 
@@ -18,17 +18,17 @@ def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
-            map_data = MapData.objects.get(id=parsed_data['mapDataID'])
+            map_data = PVPowerPlant.objects.get(id=parsed_data['mapDataID'])
             map_data.latitude = parsed_data['lat']
             map_data.longitude = parsed_data['lng']
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
-            map_data.areasObjects.clear()
+            map_data.areas.clear()
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data,
                              float(map_data.solar_panel.power))
         else:
-            last_map_data = MapData.objects.last()
+            last_map_data = PVPowerPlant.objects.last()
             if last_map_data is None:
                 id = 0
             else:
@@ -36,9 +36,9 @@ def process_map_data(data, user_id):
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
             pv_panel = SolarPanel.objects.get(id=parsed_data['solarPanelID'])
             user_obj = CustomUser.objects.get(id=user_id)
-            map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
-                               zoom=parsed_data['zoom'], map_image=img_path,
-                               solar_panel=pv_panel)
+            map_data = PVPowerPlant(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
+                                    zoom=parsed_data['zoom'], map_image=img_path,
+                                    solar_panel=pv_panel)
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
             delete_rotated_images()
@@ -73,7 +73,7 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
         )
         area_instance.save()
         print(area_instance)
-        map_data.areasObjects.add(area_instance)
+        map_data.areas.add(area_instance)
     map_data.save()
 
 
@@ -96,8 +96,8 @@ def save_response(file_name, response, user_id, index=0):
 
 
 def make_api_calling(data_id, user_id):
-    map_data = MapData.objects.get(id=data_id)
-    areas = map_data.areasObjects.all()
+    map_data = PVPowerPlant.objects.get(id=data_id)
+    areas = map_data.areas.all()
     pv_power_plant = map_data.pv_power_plant
     sum_power = 0
     params = []

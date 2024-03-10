@@ -3,28 +3,27 @@ from django.contrib.gis.db import models
 
 
 class CustomUser(AbstractUser):
-    address = models.CharField(max_length=255, blank=True, null=True)
     home_location = models.PointField(blank=True, null=True)
 
     def __str__(self):
         return self.username
 
 
-class MapData(models.Model):
+class PVPowerPlant(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
-    pv_power_plant = models.ForeignKey('PVPowerPlant', null=True, on_delete=models.CASCADE)
-    areasObjects = models.ManyToManyField('Area', blank=True)
+    pv_power_plant = models.ForeignKey('PVSystemDetails', null=True, on_delete=models.CASCADE)
+    areas = models.ManyToManyField('Area', blank=True)
     solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
 
     def __str__(self):
-        return f"Map Data - ID: {self.id}"
+        return f"PVPowerPlant - ID: {self.id}"
 
     def areas_objects_to_JSON(self):
-        return [area.to_JSON() for area in self.areasObjects.all()]
+        return [area.to_JSON() for area in self.areas.all()]
 
     def to_JSON(self):
         areas = self.areas_objects_to_JSON()
@@ -38,7 +37,7 @@ class MapData(models.Model):
         }
 
 
-class PVPowerPlant(models.Model):
+class PVSystemDetails(models.Model):
     title = models.CharField(max_length=255)
     system_loss = models.FloatField()
     pv_electricity_price = models.BooleanField(default=False)
@@ -112,7 +111,7 @@ class SolarPanel(models.Model):
 
 
 class MonthlyConsumption(models.Model):
-    power_plant = models.ForeignKey(PVPowerPlant, on_delete=models.CASCADE, related_name='monthly_consumptions')
+    power_plant = models.ForeignKey(PVSystemDetails, on_delete=models.CASCADE, related_name='monthly_consumptions')
     month = models.IntegerField()
     consumption = models.FloatField()
 

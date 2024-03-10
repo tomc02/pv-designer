@@ -2,7 +2,7 @@ from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
 from django.contrib.gis.geos import Point
 
-from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
+from .models import PVSystemDetails, SolarPanel, CustomUser, MonthlyConsumption
 from pv_designer.settings import INITIAL_LATITUDE, INITIAL_LONGITUDE
 
 
@@ -33,7 +33,7 @@ class SolarPanelForm(forms.ModelForm):
     map_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
-        model = PVPowerPlant
+        model = PVSystemDetails
         fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'off_grid',
                   'battery_capacity', 'discharge_cutoff_limit', 'consumption_per_day','known_consumption', 'consumption_per_year']
         widgets = {
