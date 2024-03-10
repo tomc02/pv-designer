@@ -11,8 +11,7 @@ class CustomUser(AbstractUser):
 
 class PVPowerPlant(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    location = models.PointField()
     zoom = models.IntegerField()
     map_image = models.ImageField(upload_to='map_images/', blank=True, null=True)
     pv_power_plant = models.ForeignKey('PVSystemDetails', null=True, on_delete=models.CASCADE)
@@ -29,8 +28,8 @@ class PVPowerPlant(models.Model):
         areas = self.areas_objects_to_JSON()
         return {
             'id': self.id,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
+            'latitude': self.location.y,
+            'longitude': self.location.x,
             'areasData': areas,
             'zoom': self.zoom,
             'solar_panel_id': self.solar_panel.id,

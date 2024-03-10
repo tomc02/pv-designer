@@ -19,8 +19,7 @@ def process_map_data(data, user_id):
         parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
             map_data = PVPowerPlant.objects.get(id=parsed_data['mapDataID'])
-            map_data.latitude = parsed_data['lat']
-            map_data.longitude = parsed_data['lng']
+            map_data.location = Point(parsed_data['lng'], parsed_data['lat'])
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
             map_data.areas.clear()
@@ -36,7 +35,8 @@ def process_map_data(data, user_id):
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
             pv_panel = SolarPanel.objects.get(id=parsed_data['solarPanelID'])
             user_obj = CustomUser.objects.get(id=user_id)
-            map_data = PVPowerPlant(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
+            location = Point(parsed_data['lng'], parsed_data['lat'])
+            map_data = PVPowerPlant(user=user_obj, location=location,
                                     zoom=parsed_data['zoom'], map_image=img_path,
                                     solar_panel=pv_panel)
             map_data.save()
@@ -104,8 +104,8 @@ def make_api_calling(data_id, user_id):
     index = 0
     for area in areas:
         param = {
-            'lat': map_data.latitude,
-            'lon': map_data.longitude,
+            'lat': map_data.location.y,
+            'lon': map_data.location.x,
             'pvtechchoice': map_data.solar_panel.pv_technology,
             'peakpower': area.installed_peak_power / 1000,
             'loss': pv_power_plant.system_loss,
@@ -131,8 +131,8 @@ def make_api_calling(data_id, user_id):
 
     if pv_power_plant.off_grid:
         param = {
-            'lat': map_data.latitude,
-            'lon': map_data.longitude,
+            'lat': map_data.location.y,
+            'lon': map_data.location.x,
             'peakpower': sum_power / 1000,
             'angle': areas[0].slope,
             'aspect': areas[0].azimuth,
