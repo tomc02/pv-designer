@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.gis.geos import Point
 
 from .models import PVSystemDetails, SolarPanel, CustomUser, MonthlyConsumption
-from pv_designer.settings import INITIAL_LATITUDE, INITIAL_LONGITUDE
+from .maps_config import INITIAL_LATITUDE, INITIAL_LONGITUDE
 
 
 class CustomSignupForm(SignupForm):

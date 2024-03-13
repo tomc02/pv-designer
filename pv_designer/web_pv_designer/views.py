@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django_ratelimit.decorators import ratelimit
 
 from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyConsumptionForm
 from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
@@ -14,7 +15,7 @@ from .utils.pdf_report import create_pdf_report
 from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
 from .signals import solar_panel_added
 import requests
-from pv_designer.settings import GOOGLE_MAPS_API_KEY, MAPY_CZ_API_KEY, INITIAL_LATITUDE, INITIAL_LONGITUDE
+from .maps_config import GOOGLE_MAPS_API_KEY, MAPY_CZ_API_KEY, INITIAL_LATITUDE, INITIAL_LONGITUDE, GOOGLE_MAPS_API_RATE_LIMIT, MAPY_CZ_API_RATE_LIMIT
 
 
 def data_page(request):
@@ -235,6 +236,7 @@ def get_solar_panels(request):
     return JsonResponse(data, safe=False)
 
 
+@ratelimit(key='ip', rate=GOOGLE_MAPS_API_RATE_LIMIT, method='GET', block=True)
 def google_maps_js(request):
     api_key = GOOGLE_MAPS_API_KEY
     google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
@@ -242,6 +244,7 @@ def google_maps_js(request):
     return HttpResponse(response.content, content_type="application/javascript")
 
 
+@ratelimit(key='ip', rate=MAPY_CZ_API_RATE_LIMIT, method='GET', block=True)
 def mapy_cz_tiles(request, zoom, x, y):
     api_key = MAPY_CZ_API_KEY
     url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={api_key}"

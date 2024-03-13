@@ -162,11 +162,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 10  # 10MB
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-
-# Load the API key from an environment variable or secure source
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
-MAPY_CZ_API_KEY = os.getenv('MAPY_CZ_API_KEY')
-
-# Load initial LATITUDE from an environment variable or secure source
-INITIAL_LATITUDE = os.getenv('INITIAL_LATITUDE')
-INITIAL_LONGITUDE = os.getenv('INITIAL_LONGITUDE')

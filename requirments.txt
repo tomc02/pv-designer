@@ -6,3 +6,4 @@ pandas
 matplotlib
 reportlab
 django-extensions
+django-ratelimit
