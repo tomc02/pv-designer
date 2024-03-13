@@ -236,18 +236,16 @@ def get_solar_panels(request):
     return JsonResponse(data, safe=False)
 
 
-@ratelimit(key='ip', rate=GOOGLE_MAPS_API_RATE_LIMIT, method='GET', block=True)
+@ratelimit(key='ip', rate=GOOGLE_MAPS_API_RATE_LIMIT, block=True)
 def google_maps_js(request):
-    api_key = GOOGLE_MAPS_API_KEY
-    google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={api_key}&libraries=drawing,places"
+    google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={GOOGLE_MAPS_API_KEY}&libraries=drawing,places"
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type="application/javascript")
 
 
-@ratelimit(key='ip', rate=MAPY_CZ_API_RATE_LIMIT, method='GET', block=True)
+@ratelimit(key='ip', rate=MAPY_CZ_API_RATE_LIMIT, block=True)
 def mapy_cz_tiles(request, zoom, x, y):
-    api_key = MAPY_CZ_API_KEY
-    url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={api_key}"
+    url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={MAPY_CZ_API_KEY}"
     response = requests.get(url)
     content_type = response.headers['Content-Type']
     return HttpResponse(response.content, content_type=content_type)
