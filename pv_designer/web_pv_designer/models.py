@@ -43,7 +43,6 @@ class PVSystemDetails(models.Model):
     pv_system_cost = models.FloatField(blank=True, null=True)
     interest = models.FloatField(blank=True, null=True)
     lifetime = models.IntegerField(blank=True, null=True)
-    known_consumption = models.BooleanField(default=False)
     consumption_per_year = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

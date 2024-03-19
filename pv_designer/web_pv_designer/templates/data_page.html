@@ -27,7 +27,7 @@
                             {{ form.title }}
                         </div>
 
-                        <div class="form-group last-input">
+                        <div class="form-group">
                             <label for="{{ form.system_loss.id_for_label }}">System loss [%]
                                 <i class="bi bi-question-lg"
                                    data-bs-toggle="tooltip"
@@ -38,16 +38,7 @@
 
                         </div>
 
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="{{ form.known_consumption.name }}"
-                                   id="{{ form.known_consumption.id_for_label }}"></input>
-                            <label class="form-check-label" for="{{ form.known_consumption.id_for_label }}">I know my
-                                consumption
-                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Check this if you know your annual electricity consumption."></i></label>
-                        </div>
-
-                        <div id="consumptionInput" style="display:none;" class="last-input">
+                        <div id="consumptionInput" class="last-input">
                             <div class="form-group" style="margin-bottom: 10px">
                                 <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
                                     <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
@@ -142,13 +133,10 @@
             checkbox.trigger('change');
         }
         toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
-        toggleElementVisibility($('#{{ form.known_consumption.auto_id }}'), 'consumptionInput');
 
         const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
-        const knownConsumptionDefaultValue = "{{ form.known_consumption.value }}";
 
         $(`#${'{{ form.pv_electricity_price.id_for_label }}'}`).prop('checked', pvElectricityPriceDefaultValue === "True").trigger('change');
-        $(`#${'{{ form.known_consumption.id_for_label }}'}`).prop('checked', knownConsumptionDefaultValue === "True").trigger('change');
 
         $('#{{ form.system_loss.id_for_label }}').val(14);
 
