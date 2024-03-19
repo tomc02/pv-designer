@@ -124,7 +124,7 @@ def make_api_calling(data_id, user_id):
         index += 1
         sum_power += area.installed_peak_power
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor() as executor:
         results = list(executor.map(get_pvgis_response, params))
     for i, response in enumerate(results):
         save_response("response", response, user_id, i)

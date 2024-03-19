@@ -99,17 +99,17 @@ function getHeadings(corners) {
 }
 
 function computeAzimuth(headingLTR) {
-    let azimuth = 0;
-    if (headingLTR < -90) {
-        azimuth = 90 + 180 + headingLTR;
-    } else {
-        azimuth = headingLTR - 90;
+    // Normalize the heading to a 360° system and adjust by -90° to align with azimuth definitions
+    let azimuth = (headingLTR + 270) % 360;
+
+    // Convert azimuth to the -180° to 180° system
+    if (azimuth > 180) {
+        azimuth -= 360;
     }
-    azimuth = Math.round(azimuth);
-    return azimuth;
+    return Math.round(azimuth);
 }
 
-function computeHyptenuse(heading1, heading2, panelHeight) {
+function computeHypotenuse(heading1, heading2, panelHeight) {
     let angle = calculateAngle(heading1, heading2);
     angle = Math.abs(angle - 90);
     return panelHeight / Math.cos(angle * Math.PI / 180);
@@ -139,8 +139,9 @@ function fillPolygon(index) {
 
     let polygon = shapesHandler.getShape(index);
     let {headingLTR, headingRTL, headingLTD, headingRTD} = getHeadings(cornerPoints);
-    const hypotenuseLTR_LTD = computeHyptenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
-    const hypotenuseRTL_RTD = computeHyptenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
+
+    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
@@ -153,9 +154,9 @@ function fillPolygon(index) {
 
     while (continuePlacingPanels && iteration < 100) {
         if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
-            topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
+            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
-            topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
+            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
         }
         // move corner points
         cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
@@ -195,8 +196,8 @@ function fillTriangle(index) {
     let headingRTL = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     let headingRTD = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.bottom);
 
-    const hypotenuseLTR_LTD = computeHyptenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
-    const hypotenuseRTL_RTD = computeHyptenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
@@ -209,9 +210,9 @@ function fillTriangle(index) {
 
     while (continuePlacingPanels && iteration < 100) {
         if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
-            topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
+            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
-            topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
+            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
         }
         // move corner points
         cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
@@ -228,20 +229,20 @@ function fillTriangle(index) {
     return new areaData(panelsCount, azimuth);
 }
 
-function generatePointsBetween(startPoint, endPoint, panleWidth, heading) {
-    const points = [];
+function generatePanels(startPoint, endPoint, panelWidth, heading) {
+    const panels = [];
     let position = startPoint;
     let index = 0;
-    while (google.maps.geometry.spherical.computeDistanceBetween(position, endPoint) > panleWidth) {
-        points.push(position);
-        position = google.maps.geometry.spherical.computeOffset(position, panleWidth, heading);
+    while (google.maps.geometry.spherical.computeDistanceBetween(position, endPoint) >= panelWidth) {
+        panels.push(position);
+        position = google.maps.geometry.spherical.computeOffset(position, panelWidth, heading);
         index++;
         if (index > 100) {
             console.error('Infinite loop');
             break;
         }
     }
-    return points;
+    return panels;
 }
 
 function drawPoints(points, polygon, angle, pvPanelUrl, polygonIndex) {

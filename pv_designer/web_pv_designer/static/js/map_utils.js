@@ -61,6 +61,7 @@ function getMapPicture() {
         alert('Please select a PV panel type');
     }
 }
+
 function convertToGoogleMapsPolygonPath(coordsObj) {
     const path = [];
     for (const key in coordsObj) {
@@ -72,6 +73,7 @@ function convertToGoogleMapsPolygonPath(coordsObj) {
     }
     return path;
 }
+
 function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
         map = new google.maps.Map(document.getElementById('map'), {

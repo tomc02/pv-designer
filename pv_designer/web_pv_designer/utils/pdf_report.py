@@ -162,20 +162,17 @@ def create_pdf_report(user_id, areas, pv_data):
 def create_energy_balance_chart(totals):
     labels = ['Consumed', 'Unused', 'Deficit']
     sizes = [totals['consumed'], totals['unused'], totals['deficit']]
-    colors = ['#4CAF50', '#FFC107', '#F44336']
-
+    chart_colors = ['#4CAF50', '#FFC107', '#F44336']
     explode = (0.1, 0, 0)
-
     labels_with_values = [f'{label}: {round(size, 2)} kWh' for label, size in zip(labels, sizes)]
 
     fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=colors,
+    ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=chart_colors,
             autopct='%1.1f%%',
             shadow=True, startangle=90)
 
     ax1.axis('equal')
     plt.title('Overall Energy Balance', fontsize=14)
-
     return plt
 
 
