@@ -83,12 +83,6 @@ def get_pvgis_response(params):
     return response
 
 
-def get_pvgis_response_off_grid(params):
-    base_url = 'https://re.jrc.ec.europa.eu/api/SHScalc'
-    response = requests.get(base_url, params=params)
-    return response
-
-
 def save_response(file_name, response, user_id, index=0):
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id))
     with open(path_to_source + '/' + file_name + str(index) + '.json', 'wb') as f:
@@ -128,20 +122,6 @@ def make_api_calling(data_id, user_id):
         results = list(executor.map(get_pvgis_response, params))
     for i, response in enumerate(results):
         save_response("response", response, user_id, i)
-
-    if pv_power_plant.off_grid:
-        param = {
-            'lat': map_data.location.y,
-            'lon': map_data.location.x,
-            'peakpower': sum_power / 1000,
-            'angle': areas[0].slope,
-            'aspect': areas[0].azimuth,
-            'batterysize': pv_power_plant.battery_capacity,
-            'cutoff': pv_power_plant.discharge_cutoff_limit,
-            'consumptionday': pv_power_plant.consumption_per_day,
-            'outputformat': 'json'
-        }
-        save_response("response_off_grid", get_pvgis_response_off_grid(param), user_id, 0)
 
 
 def get_user_id(request):

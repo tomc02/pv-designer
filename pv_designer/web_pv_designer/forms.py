@@ -34,8 +34,7 @@ class SolarPanelForm(forms.ModelForm):
 
     class Meta:
         model = PVSystemDetails
-        fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'off_grid',
-                  'battery_capacity', 'discharge_cutoff_limit', 'consumption_per_day','known_consumption', 'consumption_per_year']
+        fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'known_consumption', 'consumption_per_year']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -43,9 +42,6 @@ class SolarPanelForm(forms.ModelForm):
             'pv_system_cost': forms.NumberInput(attrs={'class': 'form-control'}),
             'interest': forms.NumberInput(attrs={'class': 'form-control'}),
             'lifetime': forms.NumberInput(attrs={'class': 'form-control'}),
-            'battery_capacity': forms.NumberInput(attrs={'class': 'form-control'}),
-            'discharge_cutoff_limit': forms.NumberInput(attrs={'class': 'form-control'}),
-            'consumption_per_day': forms.NumberInput(attrs={'class': 'form-control'}),
             'known_consumption': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'consumption_per_year': forms.NumberInput(attrs={'class': 'form-control'}),
         }

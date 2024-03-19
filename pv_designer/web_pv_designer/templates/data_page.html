@@ -115,42 +115,6 @@
                                 {{ form.lifetime }}
                             </div>
                         </div>
-
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="{{ form.off_grid.name }}"
-                                   id="{{ form.off_grid.id_for_label }}"></input>
-                            <label class="form-check-label" for="{{ form.off_grid.id_for_label }}">Include Battery
-                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                                   title="Select this option if your PV system includes energy storage solutions like batteries.
-                            This is essential for off-grid systems or for adding energy resilience to grid-tied systems."></i></label>
-                        </div>
-
-                        <div id="batteryFields" style="display:none;">
-                            <div class="form-group">
-                                <label for="{{ form.battery_capacity.id_for_label }}">Battery capacity [Wh]
-                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                                       title="Total energy storage capacity of the battery(ies) in watt-hours (Wh).
-                                Adequate capacity is critical for ensuring energy availability during periods without sunlight."></i></label>
-                                {{ form.battery_capacity }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form.discharge_cutoff_limit.id_for_label }}">Discharge cut-off limit
-                                    [%]
-                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                                       title="Minimum state of charge as a percentage before the system stops drawing power from the battery.
-                                Setting this limit helps in prolonging battery life."></i></label>
-                                {{ form.discharge_cutoff_limit }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form.consumption_per_day.id_for_label }}">Consumption per day [Wh]
-                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
-                                       title="Your daily energy consumption in watt-hours (Wh).
-                                This figure helps in sizing the battery system to ensure it can meet your daily energy demands."></i></label>
-                                {{ form.consumption_per_day }}
-                            </div>
-                        </div>
                         <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue</button>
                     </form>
                 </div>
@@ -178,12 +142,7 @@
             checkbox.trigger('change');
         }
         toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
-        toggleElementVisibility($('#{{ form.off_grid.auto_id }}'), 'batteryFields');
         toggleElementVisibility($('#{{ form.known_consumption.auto_id }}'), 'consumptionInput');
-
-        // Set default values
-        const offGridDefaultValue = "{{ form.off_grid.value }}";
-        $(`#${'{{ form.off_grid.id_for_label }}'}`).prop('checked', offGridDefaultValue === "True").trigger('change');
 
         const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
         const knownConsumptionDefaultValue = "{{ form.known_consumption.value }}";
