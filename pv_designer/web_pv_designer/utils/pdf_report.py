@@ -111,8 +111,18 @@ def create_pdf_report(user_id, areas, pv_data):
     elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     if optimized_areas:
-        optimized_text = 'The values highlighted in <font color="green">green</font> have been optimized for the best performance.'
+        optimized_text = ('The values highlighted in <font color="green">green</font> have been optimized for the best '
+                          'performance.')
         elements.append(Paragraph(optimized_text, style_sheet['BodyText']))
+        elements.append(Paragraph('<br/>', style_sheet['BodyText']))
+
+    if 'LCOE_pv' in data['outputs']['totals']['fixed']:
+        elements.append(Paragraph('Electricity Price', style_sheet['Heading3']))
+        lcoe = data['outputs']['totals']['fixed']['LCOE_pv']
+        lcoe_text = (f'For your photovoltaic system, with an initial cost of {pv_data.system_details.pv_system_cost} EUR,'
+                     f' an interest rate of {pv_data.system_details.interest}%, and an expected operational lifetime of {pv_data.system_details.lifetime} years,'
+                     f' the calculated electricity price is <b>{lcoe}</b> EUR per kWh.')
+        elements.append(Paragraph(lcoe_text, style_sheet['BodyText']))
         elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
     year_energy_data = data['outputs']['totals']['fixed']
@@ -348,6 +358,8 @@ def sum_responses(file_paths, path_to_source):
                     sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(
                 response["outputs"]["totals"]["fixed"][key]))
 
+        print("Costs:" + str(response["outputs"]["totals"]["fixed"].get("LCOE_pv", 0)))
+
     for key in ["l_aoi", "l_spec", "l_tg"]:
         sum_response["outputs"]["totals"]["fixed"][key] = (
                 sum_response["outputs"]["totals"]["fixed"][key] / len(file_paths))
@@ -356,6 +368,10 @@ def sum_responses(file_paths, path_to_source):
                                                             sum_response["outputs"]["totals"]["fixed"]["l_spec"] + \
                                                             sum_response["outputs"]["totals"]["fixed"]["l_tg"] - \
                                                             sum_response["inputs"]["pv_module"]["system_loss"]
+    # Average the LCOE_pv value
+    if "LCOE_pv" in sum_response["outputs"]["totals"]["fixed"]:
+        sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] = sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] / len(file_paths)
+
 
     # Save the sum to a new file
     with open(path_to_source + 'response_sum.json', 'w') as output_file:

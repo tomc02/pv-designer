@@ -93,9 +93,18 @@ def make_api_calling(data_id, user_id):
     map_data = PVPowerPlant.objects.get(id=data_id)
     areas = map_data.areas.all()
     pv_power_plant = map_data.system_details
-    sum_power = 0
+    sum_power = sum([area.installed_peak_power for area in areas])
     params = []
     index = 0
+    areas_pv_system_costs = []
+    if pv_power_plant.pv_system_cost:
+        for area in areas:
+            weight = area.installed_peak_power / sum_power
+            area_pv_system_cost = pv_power_plant.pv_system_cost * area.installed_peak_power / sum_power
+            areas_pv_system_costs.append(area_pv_system_cost)
+    else:
+        areas_pv_system_costs = [0] * len(areas)
+
     for area in areas:
         param = {
             'lat': map_data.location.y,
@@ -107,7 +116,7 @@ def make_api_calling(data_id, user_id):
             'angle': area.slope,
             'aspect': area.azimuth,
             'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
-            'systemcost': pv_power_plant.pv_system_cost,
+            'systemcost': areas_pv_system_costs[index] if pv_power_plant.pv_system_cost else pv_power_plant.pv_system_cost,
             'interest': pv_power_plant.interest,
             'lifetime': pv_power_plant.lifetime,
             'outputformat': 'json',
@@ -116,7 +125,6 @@ def make_api_calling(data_id, user_id):
         }
         params.append(param)
         index += 1
-        sum_power += area.installed_peak_power
 
     with ThreadPoolExecutor() as executor:
         results = list(executor.map(get_pvgis_response, params))
