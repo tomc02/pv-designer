@@ -116,14 +116,15 @@ def make_api_calling(data_id, user_id):
             'angle': area.slope,
             'aspect': area.azimuth,
             'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
-            'systemcost': areas_pv_system_costs[index] if pv_power_plant.pv_system_cost else pv_power_plant.pv_system_cost,
-            'interest': pv_power_plant.interest,
-            'lifetime': pv_power_plant.lifetime,
+            'systemcost': areas_pv_system_costs[index],
+            'interest': pv_power_plant.interest if pv_power_plant.interest else 0,
+            'lifetime': pv_power_plant.lifetime if pv_power_plant.lifetime else 25,
             'outputformat': 'json',
             'optimalinclination': area.mounting_position == 'optimize' and '1' or '0',
             'optimalangles': area.mounting_position == 'optimize' and '1' or '0',
         }
         params.append(param)
+        print(param)
         index += 1
 
     with ThreadPoolExecutor() as executor:

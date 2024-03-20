@@ -119,8 +119,11 @@ def create_pdf_report(user_id, areas, pv_data):
     if 'LCOE_pv' in data['outputs']['totals']['fixed']:
         elements.append(Paragraph('Electricity Price', style_sheet['Heading3']))
         lcoe = data['outputs']['totals']['fixed']['LCOE_pv']
-        lcoe_text = (f'For your photovoltaic system, with an initial cost of {pv_data.system_details.pv_system_cost} EUR,'
-                     f' an interest rate of {pv_data.system_details.interest}%, and an expected operational lifetime of {pv_data.system_details.lifetime} years,'
+        pv_system_cost = pv_data.system_details.pv_system_cost if pv_data.system_details.pv_system_cost else data['inputs']['economic_data']['system_cost']
+        interest = pv_data.system_details.interest if pv_data.system_details.interest else data['inputs']['economic_data']['interest']
+        lifetime = pv_data.system_details.lifetime if pv_data.system_details.lifetime else data['inputs']['economic_data']['lifetime']
+        lcoe_text = (f'For your photovoltaic system, with an initial cost of {pv_system_cost} EUR,'
+                     f' an interest rate of {interest}%, and an expected operational lifetime of {lifetime} years,'
                      f' the calculated electricity price is <b>{lcoe}</b> EUR per kWh.')
         elements.append(Paragraph(lcoe_text, style_sheet['BodyText']))
         elements.append(Paragraph('<br/>', style_sheet['BodyText']))
