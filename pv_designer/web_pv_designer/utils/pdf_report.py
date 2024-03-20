@@ -142,20 +142,29 @@ def create_pdf_report(user_id, areas, pv_data):
     return True
 
 
+import matplotlib.pyplot as plt
+
+
 def create_energy_balance_chart(totals):
     labels = ['Consumed', 'Unused', 'Deficit']
     sizes = [totals['consumed'], totals['unused'], totals['deficit']]
     chart_colors = ['#4CAF50', '#FFC107', '#F44336']
     explode = (0.1, 0, 0)
-    labels_with_values = [f'{label}: {round(size, 2)} kWh' for label, size in zip(labels, sizes)]
+    labels_with_values = [f'{label}: {round(size, 1)} kWh' for label, size in zip(labels, sizes)]
 
-    fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, explode=explode, labels=labels_with_values, colors=chart_colors,
-            autopct='%1.1f%%',
-            shadow=True, startangle=90)
+    fig1, ax1 = plt.subplots(figsize=(8, 7))
+    wedges, texts, autotexts = ax1.pie(sizes, explode=explode, colors=chart_colors,
+                                       autopct='%1.1f%%', shadow=True, startangle=90)
 
     ax1.axis('equal')
-    plt.title('Overall Energy Balance', fontsize=14)
+    #plt.legend(wedges, labels_with_values, title="Energy Distribution", loc="upper center", bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, fontsize=12, title_fontsize=14)
+
+    plt.legend(labels_with_values, fontsize=12, loc="upper left", bbox_to_anchor=(0.81, 0.0, 0.0, 1.0), title="Energy Distribution", title_fontsize=14)
+    plt.title('Overall Energy Balance', fontsize=16, x=0.65, pad=20)
+
+    plt.setp(autotexts, size=12)
+
+    plt.tight_layout()
     return plt
 
 
@@ -217,12 +226,12 @@ def create_monthly_energy_chart(monthly_energy_data, consumption=None):
 
     plt.xlabel('Month')
     plt.ylabel('Energy (kWh/mo)')
-    plt.title('Monthly Energy Production vs. Consumption')
+    plt.title('Monthly Energy Production vs. Consumption', fontsize=16)
 
     for bar, value in zip(bars, energy_values):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2, f'{value:.2f}', ha='center', va='bottom',
                  color='black', fontweight='bold', fontsize=10)
-    plt.legend()
+    plt.legend(fontsize=12)
 
     plt.xticks(months, labels=month_labels)
     plt.ylim(0, max(energy_values + (consumption if consumption else [0])) * 1.1)

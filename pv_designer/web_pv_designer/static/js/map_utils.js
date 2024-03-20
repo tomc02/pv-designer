@@ -102,6 +102,7 @@ function loadMapData() {
             addControlPanel();
         });
         areasObjects.forEach(function (areaData) {
+            console.error('areaData', areaData);
             updateControlPanelTitle(areaData.title, index);
             updateControlPanelSlope(areaData.slope, index);
             updateControlPanelMountingPosition(areaData.mounting_position, index);
