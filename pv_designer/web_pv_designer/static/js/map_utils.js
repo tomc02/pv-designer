@@ -172,7 +172,7 @@ function loadMapData() {
     const drawShapeButton = document.createElement('button');
     drawShapeButton.id = 'drawShapeButton';
     drawShapeButton.classList.add('btn', 'btn-primary', 'btn-sm');
-    drawShapeButton.innerText = 'Add area';
+    drawShapeButton.innerText = 'New area';
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(drawShapeButton);
     drawShapeButton.style.display = 'block';
     drawShapeButton.style.margin = '10px';
@@ -208,7 +208,7 @@ function loadMapData() {
     mapTypeSelect.appendChild(classicMapOption);
 
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapTypeSelect);
-    mapTypeSelect.style.width = '75px';
+    mapTypeSelect.style.width = '77px';
     mapTypeSelect.style.marginLeft = '10px';
 
     mapTypeSelect.addEventListener('change', function () {
