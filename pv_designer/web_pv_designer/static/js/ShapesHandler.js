@@ -125,6 +125,7 @@ class ShapesHandler {
                 this.shapesCount--;
                 this.selectedShape = null;
                 this.selectedShapeIndex = null;
+                shapesFiled.splice(index, 1);
             }
         }
     }

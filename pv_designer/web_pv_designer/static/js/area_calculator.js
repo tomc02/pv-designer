@@ -119,6 +119,7 @@ function fillPolygon(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
+        console.log('Sorting corners');
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
     } else {

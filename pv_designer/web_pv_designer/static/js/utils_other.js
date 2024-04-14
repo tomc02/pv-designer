@@ -35,8 +35,6 @@ function moveToForm() {
         'solarPanelID': solarPanelID,
     };
     sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
-
-    // if
 }
 
 function convertShapesToJSON(shapes) {
@@ -64,6 +62,7 @@ function showProcessing(controlPanelOnly = false) {
     }
     $('#loading').show();
     processing = true;
+    console.log('showProcessing');
 }
 
 function hideProcessing() {

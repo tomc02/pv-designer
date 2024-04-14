@@ -107,45 +107,54 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue</button>
+                            <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-            <div id="loading" class="loading">
-                <div class="processing-container">
-                    <div class="processing-animation"></div>
-                    <p class="processing-message">Processing...</p>
-                </div>
+        </div>
+        <div id="loading" class="loading">
+            <div class="processing-container">
+                <div class="processing-animation"></div>
+                <p class="processing-message">Processing...</p>
             </div>
         </div>
     </div>
 
-<script>
-    $(document).ready(function () {
-        function toggleElementVisibility(checkbox, targetId) {
-            const target = $(`#${targetId}`);
-            checkbox.on('change', function () {
-                if ($(this).prop('checked')) {
-                    target.show();
-                } else {
-                    target.hide();
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function toggleElementVisibility(checkbox, targetId) {
+                const target = document.getElementById(targetId);
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        target.style.display = 'block';
+                    } else {
+                        target.style.display = 'none';
+                    }
+                });
+                checkbox.dispatchEvent(new Event('change'));
+            }
+
+            const checkbox = document.getElementById('{{ form.pv_electricity_price.auto_id }}');
+            toggleElementVisibility(checkbox, 'pvElectricityPriceInputs');
+
+            const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
+            const pvElectricityPriceCheckbox = document.getElementById('{{ form.pv_electricity_price.id_for_label }}');
+            pvElectricityPriceCheckbox.checked = pvElectricityPriceDefaultValue === "True";
+            pvElectricityPriceCheckbox.dispatchEvent(new Event('change'));
+
+            document.getElementById('{{ form.system_loss.id_for_label }}').value = 14;
+
+            // if consumption in december is not empty, show the accordion
+            const consumptionInputs = document.querySelectorAll('#consumption-formset input[name$="consumption"]');
+            const lastConsumptionInput = consumptionInputs[consumptionInputs.length - 1];
+            if (lastConsumptionInput.value !== "") {
+                const collapseOne = document.getElementById('flush-collapseOne');
+                if (collapseOne) {
+                    collapseOne.classList.add('show');
                 }
-            });
-            checkbox.trigger('change');
-        }
-        toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
-
-        const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
-
-        $(`#${'{{ form.pv_electricity_price.id_for_label }}'}`).prop('checked', pvElectricityPriceDefaultValue === "True").trigger('change');
-
-        $('#{{ form.system_loss.id_for_label }}').val(14);
-
-        // if consumption in december is not empty, show the accordion
-        if ($('#consumption-formset input[name$="consumption"]').last().val() !== "") {
-            $('#flush-collapseOne').collapse('show');
-        }
-    });
-</script>
+            }
+        });
+    </script>
 {% endblock %}

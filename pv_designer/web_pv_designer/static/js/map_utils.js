@@ -31,7 +31,7 @@ function getMapPicture() {
         mapDataForm = shapesHandler.prepareAreasData();
         document.getElementById('markerDeleteButton').style.display = 'none';
         document.getElementById('drawShapeButton').style.display = 'none';
-        $('.gm-style-cc').css('display', 'none');
+        document.getElementById('mapTypeSelect').style.display = 'none';
         // lock map moving
         map.setOptions({
             zoomControl: false,
