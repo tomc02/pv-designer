@@ -8,9 +8,14 @@ class areaData {
     }
 }
 
-function rotatePolygon(polygon) {
-    const cornerPoints = getCornerPoints(polygon);
-    polygon.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
+function rotatePolygon(shape) {
+    const cornerPoints = getCornerPoints(shape.getShape());
+    shape.setPath([cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom, cornerPoints.leftTop]);
+}
+
+function rotateTriangle(shape) {
+    const cornerPoints = getCornerPoints(shape.getShape());
+    shape.setPath([cornerPoints.rightTop, cornerPoints.bottom, cornerPoints.leftTop]);
 }
 
 function sortCorners(corners) {
@@ -42,6 +47,13 @@ function sortCorners(corners) {
 }
 
 function getCornerPoints(polugon) {
+    if (polugon.getPath().getLength() === 3) {
+        return{
+            leftTop: polugon.getPath().getAt(0),
+            rightTop: polugon.getPath().getAt(1),
+            bottom: polugon.getPath().getAt(2),
+        }
+    }
     return {
         leftTop: polugon.getPath().getAt(0),
         rightTop: polugon.getPath().getAt(1),
@@ -49,13 +61,62 @@ function getCornerPoints(polugon) {
         leftBottom: polugon.getPath().getAt(3),
     }
 }
+
 function calculateAngle(heading1, heading2) {
-  let angle = Math.abs(heading1 - heading2);
-  angle = Math.min(angle, 360 - angle);
-  return angle;
+    let angle = Math.abs(heading1 - heading2);
+    angle = Math.min(angle, 360 - angle);
+    return angle;
+}
+
+function setListenerForShapeDragging(shape) {
+    google.maps.event.addListener(shape.getShape(), 'dragstart', function () {
+        shape.dragging = true;
+    });
+    google.maps.event.addListener(shape.getShape(), 'dragend', function () {
+        shapesHandler.fillAreaWithPanels();
+        shape.dragging = false;
+    });
+    shape.listenerSet = true;
+}
+
+function setListenerForShapeChange(shape) {
+     google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+        shapesHandler.selectedShape.updateHighlightedEdge();
+        if (!shape.dragging) {
+            shapesHandler.fillAreaWithPanels();
+        }
+    });
+}
+
+function getHeadings(corners) {
+    const gMaps = google.maps.geometry.spherical;
+    return {
+        headingLTR: gMaps.computeHeading(corners.leftTop, corners.rightTop),
+        headingRTL: gMaps.computeHeading(corners.rightTop, corners.leftTop),
+        headingLTD: gMaps.computeHeading(corners.leftTop, corners.leftBottom),
+        headingRTD: gMaps.computeHeading(corners.rightTop, corners.rightBottom),
+    }
+}
+
+function computeAzimuth(headingLTR) {
+    // Normalize the heading to a 360° system and adjust by -90° to align with azimuth definitions
+    let azimuth = (headingLTR + 270) % 360;
+
+    // Convert azimuth to the -180° to 180° system
+    if (azimuth > 180) {
+        azimuth -= 360;
+    }
+    return Math.round(azimuth);
+}
+
+function computeHypotenuse(heading1, heading2, panelHeight) {
+    let angle = calculateAngle(heading1, heading2);
+    angle = Math.abs(angle - 90);
+    return panelHeight / Math.cos(angle * Math.PI / 180);
 }
 
 function fillPolygon(index) {
+    const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
@@ -66,118 +127,132 @@ function fillPolygon(index) {
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
+
+    const shape = shapesHandler.getShapeObject(index);
+    if (!shape.listenerSet) {
+        setListenerForShapeDragging(shape);
+    }
+    setListenerForShapeChange(shape);
+    addInsertPointListener(shape);
+    shapesHandler.selectedShape.updateHighlightedEdge();
+
+
     let polygon = shapesHandler.getShape(index);
-    let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
-    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
-    let headingLTD = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.leftBottom);
-    let headingRTD = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
+    let {headingLTR, headingRTL, headingLTD, headingRTD} = getHeadings(cornerPoints);
 
-    let angleLTR_LTD = calculateAngle(headingLTR, headingLTD);
-    angleLTR_LTD = Math.abs(angleLTR_LTD - 90);
-    console.log(`Angle between LTR and LTD: ${angleLTR_LTD} degrees`);
-
-    let angleRTL_RTD = calculateAngle(headingRTL, headingRTD);
-    angleRTL_RTD = Math.abs(angleRTL_RTD - 90);
-    console.log(`Angle between RTL and RTD: ${angleRTL_RTD} degrees`);
-
-    const hypotenuseLTR_LTD = shapesHandler.getPanelHeight(index) / Math.cos(angleLTR_LTD * Math.PI / 180);
-    const hypotenuseRTL_RTD = shapesHandler.getPanelHeight(index) / Math.cos(angleRTL_RTD * Math.PI / 180);
-    console.log(`Hypotenuse LTR_LTD: ${hypotenuseLTR_LTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
-    console.log(`Hypotenuse RTL_RTD: ${hypotenuseRTL_RTD}` + 'Panel height: ' + shapesHandler.getPanelHeight(index));
+    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
-    angle = angle > 180 ? angle - 180 : angle;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
-    console.log('url: ' + pvPanelUrl);
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    let azimuth = computeAzimuth(headingLTR);
 
-    let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
-    const absAzimuth = Math.abs(azimuth);
-    if (absAzimuth > 180) {
-        azimuth = 360 - absAzimuth;
-    }
     let topPoints = [];
-    let panelsCount=0;
-    for (let i = 0; i < 10; i++) {
-        const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
-        topPoints = generatePointsBetween(cornerPoints.rightTop, cornerPoints.leftTop, colsCount);
-        // move corner points
-        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
-        if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD, pvPanelUrl, index);
+    let panelsCount = 0;
+    let iteration = 0;
+    let continuePlacingPanels = true;
+
+    while (continuePlacingPanels && iteration < 100) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
+            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD, pvPanelUrl, index);
+            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
         }
+        // move corner points
+        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
+        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
+
+        continuePlacingPanels = gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) || gMaps.poly.containsLocation(cornerPoints.rightTop, polygon);
+
+        if (continuePlacingPanels) {
+            panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
+        }
+
+        iteration++;
     }
     return new areaData(panelsCount, azimuth);
 }
-/*
-function fillPolygon2(index) {
-    let cornerPoints;
-    if (!shapesFiled.includes(index)) {
-        cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
-        shapesFiled.push(index);
-    } else {
-        cornerPoints = getCornerPoints(shapesHandler.getShape(index));
-    }
+
+
+function fillTriangle(index) {
+    const gMaps = google.maps.geometry;
+    let cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
 
-    shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.rightBottom, cornerPoints.leftBottom]);
-    let polygon = shapesHandler.getShape(index);
-    let headingLTR = google.maps.geometry.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
-    let headingRTL = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
-    let headingRTD2 = google.maps.geometry.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.rightBottom);
-    console.warn('headingLTR: ' + headingLTR);
-    console.warn('headingRTL: ' + headingRTL);
-    console.warn('headingRTD2: ' + headingRTD2);
-    const angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope());
-    console.log('url: ' + pvPanelUrl);
-    cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, 50, headingLTR);
-    cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, 50, headingRTL);
-    let azimuth = Math.floor((180 - (headingLTR + 90)) * -1);
-    const headingRTD = headingLTR + 90;
-    console.warn('headingRTD: ' + headingRTD);
+    shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.bottom]);
 
-    const colsCount = Math.floor(google.maps.geometry.spherical.computeDistanceBetween(cornerPoints.leftTop, cornerPoints.rightTop) / shapesHandler.getPanelWidth(index));
-    let topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-    let panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD2, pvPanelUrl, index);
-    for (let i = 0; i < 10; i++) {
-        cornerPoints.leftTop = google.maps.geometry.spherical.computeOffset(cornerPoints.leftTop, shapesHandler.getPanelHeight(index), headingLTR + 90);
-        cornerPoints.rightTop = google.maps.geometry.spherical.computeOffset(cornerPoints.rightTop, shapesHandler.getPanelHeight(index), headingRTL - 90);
-        topPoints = generatePointsBetween(cornerPoints.leftTop, cornerPoints.rightTop, colsCount);
-        if (panelsCount > 0) {
-            panelsCount += drawPoints(topPoints, polygon, true, headingLTR, headingRTD2, pvPanelUrl, index);
+    const shape = shapesHandler.getShapeObject(index);
+    if (!shape.listenerSet) {
+        setListenerForShapeDragging(shape);
+    }
+    setListenerForShapeChange(shape);
+    addInsertPointListener(shape);
+    shapesHandler.selectedShape.updateHighlightedEdge();
+
+
+    let polygon = shapesHandler.getShape(index);
+    let headingLTR = gMaps.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.rightTop);
+    let headingLTD = gMaps.spherical.computeHeading(cornerPoints.leftTop, cornerPoints.bottom);
+    let headingRTL = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
+    let headingRTD = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.bottom);
+
+    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
+
+    let angle = 90 - headingLTR;
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    let azimuth = computeAzimuth(headingLTR);
+
+    let topPoints = [];
+    let panelsCount = 0;
+    let iteration = 0;
+    let continuePlacingPanels = true;
+
+    while (continuePlacingPanels && iteration < 100) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
+            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
-            panelsCount = drawPoints(topPoints, polygon, false, headingLTR, headingRTD2, pvPanelUrl, index);
+            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
+        }
+        // move corner points
+        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
+        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
+
+        continuePlacingPanels = gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) || gMaps.poly.containsLocation(cornerPoints.rightTop, polygon);
+
+        if (continuePlacingPanels) {
+            panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
         }
 
+        iteration++;
     }
     return new areaData(panelsCount, azimuth);
 }
-*/
-function generatePointsBetween(startPoint, endPoint, numPoints) {
-    const points = [];
-    for (let i = 1; i < numPoints; i++) {
-        const fraction = i / numPoints;
-        const lat = startPoint.lat() + fraction * (endPoint.lat() - startPoint.lat());
-        const lng = startPoint.lng() + fraction * (endPoint.lng() - startPoint.lng());
-        points.push(new google.maps.LatLng(lat, lng));
+
+function generatePanels(startPoint, endPoint, panelWidth, heading) {
+    const panels = [];
+    let position = startPoint;
+    let index = 0;
+    while (google.maps.geometry.spherical.computeDistanceBetween(position, endPoint) >= panelWidth) {
+        panels.push(position);
+        position = google.maps.geometry.spherical.computeOffset(position, panelWidth, heading);
+        index++;
+        if (index > 100) {
+            console.error('Infinite loop');
+            break;
+        }
     }
-    return points;
+    return panels;
 }
 
-function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRTD, pvPanelUrl, polygonIndex) {
+function drawPoints(points, polygon, angle, pvPanelUrl, polygonIndex) {
     let panelCount = 0;
     const leftTop = polygon.getPath().getAt(0);
-    let angle = 90 - headingLTR;
-    // recalculate angle to range 0-180
     const picture = markerHandler.getMarkerPicture(leftTop, pvPanelUrl, angle, polygonIndex);
-    //angle = angle > 180 ? angle - 180 : angle;
     for (let i = 0; i < points.length; i++) {
         const leftTop = points[i];
-        if (isPanelInPolygon(points[i], polygon, notFirstLine, headingLTR, headingRTD)) {
-            markerHandler.putMarker(points[i], picture,  angle, polygonIndex);
+        if (google.maps.geometry.poly.containsLocation(leftTop, polygon)) {
+            markerHandler.putMarker(points[i], picture, angle, polygonIndex);
             panelCount++;
         }
     }
@@ -185,17 +260,22 @@ function drawPoints(points, polygon, notFirstLine = false, headingLTR, headingRT
 }
 
 function calculatePixelSize(map, meters, latitude) {
-    const metersPerPixel = (40075000 * Math.cos(latitude * Math.PI / 180)) / (256 * Math.pow(2, map.getZoom()));
-    return meters / metersPerPixel;
+    zoom = map.getZoom();
+    var earthRadius = 6378137;
+    var latRadians = latitude * (Math.PI / 180);
+    var metersPerPixel = (Math.cos(latRadians) * 2 * Math.PI * earthRadius) / (256 * Math.pow(2, zoom));
+    var pixelSize = meters / metersPerPixel;
+    return pixelSize;
 }
 
-function rotateImage(angle, slope) {
+function rotateImage(angle, slope, orientation) {
     console.log(angle)
     $.ajax({
         url: rotateImgUrl,
         data: {
             'angle': angle,
-            'slope': slope
+            'slope': slope,
+            'orientation': orientation
         },
     });
     return getPvImgUrl(angle);

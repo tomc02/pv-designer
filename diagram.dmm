@@ -1,0 +1,1890 @@
+{
+	"tables": {
+		"e770247a-e410-4473-acdc-34f7167f06db": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "e770247a-e410-4473-acdc-34f7167f06db",
+			"name": "CustomUser",
+			"desc": "",
+			"cols": [
+				{
+					"id": "e89d287c-70aa-4794-8b44-371a20279461",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "f02fa4d9-6013-4151-a75b-f02fc6b24f30",
+					"name": "password",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "c9e2f72f-0d7e-4078-a062-a08cfefdc3f6",
+					"name": "last_login",
+					"datatype": "DATETIME",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "c50ae5ba-b9ec-4bdd-9c59-0262998ce3e6",
+					"name": "is_superuser",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "91f0e58e-f0ad-4d8e-92e3-300e2ff93ed7",
+					"name": "username",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "fbe0ab88-745e-4c6c-aa0e-688960213af3",
+					"name": "first_name",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "7fea802c-a2f8-41a6-852c-ca1f34633f16",
+					"name": "last_name",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "05a60207-2606-4e43-bc66-85aa02f5d8bd",
+					"name": "email",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "8abbfd3b-71dd-49cb-9227-4d0522ff8445",
+					"name": "is_staff",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "9ddadcc6-fecb-40eb-912f-32ce3c20aa73",
+					"name": "is_active",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "385d10a5-0b8f-4bfa-ab55-826884bdb2fb",
+					"name": "date_joined",
+					"datatype": "DATETIME",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "89b538aa-b368-4d3c-9508-ad5ce185456b",
+					"name": "home_location",
+					"datatype": "POINT",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"898e9ee2-1343-4f6e-b870-afbd793bdd94",
+				"2534835c-2cb0-4cac-af1f-6ac811cf2c8f"
+			],
+			"keys": [
+				{
+					"id": "7be18d4e-bafb-4ff4-af27-7173c6caabd7",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "55bdf3ec-d96a-4e98-af0b-66454dd59dbb",
+							"colid": "e89d287c-70aa-4794-8b44-371a20279461"
+						}
+					]
+				},
+				{
+					"id": "610577ee-4e69-410d-a2c8-ba5a73616bc8",
+					"isPk": false,
+					"name": "web_pv_designer_customuser_key_1",
+					"cols": [
+						{
+							"id": "57662fe4-346e-46cd-ae1e-297b261377ef",
+							"colid": "91f0e58e-f0ad-4d8e-92e3-300e2ff93ed7"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"778eb1bd-e5c4-4aa0-a045-a766bf795a78": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "778eb1bd-e5c4-4aa0-a045-a766bf795a78",
+			"name": "Area",
+			"desc": "",
+			"cols": [
+				{
+					"id": "119919e2-b550-4a86-89cd-7b87f67310a4",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "bf61b76b-3de3-4589-b808-e993423574e6",
+					"name": "panels_count",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "ef55f771-d407-4662-917c-ecdd31140cb9",
+					"name": "installed_peak_power",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "9e54b853-7de3-4289-a53f-6767effc567b",
+					"name": "mounting_position",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "dfdde2c6-c86f-41c6-908f-d15bb1b7f2cf",
+					"name": "slope",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "c4121a6e-0ad3-4b93-9972-3cc2f6c1ce66",
+					"name": "azimuth",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "97836ad0-7b3b-45e2-beac-adce696bb7a7",
+					"name": "title",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "41967c94-385d-4bf6-887e-7ee6205b1b10",
+					"name": "rotations",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "3bfdbf9d-7c63-41ba-a92b-1f8757e9c171",
+					"name": "polygon",
+					"datatype": "POLYGON",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"b6e7ff38-00b7-4ab9-b56d-bf59e7347bf6"
+			],
+			"keys": [
+				{
+					"id": "7ad44e06-b7d0-4d19-972c-667278b90caf",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "409a9721-6565-4f12-b81a-248a30df1dce",
+							"colid": "119919e2-b550-4a86-89cd-7b87f67310a4"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"cbcc3c30-45a0-4201-b627-10c3378adc1e": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "cbcc3c30-45a0-4201-b627-10c3378adc1e",
+			"name": "PVSystemDetails",
+			"desc": "",
+			"cols": [
+				{
+					"id": "1c0a1b44-edff-4c19-b20b-93658b8ec7ab",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "3a3c6f49-04ee-4e67-9153-41bd03e807ca",
+					"name": "title",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "8f0c3cd0-4be0-4782-8ffe-a92356d83c0a",
+					"name": "system_loss",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "fce9344d-c751-466b-8882-a648e07fef35",
+					"name": "pv_electricity_price",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "d230bd98-d915-4a1b-aaa8-28ceba781bbe",
+					"name": "pv_system_cost",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "251a34e3-9698-4a3c-9783-a4e3ec1d2b34",
+					"name": "interest",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "eea5f0c2-3a13-4b2e-8c4d-7b2c6227e028",
+					"name": "lifetime",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "e24ae8a8-4c96-487d-a97b-66fd786d013c",
+					"name": "off_grid",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "95870af4-7175-41b8-8397-e4b96017cde9",
+					"name": "battery_capacity",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "5a7bdda8-7aba-47ff-88a9-11c2f0c3072d",
+					"name": "discharge_cutoff_limit",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "a8034651-b4e6-4dd7-8d0e-e53d19c6d151",
+					"name": "consumption_per_day",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "7b992e55-84e3-4905-aaf2-de66d7ece80a",
+					"name": "known_consumption",
+					"datatype": "BOOL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "ea193445-92c2-4086-9ae8-4068d6b0cf9e",
+					"name": "consumption_per_year",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "02000d83-8255-41b7-823a-c988373dfaef",
+					"name": "created_at",
+					"datatype": "DATETIME",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"b1027f96-dc4c-40f5-b55a-1936198572a7",
+				"d67f03f1-25db-4236-bfa4-3089ce3e1529"
+			],
+			"keys": [
+				{
+					"id": "c67e8098-acc6-4247-866e-9b1b9dd2de85",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "0f1628c3-56ac-4629-8517-43af2effa6ab",
+							"colid": "1c0a1b44-edff-4c19-b20b-93658b8ec7ab"
+						}
+					]
+				}
+			],
+			"indexes": [],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"285335e4-9e44-4d5d-bcba-4da9cac48da4": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "285335e4-9e44-4d5d-bcba-4da9cac48da4",
+			"name": "SolarPanel",
+			"desc": "",
+			"cols": [
+				{
+					"id": "67cd3b17-d8a7-4199-a29d-23e39884a4c3",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "a3cfed54-9a03-4104-8eae-bba8a38178f6",
+					"name": "manufacturer",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "7dde5f50-4b24-4970-bf04-37cccce52cb6",
+					"name": "model",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "d7e148c3-b0ca-477d-9daa-1521f4b99275",
+					"name": "width",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "f79126a9-fcfd-44cc-8317-b21cd6a4384c",
+					"name": "height",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "57bb88b6-470a-4f61-ae1b-554fc440a9e1",
+					"name": "power",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "864cc575-32d9-4073-8668-5bbacc8726d7",
+					"name": "pv_technology",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "058fe42f-2e10-4159-a5a6-42cb66d24d0b",
+					"name": "user_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"898e9ee2-1343-4f6e-b870-afbd793bdd94",
+				"616646d5-8867-43f1-b8b2-d1cdccd2fcba"
+			],
+			"keys": [
+				{
+					"id": "2c182f28-bc69-46ef-9abe-95e0e287c2dd",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "456c7327-56ec-43e1-9915-38e1f8c460b3",
+							"colid": "67cd3b17-d8a7-4199-a29d-23e39884a4c3"
+						}
+					]
+				}
+			],
+			"indexes": [
+				{
+					"id": "a528d166-26bb-4a5d-b3c1-8b3b3a08f87e",
+					"unique": false,
+					"name": "web_pv_designer_solarpanel_user_id_8bfa030d",
+					"cols": [
+						{
+							"id": "3f66fa5d-4066-41eb-b0db-7deb8676b8bf",
+							"colid": "058fe42f-2e10-4159-a5a6-42cb66d24d0b",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				}
+			],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e",
+			"name": "PVPowerPlant_Areas",
+			"desc": "",
+			"cols": [
+				{
+					"id": "2d862c5d-844f-4885-a8db-6c3f8406388d",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "f024a966-120f-440e-8548-30565c6e7fda",
+					"name": "pvpowerplant_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "990f1512-5588-4073-bca2-0f95c652ae1f",
+					"name": "area_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"b6e7ff38-00b7-4ab9-b56d-bf59e7347bf6",
+				"02575524-7f1a-4291-9b81-1fbb1738aa0f"
+			],
+			"keys": [
+				{
+					"id": "80a12bcd-4451-49aa-bcf5-075c0cd776d4",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "23844510-7d80-49d2-bae6-a0c86124c9a4",
+							"colid": "2d862c5d-844f-4885-a8db-6c3f8406388d"
+						}
+					]
+				}
+			],
+			"indexes": [
+				{
+					"id": "48ac134d-8e78-4142-a23e-6db396ba6465",
+					"unique": true,
+					"name": "web_pv_designer_pvpowerplant_areas_pvpowerplant_id_area_id_9e6da348_uniq",
+					"cols": [
+						{
+							"id": "56ba8c71-deb3-468c-9486-82eeb7de6662",
+							"colid": "f024a966-120f-440e-8548-30565c6e7fda",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						},
+						{
+							"id": "4564c834-3e17-4d45-8137-0cd6a9ce216c",
+							"colid": "990f1512-5588-4073-bca2-0f95c652ae1f",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				},
+				{
+					"id": "6abbc31d-9641-4d93-947b-88c82b84acba",
+					"unique": false,
+					"name": "web_pv_designer_pvpowerplant_areas_pvpowerplant_id_f79b53a0",
+					"cols": [
+						{
+							"id": "c22bc1fa-8ae6-484e-adb6-44db9f828efd",
+							"colid": "f024a966-120f-440e-8548-30565c6e7fda",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				},
+				{
+					"id": "98c18bf3-0b57-4a92-9aeb-ae7bb748f413",
+					"unique": false,
+					"name": "web_pv_designer_pvpowerplant_areas_area_id_0c3d2048",
+					"cols": [
+						{
+							"id": "86824e1b-1ef9-485a-8b5c-7b935471c8e5",
+							"colid": "990f1512-5588-4073-bca2-0f95c652ae1f",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				}
+			],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"805567b2-cb8c-4403-8053-a79ef534dc4f": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "805567b2-cb8c-4403-8053-a79ef534dc4f",
+			"name": "MonthlyConsumption",
+			"desc": "",
+			"cols": [
+				{
+					"id": "aacd52de-00df-47f5-8891-c373032f52b7",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "a43688e2-79f6-4b80-a2b6-0887bbe211d1",
+					"name": "month",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "96d51270-9193-4d80-9bda-7560e2a1c9ee",
+					"name": "consumption",
+					"datatype": "REAL",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "2c513262-9c86-4917-b82e-7d2e6eb4111a",
+					"name": "power_plant_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"b1027f96-dc4c-40f5-b55a-1936198572a7"
+			],
+			"keys": [
+				{
+					"id": "db566662-97fd-4ac7-86d3-4e9a19b3dea3",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "0f943761-4acc-4196-b2d3-2706c84831d1",
+							"colid": "aacd52de-00df-47f5-8891-c373032f52b7"
+						}
+					]
+				}
+			],
+			"indexes": [
+				{
+					"id": "065395dc-367c-4af4-b776-8132883cbfa4",
+					"unique": true,
+					"name": "web_pv_designer_monthlyconsumption_power_plant_id_month_d192456f_uniq",
+					"cols": [
+						{
+							"id": "08061576-55f6-41f8-8578-1988c52483fd",
+							"colid": "2c513262-9c86-4917-b82e-7d2e6eb4111a",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						},
+						{
+							"id": "f78af741-a9e7-4125-a533-5f93faa30a0f",
+							"colid": "a43688e2-79f6-4b80-a2b6-0887bbe211d1",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				},
+				{
+					"id": "3efd7d19-26b5-4c21-9ddd-cd54b07bb69d",
+					"unique": false,
+					"name": "web_pv_designer_monthlyconsumption_power_plant_id_9f42e18e",
+					"cols": [
+						{
+							"id": "c3842e3b-6a37-4822-8be6-28a6f2a0885a",
+							"colid": "2c513262-9c86-4917-b82e-7d2e6eb4111a",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				}
+			],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		},
+		"b96a5dcd-b2ec-43f3-8827-8d5f7940e31c": {
+			"lines": [],
+			"embeddable": false,
+			"generate": true,
+			"generateCustomCode": true,
+			"id": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+			"name": "PVPowerPlant",
+			"desc": "",
+			"cols": [
+				{
+					"id": "54d1b69a-6114-4b8b-b681-314ef0b4896a",
+					"name": "id",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": true,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": true
+					}
+				},
+				{
+					"id": "bcdd2449-2a77-4976-aef0-3cb983e26fbd",
+					"name": "zoom",
+					"datatype": "INTEGER",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "23e9705f-9fd3-4758-bac0-176519bf3bb9",
+					"name": "map_image",
+					"datatype": "VARCHAR",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "ecc744d7-9ff5-402b-a911-1cf887ca2055",
+					"name": "solar_panel_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "54d82030-e645-4aeb-8786-7b4bc3142a9b",
+					"name": "user_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "0cf8fc3a-e191-49f9-a8ab-ed030c65848e",
+					"name": "system_details_id",
+					"datatype": "BIGINT",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": true,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				},
+				{
+					"id": "9e895701-3e34-4e25-97a1-6dba8e52d063",
+					"name": "location",
+					"datatype": "POINT",
+					"param": "",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"data": "",
+					"estimatedSize": "",
+					"defaultvalue": "",
+					"fk": false,
+					"after": "",
+					"json": false,
+					"sqlite": {
+						"autoincrement": false
+					}
+				}
+			],
+			"relations": [
+				"02575524-7f1a-4291-9b81-1fbb1738aa0f",
+				"d67f03f1-25db-4236-bfa4-3089ce3e1529",
+				"2534835c-2cb0-4cac-af1f-6ac811cf2c8f",
+				"616646d5-8867-43f1-b8b2-d1cdccd2fcba"
+			],
+			"keys": [
+				{
+					"id": "7974cfdb-95fa-4366-818b-f8cfe766b50c",
+					"isPk": true,
+					"name": "Primary key",
+					"cols": [
+						{
+							"id": "f307b97b-9671-41d9-b4ef-e2e4732dd29e",
+							"colid": "54d1b69a-6114-4b8b-b681-314ef0b4896a"
+						}
+					]
+				}
+			],
+			"indexes": [
+				{
+					"id": "19094629-7d47-411a-893a-888585949620",
+					"unique": false,
+					"name": "web_pv_designer_pvpowerplant_solar_panel_id_445a1dfe",
+					"cols": [
+						{
+							"id": "b3071ddd-6522-43d6-9167-f06cca9d08fb",
+							"colid": "ecc744d7-9ff5-402b-a911-1cf887ca2055",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				},
+				{
+					"id": "6284aa99-a2b9-46f7-8d5c-0041b406b155",
+					"unique": false,
+					"name": "web_pv_designer_pvpowerplant_user_id_32fb5c75",
+					"cols": [
+						{
+							"id": "949f4f6d-1aea-4d3e-9f2b-5a400eee78fc",
+							"colid": "54d82030-e645-4aeb-8786-7b4bc3142a9b",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				},
+				{
+					"id": "0f29cc38-2754-46ca-aa52-c7a8d6256933",
+					"unique": false,
+					"name": "web_pv_designer_pvpowerplant_system_details_id_567619ca",
+					"cols": [
+						{
+							"id": "c92be832-47a0-4b59-8d2f-9d26ea9ad6fa",
+							"colid": "0cf8fc3a-e191-49f9-a8ab-ed030c65848e",
+							"sqlite": {
+								"collate": "",
+								"expression": "",
+								"desc": false
+							}
+						}
+					],
+					"sqlite": {
+						"expression": "",
+						"desc": ""
+					}
+				}
+			],
+			"afterScript": " ",
+			"estimatedSize": "",
+			"sqlite": {
+				"withoutrowid": false,
+				"strict": false
+			},
+			"visible": true,
+			"customCode": ""
+		}
+	},
+	"relations": {
+		"898e9ee2-1343-4f6e-b870-afbd793bdd94": {
+			"id": "898e9ee2-1343-4f6e-b870-afbd793bdd94",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "9397b769-cd22-408e-9bd1-a1864ec72e87",
+					"parentcol": "e89d287c-70aa-4794-8b44-371a20279461",
+					"childcol": "058fe42f-2e10-4159-a5a6-42cb66d24d0b"
+				}
+			],
+			"child": "285335e4-9e44-4d5d-bcba-4da9cac48da4",
+			"parent": "e770247a-e410-4473-acdc-34f7167f06db",
+			"c_mp": "true",
+			"c_mch": "false",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_customuser_web_pv_designer_solarpanel",
+			"desc": "",
+			"parent_key": "7be18d4e-bafb-4ff4-af27-7173c6caabd7",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"2534835c-2cb0-4cac-af1f-6ac811cf2c8f": {
+			"id": "2534835c-2cb0-4cac-af1f-6ac811cf2c8f",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "a67c89d7-94d5-4f43-ae81-7fb33e86d358",
+					"parentcol": "e89d287c-70aa-4794-8b44-371a20279461",
+					"childcol": "54d82030-e645-4aeb-8786-7b4bc3142a9b"
+				}
+			],
+			"child": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+			"parent": "e770247a-e410-4473-acdc-34f7167f06db",
+			"c_mp": "true",
+			"c_mch": "false",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_customuser_web_pv_designer_pvpowerplant",
+			"desc": "",
+			"parent_key": "7be18d4e-bafb-4ff4-af27-7173c6caabd7",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"b6e7ff38-00b7-4ab9-b56d-bf59e7347bf6": {
+			"id": "b6e7ff38-00b7-4ab9-b56d-bf59e7347bf6",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "1bf3220a-757b-4f5d-9d0c-e58887f22c14",
+					"parentcol": "119919e2-b550-4a86-89cd-7b87f67310a4",
+					"childcol": "990f1512-5588-4073-bca2-0f95c652ae1f"
+				}
+			],
+			"child": "ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e",
+			"parent": "778eb1bd-e5c4-4aa0-a045-a766bf795a78",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_area_web_pv_designer_pvpowerplant_areas",
+			"desc": "",
+			"parent_key": "7ad44e06-b7d0-4d19-972c-667278b90caf",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"b1027f96-dc4c-40f5-b55a-1936198572a7": {
+			"id": "b1027f96-dc4c-40f5-b55a-1936198572a7",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "5e0d908b-6a73-4214-af0d-63ed48b167ae",
+					"parentcol": "1c0a1b44-edff-4c19-b20b-93658b8ec7ab",
+					"childcol": "2c513262-9c86-4917-b82e-7d2e6eb4111a"
+				}
+			],
+			"child": "805567b2-cb8c-4403-8053-a79ef534dc4f",
+			"parent": "cbcc3c30-45a0-4201-b627-10c3378adc1e",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_pvsystemdetails_web_pv_designer_monthlyconsumption",
+			"desc": "",
+			"parent_key": "c67e8098-acc6-4247-866e-9b1b9dd2de85",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"d67f03f1-25db-4236-bfa4-3089ce3e1529": {
+			"id": "d67f03f1-25db-4236-bfa4-3089ce3e1529",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "7e1787e0-be3b-4551-af1e-1c5b7380ab78",
+					"parentcol": "1c0a1b44-edff-4c19-b20b-93658b8ec7ab",
+					"childcol": "0cf8fc3a-e191-49f9-a8ab-ed030c65848e"
+				}
+			],
+			"child": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+			"parent": "cbcc3c30-45a0-4201-b627-10c3378adc1e",
+			"c_mp": "true",
+			"c_mch": "false",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_pvsystemdetails_web_pv_designer_pvpowerplant",
+			"desc": "",
+			"parent_key": "c67e8098-acc6-4247-866e-9b1b9dd2de85",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"616646d5-8867-43f1-b8b2-d1cdccd2fcba": {
+			"id": "616646d5-8867-43f1-b8b2-d1cdccd2fcba",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "e62981c5-81ac-4419-b213-fdf855969d45",
+					"parentcol": "67cd3b17-d8a7-4199-a29d-23e39884a4c3",
+					"childcol": "ecc744d7-9ff5-402b-a911-1cf887ca2055"
+				}
+			],
+			"child": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+			"parent": "285335e4-9e44-4d5d-bcba-4da9cac48da4",
+			"c_mp": "true",
+			"c_mch": "false",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_solarpanel_web_pv_designer_pvpowerplant",
+			"desc": "",
+			"parent_key": "2c182f28-bc69-46ef-9abe-95e0e287c2dd",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		},
+		"02575524-7f1a-4291-9b81-1fbb1738aa0f": {
+			"id": "02575524-7f1a-4291-9b81-1fbb1738aa0f",
+			"type": "identifying",
+			"cols": [
+				{
+					"id": "b15ff5a6-420a-4636-bb66-f4ed1ff97075",
+					"parentcol": "54d1b69a-6114-4b8b-b681-314ef0b4896a",
+					"childcol": "f024a966-120f-440e-8548-30565c6e7fda"
+				}
+			],
+			"child": "ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e",
+			"parent": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+			"c_mp": "true",
+			"c_mch": "true",
+			"c_ch": "many",
+			"c_p": "one",
+			"c_cp": "",
+			"c_cch": "",
+			"name": "web_pv_designer_pvpowerplant_web_pv_designer_pvpowerplant_areas",
+			"desc": "",
+			"parent_key": "7974cfdb-95fa-4366-818b-f8cfe766b50c",
+			"ri_pd": "No action",
+			"ri_pu": "No action",
+			"visible": true,
+			"generate": true,
+			"generateCustomCode": true,
+			"customCode": "",
+			"relationColor": "transparent"
+		}
+	},
+	"notes": {},
+	"lines": {},
+	"model": {
+		"connectionId": "2236072c-bc87-4c6a-a260-d2d30b6f120b",
+		"activeDiagram": "0224e504-2868-473e-b0a7-bcd8f485d71a",
+		"caseConvention": "under",
+		"color": "transparent",
+		"def_coltopk": true,
+		"desc": "",
+		"id": "4150659d-da92-4327-bd59-e00548f7c0fc",
+		"isDirty": true,
+		"name": "SQLite",
+		"parentTableInFkCols": true,
+		"path": "",
+		"replaceSpace": "_",
+		"sideSelections": true,
+		"storedin": {
+			"major": 7,
+			"minor": 5,
+			"extra": 3
+		},
+		"laststoredin": {
+			"major": 7,
+			"minor": 5,
+			"extra": 3
+		},
+		"type": "SQLITE",
+		"version": 1,
+		"lastSaved": "",
+		"sqlSettings": {
+			"wrapLines": true,
+			"wrapOffset": 80,
+			"indent": true,
+			"indentationString": "spaces",
+			"indentationSize": 2,
+			"limitItemsOnLine": true,
+			"maxListItemsOnLine": 3,
+			"statementDelimiter": ";",
+			"routineDelimiter": ";",
+			"keywordCase": "upper",
+			"identiferCase": "original"
+		},
+		"writeFileParam": false,
+		"authorName": "",
+		"companyDetails": "",
+		"companyUrl": ""
+	},
+	"otherObjects": {},
+	"diagrams": {
+		"0224e504-2868-473e-b0a7-bcd8f485d71a": {
+			"id": "0224e504-2868-473e-b0a7-bcd8f485d71a",
+			"lineColor": "transparent",
+			"description": "",
+			"diagramItems": {
+				"e770247a-e410-4473-acdc-34f7167f06db": {
+					"x": 1171,
+					"y": 2354,
+					"gHeight": 243,
+					"gWidth": 219,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "e770247a-e410-4473-acdc-34f7167f06db",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"778eb1bd-e5c4-4aa0-a045-a766bf795a78": {
+					"x": 502,
+					"y": 2308,
+					"gHeight": 189,
+					"gWidth": 256,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "778eb1bd-e5c4-4aa0-a045-a766bf795a78",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"cbcc3c30-45a0-4201-b627-10c3378adc1e": {
+					"x": 820,
+					"y": 2334,
+					"gHeight": 279,
+					"gWidth": 255,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "cbcc3c30-45a0-4201-b627-10c3378adc1e",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"285335e4-9e44-4d5d-bcba-4da9cac48da4": {
+					"x": 1182,
+					"y": 2099,
+					"gHeight": 171,
+					"gWidth": 231,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "285335e4-9e44-4d5d-bcba-4da9cac48da4",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e": {
+					"x": 520,
+					"y": 2148,
+					"gHeight": 81,
+					"gWidth": 230,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "ed7ad227-fe0b-42f1-bd29-fe71b0a6ee2e",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"805567b2-cb8c-4403-8053-a79ef534dc4f": {
+					"x": 505,
+					"y": 2538,
+					"gHeight": 99,
+					"gWidth": 222,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "805567b2-cb8c-4403-8053-a79ef534dc4f",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				},
+				"b96a5dcd-b2ec-43f3-8827-8d5f7940e31c": {
+					"x": 837,
+					"y": 2105,
+					"gHeight": 153,
+					"gWidth": 235,
+					"background": "#03a9f4",
+					"color": "#ffffff",
+					"referencedItemId": "b96a5dcd-b2ec-43f3-8827-8d5f7940e31c",
+					"resized": false,
+					"autoExpand": true,
+					"backgroundOpacity": "10"
+				}
+			},
+			"isOpen": true,
+			"main": true,
+			"name": "Main Diagram",
+			"keysgraphics": true,
+			"linegraphics": "basic",
+			"zoom": 1.6,
+			"background": "transparent",
+			"scroll": {
+				"x": 0,
+				"y": 0
+			},
+			"type": "erd",
+			"showEstimatedSize": false,
+			"showSchemaContainer": false,
+			"showEmbeddedInParents": true,
+			"showCardinalityCaptions": false,
+			"showRelationshipNames": false,
+			"showLineCaptions": true,
+			"showColumns": true,
+			"showColumnDataTypes": true,
+			"showSampleData": false,
+			"showTableIndexes": false,
+			"showTableDescriptions": false,
+			"showRelations": true,
+			"showHorizontal": false,
+			"showDescriptions": true,
+			"showIndicators": false,
+			"showProgress": false,
+			"showIndicatorCaptions": false,
+			"backgroundImage": "na",
+			"descriptionsColor": "transparent",
+			"boxSize": "0",
+			"boxSpacing": "2",
+			"boxAlign": "center",
+			"lineWidth": "2",
+			"embeddedSpacing": "2",
+			"showLabels": true,
+			"showMainIcon": true
+		}
+	},
+	"diagramsOrder": [],
+	"order": [],
+	"collapsedTreeItems": [],
+	"reverseStats": {}
+}

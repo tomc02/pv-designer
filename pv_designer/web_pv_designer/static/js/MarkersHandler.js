@@ -1,11 +1,10 @@
 class MarkersHandler {
     constructor() {
-        this.markers = {'0': [], '1': [], '2': [], '3': []};
+        this.markers = {'0': [], '1': [], '2': [], '3': [], '4': [], '5': [], '6' : [], '7': [], '8': [], '9' : []};
         this.selectedMarker = null;
     }
 
     clearMarkers(areaIndex) {
-        console.log('clearMarkers: ' + areaIndex);
         if (this.markers[areaIndex] !== undefined) {
             this.markers[areaIndex].forEach(function (marker) {
                 marker.setMap(null);
@@ -15,9 +14,8 @@ class MarkersHandler {
     }
 
     deleteMarkersArea(areaIndex) {
-        console.log('deleteMarkersArea: ' + areaIndex);
         this.clearMarkers(areaIndex);
-        for (let i = areaIndex; i < 3; i++) {
+        for (let i = areaIndex; i < 10; i++) {
             this.markers[i] = this.markers[i + 1];
         }
     }
@@ -31,6 +29,7 @@ class MarkersHandler {
                 map: map,
                 icon: markerIcon,
                 title: angle,
+                zIndex: 1,
             });
             this.markers[areaIndex].push(marker);
             google.maps.event.addListener(marker, 'click', () => {
@@ -39,38 +38,47 @@ class MarkersHandler {
         }, 100);
     }
 
-    getMarkerPicture(position, imgUrl, angle) {
-        console.log('angleAbs: ' + angle);
-        const angleAbs = Math.abs(this.clipAngle(angle));
-        const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
-        const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
-        let rotatedPanelWidth = Math.abs(panelWidthPix * Math.cos(angleAbs * Math.PI / 180)) + panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
-        let rotatedPanelHeight = panelWidthPix * Math.sin(angleAbs * Math.PI / 180) + Math.abs(panelHeightPix * Math.cos(angleAbs * Math.PI / 180));
+getMarkerPicture(position, imgUrl, theta) {
+    const panelWidthPix = calculatePixelSize(map, shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex), position.lat());
+    const panelHeightPix = calculatePixelSize(map, shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex), position.lat());
 
-        let anchorY = panelWidthPix * Math.sin(angleAbs * Math.PI / 180);
-        let anchorX = panelHeightPix * Math.sin(angleAbs * Math.PI / 180);
+    const width = shapesHandler.getPanelWidth(shapesHandler.selectedShapeIndex);
+    const height = shapesHandler.getPanelHeight(shapesHandler.selectedShapeIndex);
 
-        if (angle < 120) {
-            if (angle > 0) {
-                anchorX = 0;
-            } else {
-                anchorY = 0;
-            }
-        } else {
-            if (angle > 180) {
-                anchorX = rotatedPanelWidth;
-            } else {
-                anchorY = rotatedPanelHeight;
-            }
-        }
-        console.log('anchorX: ' + anchorX);
-        console.log('anchorY: ' + anchorY);
-        return {
-            url: imgUrl,
-            scaledSize: new google.maps.Size(rotatedPanelWidth, rotatedPanelHeight),
-            anchor: new google.maps.Point(anchorX, anchorY),
-        };
+    let radians = (theta * Math.PI) / 180;
+
+    // Calculate bounding box dimensions
+    let cosTheta = Math.abs(Math.cos(radians));
+    let sinTheta = Math.abs(Math.sin(radians));
+    let newWidth = panelWidthPix * cosTheta + panelHeightPix * sinTheta;
+    let newHeight = panelWidthPix * sinTheta + panelHeightPix * cosTheta;
+
+    // Initialize anchor points
+    let anchorX = 0;
+    let anchorY = 0;
+
+    // Adjust anchor points based on the quadrant
+    if (theta <= 0) {
+        anchorX = panelHeightPix * sinTheta;
+        anchorY = 0;
+    }else if (theta <= 90) {
+        anchorX = 0;
+        anchorY = panelWidthPix * sinTheta;
+    } else if (theta <= 180) {
+        anchorX = 0;
+        anchorY = panelHeightPix * cosTheta;
+    } else if (theta <= 270) {
+        anchorX = panelWidthPix * cosTheta + panelHeightPix * sinTheta;
+        anchorY = newHeight;
+    } else {
     }
+
+    return {
+        url: imgUrl,
+        scaledSize: new google.maps.Size(newWidth, newHeight),
+        anchor: new google.maps.Point(anchorX, anchorY),
+    };
+}
 
     selectMarker(marker) {
         this.clearMarkerSelection();
@@ -88,6 +96,7 @@ class MarkersHandler {
             this.selectedMarker.setDraggable(false);
             this.selectedMarker.setIcon(this.getMarkerPicture(this.selectedMarker.getPosition(), getPvImgUrl(this.clipAngle(this.selectedMarker.title)), this.selectedMarker.title));
             this.selectedMarker = null;
+            document.getElementById('markerDeleteButton').style.display = 'none';
         }
     }
 
@@ -104,7 +113,8 @@ class MarkersHandler {
     }
 
     clipAngle(angle) {
-        return angle > 180 ? angle - 180 : angle;
+        //return angle > 180 ? angle - 180 : angle;
+        return angle;
     }
 }
 

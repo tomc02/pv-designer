@@ -10,19 +10,53 @@ class Shape {
         this.slope = 0;
         this.mountingType = 'roof';
         this.rotations = 0;
-
+        this.isFilled = false;
+        this.highlightedEdge = null;
+        this.dragging = false;
+        this.listenerSet = false;
+        this.orientation = 0;
     }
 
     rotateShape() {
-        rotatePolygon(this.shape);
+        if (this.shape.getPath().getLength() === 3) {
+            rotateTriangle(this);
+        } else {
+            rotatePolygon(this);
+        }
+        this.updateHighlightedEdge();
         this.rotations++;
         if (this.rotations === 4) {
             this.rotations = 0;
         }
     }
 
+    updateHighlightedEdge() {
+        if (this.highlightedEdge) {
+            this.highlightedEdge.setMap(null);
+        }
+        this.highlightedEdge = new google.maps.Polyline({
+            path: [this.shape.getPath().getAt(0), this.shape.getPath().getAt(1)],
+            strokeColor: '#FF0000',
+            strokeOpacity: 2.0,
+            strokeWeight: 4,
+            map: map,
+            zIndex: 20,
+            title: this.index,
+        });
+    }
+
+    deleteHighLightedEdge() {
+        if (this.highlightedEdge) {
+            this.highlightedEdge.setMap(null);
+        }
+    }
+
     getShape() {
         return this.shape;
+    }
+
+    getPath() {
+        return this.shape.getPath();
     }
 
     setPath(path) {
@@ -64,6 +98,13 @@ class Shape {
 
     getSlope() {
         return this.slope;
+    }
+
+    changeOrientation() {
+        this.orientation = this.orientation === 0 ? 1 : 0;
+        const tmp = this.panelHeight;
+        this.panelHeight = this.panelWidth;
+        this.panelWidth = tmp;
     }
 
 }

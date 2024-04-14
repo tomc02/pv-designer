@@ -1,43 +1,44 @@
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 import matplotlib
-from django.conf import settings
 import requests
+from django.conf import settings
+from django.contrib.gis.geos import Polygon, Point
 from django.http import JsonResponse
 
 from .images import save_map_img, delete_rotated_images
-from ..models import MapData, PVPowerPlant, Area, CustomUser
+from ..models import PVPowerPlant, Area, CustomUser, SolarPanel
 
 matplotlib.use('Agg')
+
+
 def process_map_data(data, user_id):
     try:
         parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
-            map_data = MapData.objects.get(id=parsed_data['mapDataID'])
-            map_data.latitude = parsed_data['lat']
-            map_data.longitude = parsed_data['lng']
-            map_data.areas = parsed_data['shapes']
-            map_data.areasData = parsed_data['shapesData']
+            map_data = PVPowerPlant.objects.get(id=parsed_data['mapDataID'])
+            map_data.location = Point(parsed_data['lng'], parsed_data['lat'])
             map_data.zoom = parsed_data['zoom']
             map_data.map_image = save_map_img(parsed_data['imageUrl'], user_id, map_data.id)
-            map_data.areasObjects.clear()
+            map_data.areas.clear()
             map_data.save()
-            parse_areas_data(parsed_data['shapesData'], map_data, float(map_data.pv_power_plant.solar_panel.power))
+            parse_areas_data(parsed_data['shapesData'], map_data,
+                             float(map_data.solar_panel.power))
         else:
-            last_map_data = MapData.objects.last()
+            last_map_data = PVPowerPlant.objects.last()
             if last_map_data is None:
                 id = 0
             else:
                 id = last_map_data.id
             img_path = save_map_img(parsed_data['imageUrl'], user_id, id + 1)
-            power_plant = PVPowerPlant.objects.get(id=parsed_data['instanceID'])
-            pv_panel = power_plant.solar_panel
+            pv_panel = SolarPanel.objects.get(id=parsed_data['solarPanelID'])
             user_obj = CustomUser.objects.get(id=user_id)
-            map_data = MapData(user=user_obj, latitude=parsed_data['lat'], longitude=parsed_data['lng'],
-                               areas=parsed_data['shapes'],
-                               areasData=parsed_data['shapesData'], zoom=parsed_data['zoom'], map_image=img_path,
-                               pv_power_plant=power_plant)
+            location = Point(parsed_data['lng'], parsed_data['lat'])
+            map_data = PVPowerPlant(user=user_obj, location=location,
+                                    zoom=parsed_data['zoom'], map_image=img_path,
+                                    solar_panel=pv_panel)
             map_data.save()
             parse_areas_data(parsed_data['shapesData'], map_data, float(pv_panel.power))
             delete_rotated_images()
@@ -47,44 +48,33 @@ def process_map_data(data, user_id):
     return map_data.id
 
 
+def create_polygon_from_coordinates(coordinates):
+    points = [(coord['lng'], coord['lat']) for coord in coordinates]
+    point_objects = [Point(lon, lat) for lon, lat in points]
+    point_objects.append(point_objects[0])
+    polygon = Polygon(point_objects)
+
+    return polygon
+
+
 def parse_areas_data(areas_data_list, map_data, pv_panel_power):
-    print(areas_data_list)
     areas = []
     for area in areas_data_list:
-        print("area: " + area['title'] + " " + str(area['mountingType']))
+        polygon = create_polygon_from_coordinates(area['polygon'])
         area_instance = Area(
             panels_count=area['panelsCount'],
             installed_peak_power=int(area['panelsCount']) * pv_panel_power,
-            mounting_position=area['mountingType'] == '1' and 'option1' or 'option2',
+            mounting_position=area['mountingType'],
             slope=area['slope'],
             azimuth=area['azimuth'],
             title=area['title'],
             rotations=area['rotations'],
+            polygon=polygon
         )
         area_instance.save()
         print(area_instance)
-        map_data.areasObjects.add(area_instance)
+        map_data.areas.add(area_instance)
     map_data.save()
-
-
-def set_params(data):
-    print('azimuth: ' + data['azimuth'])
-    params = {
-        'lat': data['latitude'],
-        'lon': data['longitude'],
-        'peakpower': data['installed_peak_power'],
-        'loss': data['system_loss'],
-        'mountingplace': data['mounting_position'] == 'option1' and 'free' or 'building',
-        'angle': data['slope'],
-        'aspect': data['azimuth'],
-        'pvprice': data['pv_system_cost'] == 'True' and '1' or '0',
-        'systemcost': data['pv_electricity_price'],
-        'interest': data['interest'],
-        'lifetime': data['lifetime'],
-        'components': '0',
-        'outputformat': 'json'
-    }
-    return params
 
 
 def get_pvgis_response(params):
@@ -93,34 +83,64 @@ def get_pvgis_response(params):
     return response
 
 
-def save_response(response, user_id, index=0):
+def save_response(file_name, response, user_id, index=0):
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id))
-    with open(path_to_source + '/response' + str(index) + '.json', 'wb') as f:
+    with open(path_to_source + '/' + file_name + str(index) + '.json', 'wb') as f:
         f.write(response.text.encode('utf-8'))
 
 
 def make_api_calling(data_id, user_id):
-    map_data = MapData.objects.get(id=data_id)
-    areas = map_data.areasObjects.all()
-    pv_power_plant = map_data.pv_power_plant
+    map_data = PVPowerPlant.objects.get(id=data_id)
+    areas = map_data.areas.all()
+    pv_power_plant = map_data.system_details
+    sum_power = sum([area.installed_peak_power for area in areas])
     params = []
     index = 0
+    areas_pv_system_costs = []
+    if pv_power_plant.pv_system_cost:
+        for area in areas:
+            weight = area.installed_peak_power / sum_power
+            area_pv_system_cost = pv_power_plant.pv_system_cost * area.installed_peak_power / sum_power
+            areas_pv_system_costs.append(area_pv_system_cost)
+    else:
+        areas_pv_system_costs = [0] * len(areas)
+
     for area in areas:
         param = {
-            'lat': map_data.latitude,
-            'lon': map_data.longitude,
+            'lat': map_data.location.y,
+            'lon': map_data.location.x,
+            'pvtechchoice': map_data.solar_panel.pv_technology,
             'peakpower': area.installed_peak_power / 1000,
             'loss': pv_power_plant.system_loss,
-            'mountingplace': area.mounting_position == 'option1' and 'free' or 'building',
+            'mountingplace': area.mounting_position == 'optimize' and 'free' or area.mounting_position,
             'angle': area.slope,
             'aspect': area.azimuth,
-            'pvprice': pv_power_plant.pv_system_cost == 'True' and '1' or '0',
-            'systemcost': pv_power_plant.pv_electricity_price,
-            'interest': pv_power_plant.interest,
-            'lifetime': pv_power_plant.lifetime,
-            'outputformat': 'json'
+            'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
+            'systemcost': areas_pv_system_costs[index] * 1000,
+            'interest': pv_power_plant.interest if pv_power_plant.interest else 0,
+            'lifetime': pv_power_plant.lifetime if pv_power_plant.lifetime else 25,
+            'outputformat': 'json',
+            'optimalinclination': area.mounting_position == 'optimize' and '1' or '0',
+            'optimalangles': area.mounting_position == 'optimize' and '1' or '0',
         }
         params.append(param)
-        save_response(get_pvgis_response(param), user_id, index)
+        print(param)
         index += 1
 
+    with ThreadPoolExecutor() as executor:
+        results = list(executor.map(get_pvgis_response, params))
+    for i, response in enumerate(results):
+        save_response("response", response, user_id, i)
+
+
+def get_user_id(request):
+    if request.user.is_authenticated:
+        return request.user.id
+    else:
+        return CustomUser.objects.get(username='anonymous').id
+
+
+def load_image_from_db(user_id, map_data):
+    image_path = './web_pv_designer/pdf_sources/' + str(user_id) + '/' + 'pv_image.png'
+    with open(image_path, 'wb') as f:
+        f.write(map_data.map_image.file.read())

@@ -1,6 +1,10 @@
 #map {
-    height: 100%;
-    min-height: 600px;
+    height: max(55vh, 500px);
+    width: 100%;
+}
+
+#simple_map {
+    height: max(35vh, 350px);
     width: 100%;
 }
 
@@ -9,10 +13,7 @@
 }
 
 #searchInput {
-    width: 100%;
-    max-width: 300px;
     padding: 5px;
-    margin-bottom: 10px;
 }
 
 #pdf_view {
@@ -21,8 +22,40 @@
     min-height: 600px;
 }
 
+.heading-section-dark {
+    border-bottom: 2px solid #495057;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.map-container-dark {
+    padding: 20px;
+    background-color: #23272b;
+    border: 1px solid #495057;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, .05);
+}
+
+.heading-section {
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.map-container {
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+/* Additional styling for visual enhancement */
+.lead {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
 .highlight {
-    border: 2px solid #007bff; /* Blue border for the highlighted panel */
+    border: 2px solid #007bff;
 }
 
 .editable-title {
@@ -37,7 +70,22 @@
 }
 
 .container {
-    max-width: 80vw; /* Adjust this value as needed */
+    max-width: 80vw; /* Adjust this value as needed for larger screens */
+
+    /* Media query for screens with a maximum width of 767px (typical for mobile devices) */
+    @media (max-width: 767px) {
+        max-width: 100%;
+    }
+}
+
+.big-mobile-button {
+    @media (max-width: 767px) {
+        width: 100%;
+    }
+}
+
+.bottom-input {
+    margin-top: 10px;
 }
 
 .processing-container {
@@ -57,7 +105,24 @@
 
 .processing-message {
     font-size: 18px;
-    color: #333;
+}
+
+.accordion-button {
+    height: 38px;
+    padding: 6px 12px;
+}
+
+.accordion-body {
+    padding: 15px;
+}
+.last-input {
+    margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+    .accordion-button {
+        height: 45px;
+        padding: 8px 15px;
+    }
 }
 
 @keyframes spin {
@@ -78,4 +143,61 @@
 
 .left-dropdown {
     margin-left: 15px;
+}
+
+.custom-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    height: 100%;
+}
+
+
+.hero-section {
+    padding: 50px 0;
+}
+
+.features {
+    padding: 20px 0;
+}
+
+.step-content {
+    display: none;
+}
+
+.step-content.active {
+    display: block;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation button {
+    margin: 0 5px;
+}
+
+.step-counter {
+    margin: 0 10px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center; /* Center children horizontally */
+    align-items: center; /* Center children vertically (if needed) */
+}
+
+.search-bar-line {
+    border-top: 1px solid;
+    padding-top: 20px;
+}
+
+.map-type-select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="blue" class="bi bi-layers-fill" viewBox="0 0 16 16"><path d="M7.765 1.559a.5.5 0 0 1 .47 0l7.5 4a.5.5 0 0 1 0 .882l-7.5 4a.5.5 0 0 1-.47 0l-7.5-4a.5.5 0 0 1 0-.882z"/><path d="m2.125 8.567-1.86.992a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882l-1.86-.992-5.17 2.756a1.5 1.5 0 0 1-1.41 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: 16px;
+
 }

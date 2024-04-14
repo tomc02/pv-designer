@@ -10,13 +10,15 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as ImagePlatypus, TableStyle, Table
 
+from ..models import MonthlyConsumption
 
-def create_pdf_report(user_id, areas):
-    pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'pv_data_report.pdf')
+
+def create_pdf_report(user_id, areas, pv_data):
+    pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_data_report.pdf')
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
-
-    lat, long = None, None
+    style_sheet = getSampleStyleSheet()
+    elements = []
 
     response_file_paths = [path_to_source + f'response{index}.json' for index in range(len(areas))]
     sum_responses(response_file_paths, path_to_source)
@@ -27,71 +29,227 @@ def create_pdf_report(user_id, areas):
         lat = round(location_data['latitude'], 4)
         long = round(location_data['longitude'], 4)
 
-    story = []
-
+    input_values = data['inputs']
     # Title
-    title_style = getSampleStyleSheet()['Title']
-    story.append(Paragraph('Photovoltaic System Performance Report', title_style))
+    title_style = style_sheet['Title']
+    elements.append(Paragraph('Photovoltaic System Performance Report', title_style))
 
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
-    story.append(ImagePlatypus(pv_panel_img_path, width=400, height=200))
+    page_content_width = doc.width
+    print(f"page_content_width: {page_content_width}")
+    # load the image and find its dimensions
+    image = ImagePlatypus(pv_panel_img_path)
+    img_width, img_height = image.wrap(doc.width, doc.height)
+    # calculate aspect ratio
+    aspect = float(img_height) / float(img_width)
+    # calculate image width and height to fit into the page
+    img_width = page_content_width
+    img_height = img_width * aspect
+    img = ImagePlatypus(pv_panel_img_path, width=img_width, height=img_height)
+    elements.append(img)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
+
+    yearly_consumption = 0
+    monthly_consumption_array = []
+    monthly_consumption = MonthlyConsumption.objects.filter(power_plant=pv_data.system_details)
+    if monthly_consumption.count() < 12:
+        monthly_consumption_array = [(pv_data.system_details.consumption_per_year * 1000) / 12] * 12
+        yearly_consumption = pv_data.system_details.consumption_per_year
+    else:
+        for month in monthly_consumption:
+            monthly_consumption_array.append(month.consumption)
+            yearly_consumption = round(sum(monthly_consumption_array) / 1000, 2)
+
+    consumption_per_year = pv_data.system_details.consumption_per_year
+    if consumption_per_year is None:
+        consumption_per_year = '-'
+    total_peak_power = 0
+    for area in areas:
+        total_peak_power += area.installed_peak_power
+    total_peak_power = round(total_peak_power / 1000, 2)
+    year_production = round(float(data["outputs"]["totals"]["fixed"]["E_y"]) / 1000, 2)
+    table_data = [
+        ["PV Panel Type", "Location Information", "Totals"],
+        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {year_production} MWh'],
+        [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
+        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {yearly_consumption} MWh'],
+        [f'Power: {pv_data.solar_panel.power} W', ''],
+    ]
+
+    # Create the table
+    table = Table(table_data, colWidths=[page_content_width / len(table_data[0])])
+
+    # Add style to the table(bold text in the first row)
+    table_style = TableStyle([
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold')])
+    table.setStyle(table_style)
+
+    # Add the table to the elements
+    elements.append(table)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
+
+    # If azimuth and slope was optimized, add the optimized values to the areas
+    # For response in responses:
+    index = 0
+    optimized_areas = []
+    for response in response_file_paths:
+        with open(response, 'r') as json_file:
+            print(f"Reading response file: {response}")
+            data_response = json.load(json_file)
+            azimuth = data_response['inputs']['mounting_system']['fixed']['azimuth']
+            slope = data_response['inputs']['mounting_system']['fixed']['slope']
+            if azimuth['optimal'] and slope['optimal']:
+                areas[index].azimuth = azimuth['value']
+                areas[index].slope = slope['value']
+                optimized_areas.append(index)
+            index += 1
 
     # Table with Area Information
-    area_info = [['Area', 'Panels Count', 'Installed Peak Power', 'Slope', 'Azimuth']]
-    total_values = [0, 0, 0, 0, 0]  # Initialize total values
+    table_data = create_table(areas, page_content_width, optimized_areas)
+    elements.append(table_data)
+    elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
-    for area in areas:
-        data_json = area.to_JSON()
-        area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000, data_json['slope'],
-                       data_json['azimuth']]
-        area_info.append(area_values)
-        total_values = [sum(x) for x in zip(total_values, area_values[1:])]
+    if optimized_areas:
+        optimized_text = ('The values highlighted in <font color="green">green</font> have been optimized for the best '
+                          'performance.')
+        elements.append(Paragraph(optimized_text, style_sheet['BodyText']))
+        elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
-    # Add row for total values
-    total_values = [round(x, 2) for x in total_values]
-    total_values[2] = '-'
-    total_values[3] = '-'
-    total_row = ['Total', *total_values]
-    area_info.append(total_row)
-    last_row_index = len(area_info) - 1
+    if 'LCOE_pv' in data['outputs']['totals']['fixed']:
+        elements.append(Paragraph('Electricity Price', style_sheet['Heading3']))
+        lcoe = round(data['outputs']['totals']['fixed']['LCOE_pv']/1000, 4)
+        pv_system_cost = pv_data.system_details.pv_system_cost if pv_data.system_details.pv_system_cost else data['inputs']['economic_data']['system_cost']
+        interest = pv_data.system_details.interest if pv_data.system_details.interest else data['inputs']['economic_data']['interest']
+        lifetime = pv_data.system_details.lifetime if pv_data.system_details.lifetime else data['inputs']['economic_data']['lifetime']
+        lcoe_text = (f'For your photovoltaic system, with an initial cost of {pv_system_cost} EUR,'
+                     f' an interest rate of {interest}%, and an expected operational lifetime of {lifetime} years,'
+                     f' the calculated electricity price is <b>{lcoe}</b> EUR per kWh.')
+        elements.append(Paragraph(lcoe_text, style_sheet['BodyText']))
+        elements.append(Paragraph('<br/>', style_sheet['BodyText']))
 
-    table_style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('BACKGROUND', (0, last_row_index), (-1, last_row_index), (222/255, 222/255, 182/255)),
-    ])
-
-    table_data = Table(area_info, colWidths=[80, 80, 120, 60, 60])  # Set custom column widths
-    table_data.setStyle(table_style)
-    story.append(table_data)
+    year_energy_data = data['outputs']['totals']['fixed']
 
     monthly_energy_data = data['outputs']['monthly']['fixed']
 
-    months = [entry['month'] for entry in monthly_energy_data]
-    energy_values = [entry['E_m'] for entry in monthly_energy_data]
+    chart = create_monthly_energy_chart(monthly_energy_data, monthly_consumption_array)
+    add_graph_to_report(chart, elements, page_content_width)
+
+    totals = {'consumed': 0, 'unused': 0, 'deficit': 0}
+    for i in range(0, 12):
+        production = monthly_energy_data[i]['E_m']
+        if monthly_consumption_array[i] >= production:
+            totals['consumed'] += production
+            totals['deficit'] += monthly_consumption_array[i] - production
+        else:
+            totals['consumed'] += monthly_consumption_array[i]
+            totals['unused'] += production - monthly_consumption_array[i]
+
+    chart = create_energy_balance_chart(totals)
+    add_graph_to_report(chart, elements, page_content_width)
+
+    doc.build(elements)
+
+    print(f"Report generated and saved as {pdf_file}")
+
+    return True
+
+
+import matplotlib.pyplot as plt
+
+
+def create_energy_balance_chart(totals):
+    labels = ['Consumed', 'Unused', 'Deficit']
+    sizes = [totals['consumed'], totals['unused'], totals['deficit']]
+    chart_colors = ['#4CAF50', '#FFC107', '#F44336']
+    explode = (0.1, 0, 0)
+    labels_with_values = [f'{label}: {round(size, 1)} kWh' for label, size in zip(labels, sizes)]
+
+    fig1, ax1 = plt.subplots(figsize=(8, 7))
+    wedges, texts, autotexts = ax1.pie(sizes, explode=explode, colors=chart_colors,
+                                       autopct='%1.1f%%', shadow=True, startangle=90)
+
+    ax1.axis('equal')
+    #plt.legend(wedges, labels_with_values, title="Energy Distribution", loc="upper center", bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, fontsize=12, title_fontsize=14)
+
+    plt.legend(labels_with_values, fontsize=12, loc="upper left", bbox_to_anchor=(0.81, 0.0, 0.0, 1.0), title="Energy Distribution", title_fontsize=14)
+    plt.title('Overall Energy Balance', fontsize=16, x=0.65, pad=20)
+
+    plt.setp(autotexts, size=12)
+
+    plt.tight_layout()
+    return plt
+
+
+def create_looses_chart(year_energy_data, input_values):
+    l_aoi = year_energy_data['l_aoi']  # Losses due to angle of incidence
+    l_spec = year_energy_data['l_spec']  # Losses due to spectral effects
+    l_tg = year_energy_data['l_tg']  # Losses due Temperature and irradiance losses
+    l_system = input_values['pv_module']['system_loss']  # System losses
+    l_system = l_system * -1
+    l_total = year_energy_data['l_total']  # Total losses
+
+    colors_plt = ['red' if value < 0 else 'green' for value in [l_spec, l_aoi, l_tg, l_system, l_total]]
+
+    losses = [l_spec, l_aoi, l_tg, l_system, l_total]
+    labels = ['Spectral Effects', 'Angle of Incidence', 'Temperature and Irradiance', 'System', 'Total']
+
+    plt.figure(figsize=(12, 8))
+    bars = plt.bar(labels, losses, color=colors_plt, edgecolor='black', linewidth=1.2)
+    plt.title('Losses', fontsize=16)
+    plt.ylabel('Percentage (%)')
+
+    for bar, value in zip(bars, losses):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
+                 color='black', fontweight='bold', fontsize=10)
+
+    return plt
+
+
+def create_consumption_chart(year_consumption, year_production):
+    categories = ['Production', 'Consumption']
+    values = [year_production, year_consumption]
 
     plt.figure(figsize=(10, 6))
-    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2)
+    bars = plt.barh(categories, values, color=['#4285F4', '#EA4335'], edgecolor='black', linewidth=1.2)
+    plt.xlabel('Energy (MWh)')
+    plt.title('Yearly Energy Production vs Consumption')
+
+    for bar, value in zip(bars, [year_production, year_consumption]):
+        plt.text(bar.get_width(), bar.get_y() + bar.get_height() / 2, f'{value:.2f} MWh',
+                 va='center', ha='right', fontweight='bold', color='black', fontsize=10)
+
+    plt.tight_layout()
+    return plt
+
+
+def create_monthly_energy_chart(monthly_energy_data, consumption=None):
+    months = [entry['month'] for entry in monthly_energy_data]
+    energy_values = [entry['E_m'] for entry in monthly_energy_data]
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    # Convert month indices to names for better readability on the chart
+    month_labels = [month_names[month - 1] for month in months]
+
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(months, energy_values, color='#4285F4', edgecolor='black', linewidth=1.2, label='Energy Production')
+
+    if consumption:
+        plt.plot(months, consumption, color='red', marker='o', linestyle='-', linewidth=2, label='Consumption')
 
     plt.xlabel('Month')
-    plt.ylabel('Energy Production (kWh/mo)')
-    plt.title('Monthly Energy Production')
+    plt.ylabel('Energy (kWh/mo)')
+    plt.title('Monthly Energy Production vs. Consumption', fontsize=16)
 
-    # Add values above the bars with better styling
     for bar, value in zip(bars, energy_values):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2, f'{value:.2f}', ha='center', va='bottom',
                  color='black', fontweight='bold', fontsize=10)
+    plt.legend(fontsize=12)
 
-    plt.xticks(months)
-    plt.ylim(0, max(energy_values)*1.1)  # Adjust y-axis limit for better visualization
+    plt.xticks(months, labels=month_labels)
+    plt.ylim(0, max(energy_values + (consumption if consumption else [0])) * 1.1)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # Beautify the chart
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['left'].set_linewidth(0.5)
@@ -99,45 +257,65 @@ def create_pdf_report(user_id, areas):
 
     plt.tight_layout()
 
-    # Save the chart to a BytesIO buffer
+    return plt
+
+
+def create_table(areas, page_content_width, optimized_areas):
+    area_info = [['Area', 'Panels Count', 'Peak Power [kW]', 'Slope [°]', 'Azimuth']]
+    total_values = [0, 0, 0, 0, 0]  # Initialize total values
+
+    index = 0
+    cell_styles = []  # Initialize list to hold cell styles for optimized values
+    for area in areas:
+        data_json = area.to_JSON()
+        azimuth = data_json['azimuth']
+        slope = data_json['slope']
+        if index in optimized_areas:
+            # Instead of adding *, we'll change the text color later
+            slope = f'{slope:.1f}'
+            azimuth = f'{azimuth:.1f}'
+            # Add cell style command for slope and azimuth values
+            cell_styles.append(('TEXTCOLOR', (3, index + 1), (3, index + 1), colors.green))  # Slope value
+            cell_styles.append(('TEXTCOLOR', (4, index + 1), (4, index + 1), colors.green))  # Azimuth value
+        area_values = [data_json['title'], data_json['panels_count'], data_json['installed_peak_power'] / 1000,
+                       slope, azimuth]
+        area_info.append(area_values)
+        total_values = [sum(x) for x in zip(total_values, area_values[1:3])]
+        index += 1
+
+    # Add row for total values
+    total_values = [round(x, 2) for x in total_values]
+    total_row = ['Total', *total_values, '-', '-']
+    area_info.append(total_row)
+    last_row_index = len(area_info) - 1
+
+    # Initial table style configuration
+    table_style = TableStyle([
+                                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                 ('BACKGROUND', (0, last_row_index), (-1, last_row_index),
+                                  (222 / 255, 222 / 255, 182 / 255)),
+                             ] + cell_styles)  # Add cell styles for optimized values
+
+    table_data = Table(area_info, colWidths=[page_content_width / len(area_info[0])])
+    table_data.setStyle(table_style)
+
+    return table_data
+
+
+def add_graph_to_report(plt, elements, width=500, height=300):
     buffer = BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
     plt.close()
 
-    # Embed the chart in the PDF report
-    chart_img = ImagePlatypus(buffer, width=500, height=300)
-    story.append(chart_img)
-    doc.build(story)
-
-    print(f"Report generated and saved as {pdf_file}")
-
-    return True
-
-
-def process_area_for_pdf(area, index, path_to_source):
-    with open(path_to_source + f'response{0}.json', 'r') as json_file:
-        data = json.load(json_file)
-
-    monthly_data = data['outputs']['monthly']['fixed']
-    pv_module_data = data['inputs']['pv_module']
-    location_data = data['inputs']['location']
-
-    months = [entry['month'] for entry in monthly_data]
-    e_d_values = [entry['E_d'] for entry in monthly_data]
-
-    plt.figure(figsize=(10, 4))
-    plt.bar(months, e_d_values, color='skyblue', label='Energy Production')
-    plt.xlabel('Month')
-    plt.ylabel('Average daily energy production (kWh/d)')
-    plt.title('Monthly Energy Production')
-    plt.xticks(months)
-    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-    plt.legend()
-    plt.tight_layout()
-
-    plt.savefig(path_to_source + f'monthly_energy_production{index}.png')
-    plt.close()
+    chart_img = ImagePlatypus(buffer, width=width, height=height)
+    elements.append(chart_img)
+    elements.append(Paragraph('<br/>', getSampleStyleSheet()['BodyText']))
 
 
 def sum_responses(file_paths, path_to_source):
@@ -172,8 +350,32 @@ def sum_responses(file_paths, path_to_source):
 
         # Summing values for totals output
         for key in response["outputs"]["totals"]["fixed"].keys():
-            sum_response["outputs"]["totals"]["fixed"][key] = sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(response["outputs"]["totals"]["fixed"][key])
+            if key not in ["l_total", "l_aoi", "l_spec", "l_tg"]:
+                sum_response["outputs"]["totals"]["fixed"][key] = sum_response["outputs"]["totals"]["fixed"].get(key,
+                                                                                                                 0) + float(
+                    response["outputs"]["totals"]["fixed"][key])
+
+        # Summing values for losses by average because they are percentages
+        for key in ["l_aoi", "l_spec", "l_tg"]:
+            sum_response["outputs"]["totals"]["fixed"][key] = (
+                    sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(
+                response["outputs"]["totals"]["fixed"][key]))
+
+        print("Costs:" + str(response["outputs"]["totals"]["fixed"].get("LCOE_pv", 0)))
+
+    for key in ["l_aoi", "l_spec", "l_tg"]:
+        sum_response["outputs"]["totals"]["fixed"][key] = (
+                sum_response["outputs"]["totals"]["fixed"][key] / len(file_paths))
+    # Summing all losses to get the total loss
+    sum_response["outputs"]["totals"]["fixed"]["l_total"] = sum_response["outputs"]["totals"]["fixed"]["l_aoi"] + \
+                                                            sum_response["outputs"]["totals"]["fixed"]["l_spec"] + \
+                                                            sum_response["outputs"]["totals"]["fixed"]["l_tg"] - \
+                                                            sum_response["inputs"]["pv_module"]["system_loss"]
+    # Average the LCOE_pv value
+    if "LCOE_pv" in sum_response["outputs"]["totals"]["fixed"]:
+        sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] = sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] / len(file_paths)
+
 
     # Save the sum to a new file
-    with open(path_to_source+'response_sum.json', 'w') as output_file:
+    with open(path_to_source + 'response_sum.json', 'w') as output_file:
         json.dump(sum_response, output_file, indent=2)

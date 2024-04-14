@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% load form_tags %}
+{% block content %}
+    <div class="container mt-5">
+        <div id="content">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div>
+                        <div class="heading-section text-center page-heading-section">
+                            <h1>PV Power Plant Details</h1>
+                            <p class="lead">Complete the final steps to accurately calculate your photovoltaic power
+                                plant's
+                                potential. Each field comes with a helpful tooltip for further explanation.</p>
+                        </div>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.map_id }}
+
+                        <div class="form-group">
+                            <label for="{{ form.title.id_for_label }}">Name of your calculation
+                                <i class="bi bi-question-lg"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="right"
+                                   title="Give your project a unique name for easy identification and future reference."></i></label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.system_loss.id_for_label }}">System loss [%]
+                                <i class="bi bi-question-lg"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="right"
+                                   title="Estimate of system losses, including wiring, shading, and inverter losses, typically between 5% to 15%.
+                            Accurately estimating system loss improves the precision of energy production calculations."></i></label>
+                            {{ form.system_loss }}
+
+                        </div>
+
+                        <div id="consumptionInput" class="last-input">
+                            <div class="form-group" style="margin-bottom: 10px">
+                                <label for="{{ form.consumption_per_year.id_for_label }}">Consumption per year [MWh]
+                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                       title="Enter your yearly electricity consumption in MWh. This value will be used to visualize the coverage."></i></label>
+                                {{ form.consumption_per_year }}
+                            </div>
+                            <div class="accordion" id="monthlyConsumptionAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                                aria-controls="flush-collapseOne">
+                                            Consumption per month [kWh] (optional)
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                         data-bs-parent="#monthlyConsumptionAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row" id="consumption-formset">
+                                                {{ consumption_formset.management_form }}
+                                                {% for form in consumption_formset.forms %}
+                                                    <div class="col-md-6 col-lg-3 mb-3">
+                                                        <label class="form-label">{{ form.month.value|get_month_name }}</label>
+                                                        {{ form.month.as_hidden }}
+                                                        {{ form.consumption }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="{{ form.pv_electricity_price.name }}"
+                                   id="{{ form.pv_electricity_price.id_for_label }}"></input>
+                            <label class="form-check-label" for="{{ form.pv_electricity_price.id_for_label }}">PV system
+                                price
+                                <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                   title="Indicate if you want to include the cost of the PV system in your calculations.
+                            This includes initial setup costs and can be used to calculate return on investment over time."></i></label>
+                        </div>
+                        <div id="pvElectricityPriceInputs" class="last-input" style="display:none;">
+                            <div class="form-group">
+                                <label for="{{ form.pv_system_cost.id_for_label }}">PV system cost [EUR]
+                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                       title="Specify the total cost of your PV system installation in EUR.
+                                This should include all expenses related to hardware, installation, and any additional fees."></i></label>
+                                {{ form.pv_system_cost }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.interest.id_for_label }}">Interest [%/year]
+                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                       title="If financing your PV system, enter the annual interest rate.
+                                This rate will be used to calculate the financial feasibility and payback period of your investment."></i></label>
+                                {{ form.interest }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.lifetime.id_for_label }}">Lifetime [years]
+                                    <i class="bi bi-question-lg" data-bs-toggle="tooltip" data-bs-placement="right"
+                                       title="The expected operational lifetime of your PV system. Typical values range from 25 to 30 years."></i></label>
+                                {{ form.lifetime }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="loading" class="loading">
+                <div class="processing-container">
+                    <div class="processing-animation"></div>
+                    <p class="processing-message">Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+        function toggleElementVisibility(checkbox, targetId) {
+            const target = $(`#${targetId}`);
+            checkbox.on('change', function () {
+                if ($(this).prop('checked')) {
+                    target.show();
+                } else {
+                    target.hide();
+                }
+            });
+            checkbox.trigger('change');
+        }
+        toggleElementVisibility($('#{{ form.pv_electricity_price.auto_id }}'), 'pvElectricityPriceInputs');
+
+        const pvElectricityPriceDefaultValue = "{{ form.pv_electricity_price.value }}";
+
+        $(`#${'{{ form.pv_electricity_price.id_for_label }}'}`).prop('checked', pvElectricityPriceDefaultValue === "True").trigger('change');
+
+        $('#{{ form.system_loss.id_for_label }}').val(14);
+
+        // if consumption in december is not empty, show the accordion
+        if ($('#consumption-formset input[name$="consumption"]').last().val() !== "") {
+            $('#flush-collapseOne').collapse('show');
+        }
+    });
+</script>
+{% endblock %}

@@ -7,9 +7,8 @@ class ShapesHandler {
         this.shapesCount = 0;
         this.panelH = panelHeight;
         this.panelW = panelWidth;
-
-        console.log('panelHeight: ' + this.panelH);
-        console.log('panelWidth: ' + this.panelW);
+        this.dragging = false;
+        this.pvPanelSelected = false;
     }
 
     getShapeObject(index) {
@@ -33,9 +32,15 @@ class ShapesHandler {
     }
 
     recalculatePanelHeight(index, slope) {
+        const shape = this.shapesObjects[index];
         slope = 90 - slope;
-        this.shapesObjects[index].panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
-        this.shapesObjects[index].panelWidth = this.panelW;
+        if (shape.orientation) {
+            shape.panelHeight = this.panelW * Math.sin(slope * Math.PI / 180);
+            shape.panelWidth = this.panelH;
+        } else {
+            shape.panelHeight = this.panelH * Math.sin(slope * Math.PI / 180);
+            shape.panelWidth = this.panelW;
+        }
     }
 
     addShape(shape) {
@@ -101,10 +106,17 @@ class ShapesHandler {
         }
     }
 
+    clearFilledPanels() {
+        if (this.selectedShape) {
+            markerHandler.clearMarkers(this.selectedShapeIndex);
+        }
+    }
+
     deleteShape() {
         if (confirm("Are you sure you want to delete this area?")) {
             if (this.selectedShape) {
                 const index = this.selectedShapeIndex;
+                this.selectedShape.deleteHighLightedEdge();
                 markerHandler.deleteMarkersArea(index);
                 this.selectedShape.deleteShape();
                 deleteControlPanel(index);
@@ -120,7 +132,12 @@ class ShapesHandler {
     fillAreaWithPanels() {
         if (this.selectedShape) {
             markerHandler.clearMarkers(this.selectedShapeIndex);
-            const data = fillPolygon(this.selectedShapeIndex);
+            let data;
+            if (this.selectedShape.getPath().getLength() === 3) {
+                data = fillTriangle(this.selectedShapeIndex);
+            } else {
+                data = fillPolygon(this.selectedShapeIndex);
+            }
             const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
             console.log('area: ' + this.selectedShapeIndex);
             const p = document.getElementById("panelCount" + (this.selectedShapeIndex));
@@ -130,13 +147,22 @@ class ShapesHandler {
             const shape = this.selectedShape;
             shape.panelsCount = data.panelsCount;
             shape.azimuth = data.azimuth;
+            shape.isFilled = true;
         }
     }
 
-    fillAllAreasWithPanels() {
+    fillAllAreasWithPanels(filledOnly = false) {
         for (let i = 0; i < this.shapesCount; i++) {
             this.selectShapeByIndex(i);
-            this.fillAreaWithPanels();
+            if (!filledOnly) {
+                this.fillAreaWithPanels();
+            } else {
+                if (this.selectedShape.isFilled) {
+                    this.fillAreaWithPanels();
+                }
+            }
+            setTimeout(function () {
+            }, 50);
         }
     }
 
@@ -164,6 +190,7 @@ class ShapesHandler {
                 'title': title,
                 'mountingType': mountingPosition,
                 'rotations': shapeObject.rotations,
+                'polygon': shape.getPath().getArray(),
             };
             console.log(shapeData);
             shapesData.push(shapeData);
@@ -171,6 +198,10 @@ class ShapesHandler {
         return shapesData;
     }
 
+    changePanelsOrientation() {
+        this.selectedShape.changeOrientation();
+        this.fillAreaWithPanels();
+    }
 }
 
 
