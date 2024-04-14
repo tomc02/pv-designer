@@ -85,21 +85,6 @@ function initMap() {
     map.setOptions({streetViewControl: false});
     map.setOptions({mapTypeControl: false});
 
-    //set listener for map location change
-    google.maps.event.addListener(map, 'center_changed', function () {
-        var maxZoomService = new google.maps.MaxZoomService();
-        maxZoomService.getMaxZoomAtLatLng(map.getCenter(), function (response) {
-            if (response.status === google.maps.MaxZoomStatus.OK) {
-                if (response.zoom < 20) {
-                    map.setMapTypeId('mapyCz');
-                } else {
-                    map.setMapTypeId('satellite');
-                }
-            } else {
-                console.error('Max zoom level not available at this location.');
-            }
-        });
-    });
 }
 
 function searchBoxInit(map, putMarker = false) {

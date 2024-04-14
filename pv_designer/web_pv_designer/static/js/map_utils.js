@@ -74,6 +74,42 @@ function convertToGoogleMapsPolygonPath(coordsObj) {
     return path;
 }
 
+function addMapyCzAttribution() {
+    // Create and add the Mapy.cz logo
+    const logo = document.createElement('a');
+    logo.id = 'mapyCzLogo';
+    logo.href = 'https://mapy.cz/';
+    logo.target = '_blank';
+
+    // Create and add the Mapy.cz logo image
+    const logoImg = document.createElement('img');
+    logoImg.src = 'https://api.mapy.cz/img/api/logo.svg';
+    logoImg.alt = 'Mapy.cz logo';
+    logoImg.style.height = '28px';
+    logo.appendChild(logoImg);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(logo);
+
+    // Add the Mapy.cz attribution link
+    var attributionControl = document.querySelectorAll('.gm-style-cc');
+    if (attributionControl.length >= 2 && attributionControl[1].children.length >= 2) {
+        var secondChild = attributionControl[1].children[1];
+        var attributionLink = document.createElement('a');
+        attributionLink.id = 'mapyCzCopyright';
+        attributionLink.textContent = ' | \u00A9 Seznam.cz a.s. a další';
+        attributionLink.setAttribute('href', 'https://api.mapy.cz/copyright');
+        attributionLink.setAttribute('target', '_blank');
+        attributionLink.style = "text-decoration: none; cursor: pointer; color: rgb(0, 0, 0);";
+        secondChild.appendChild(attributionLink);
+    }
+}
+
+function removeMapyCzAttribution() {
+    const logo = document.getElementById('mapyCzLogo');
+    const attribution = document.getElementById('mapyCzCopyright');
+    if (logo) logo.remove();
+    if (attribution) attribution.remove();
+}
+
 function loadMapData() {
     if (mapData.latitude && mapData.longitude) {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -135,7 +171,7 @@ function loadMapData() {
 
     const drawShapeButton = document.createElement('button');
     drawShapeButton.id = 'drawShapeButton';
-    drawShapeButton.classList.add('btn', 'btn-primary');
+    drawShapeButton.classList.add('btn', 'btn-primary', 'btn-sm');
     drawShapeButton.innerText = 'Add area';
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(drawShapeButton);
     drawShapeButton.style.display = 'block';
@@ -144,6 +180,48 @@ function loadMapData() {
     drawShapeButton.addEventListener('click', function () {
         drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
     });
+
+    const mapTypeSelect = document.createElement('select');
+    mapTypeSelect.id = 'mapTypeSelect';
+    mapTypeSelect.classList.add('map-type-select', 'form-select', 'form-select-sm');
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Map';
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    mapTypeSelect.appendChild(placeholderOption);
+
+    const satelliteOption = document.createElement('option');
+    satelliteOption.value = 'satellite';
+    satelliteOption.textContent = 'Satellite';
+    mapTypeSelect.appendChild(satelliteOption);
+
+    const mapyCzOption = document.createElement('option');
+    mapyCzOption.value = 'mapyCz';
+    mapyCzOption.textContent = 'Mapy.cz';
+    mapTypeSelect.appendChild(mapyCzOption);
+
+    const classicMapOption = document.createElement('option');
+    classicMapOption.value = 'roadmap';
+    classicMapOption.textContent = 'Road Map';
+    mapTypeSelect.appendChild(classicMapOption);
+
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapTypeSelect);
+    mapTypeSelect.style.width = '75px';
+    mapTypeSelect.style.marginLeft = '10px';
+
+    mapTypeSelect.addEventListener('change', function () {
+        const selectedMapType = this.value;
+        map.setMapTypeId(selectedMapType);
+        if (selectedMapType === 'mapyCz') {
+            addMapyCzAttribution();
+        } else {
+            removeMapyCzAttribution();
+        }
+        this.selectedIndex = 0;
+    });
+
     clearHighlight();
     return map;
 }

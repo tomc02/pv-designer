@@ -16,12 +16,12 @@ function addControlPanel() {
                     <p>Azimuth: <span id="azimuth${areaIndex}">0</span></p>
                     <div class="input-group mt-3">
                         <label class="input-group-text" for="roofSlopeInput">Slope (°)</label>
-                        <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Enter slope (Default 0)" onchange="updateAreaSlope(this)">
+                        <input class="form-control" type="number" min="0" max="90" id="slope${areaIndex}" placeholder="Slope" onchange="updateAreaSlope(this)">
                     </div>
                     <div class="input-group mt-3" style="padding-bottom: 10px">
                         <label class="input-group-text" for="roofSlopeInput">Mounting position</label>
                         <select class="form-select" id="mountingPosition${areaIndex}" onchange="updateMountingPosition(this)">
-                            <option value="building">Roof added</option>
+                            <option value="building">Building integrated</option>
                             <option value="free">Free standing</option>
                             <option value="optimize">Optimize position</option>
                         </select>
