@@ -48,7 +48,7 @@ function sortCorners(corners) {
 
 function getCornerPoints(polugon) {
     if (polugon.getPath().getLength() === 3) {
-        return{
+        return {
             leftTop: polugon.getPath().getAt(0),
             rightTop: polugon.getPath().getAt(1),
             bottom: polugon.getPath().getAt(2),
@@ -80,7 +80,7 @@ function setListenerForShapeDragging(shape) {
 }
 
 function setListenerForShapeChange(shape) {
-     google.maps.event.addListener(shape.getPath(), 'set_at', function () {
+    google.maps.event.addListener(shape.getPath(), 'set_at', function () {
         shapesHandler.selectedShape.updateHighlightedEdge();
         if (!shape.dragging) {
             shapesHandler.fillAreaWithPanels();
@@ -115,7 +115,7 @@ function computeHypotenuse(heading1, heading2, panelHeight) {
     return panelHeight / Math.cos(angle * Math.PI / 180);
 }
 
-async function fillPolygon(index) {
+function fillPolygon(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
@@ -145,7 +145,7 @@ async function fillPolygon(index) {
     const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
-    const pvPanelUrl = await rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
     console.log('pvPanelUrl', pvPanelUrl);
     let azimuth = computeAzimuth(headingLTR);
 
@@ -176,7 +176,7 @@ async function fillPolygon(index) {
 }
 
 
-async function fillTriangle(index) {
+function fillTriangle(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
@@ -201,7 +201,7 @@ async function fillTriangle(index) {
     const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
-    const pvPanelUrl = await rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
     let azimuth = computeAzimuth(headingLTR);
 
     let topPoints = [];
@@ -224,7 +224,6 @@ async function fillTriangle(index) {
         if (continuePlacingPanels) {
             panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
         }
-
         iteration++;
     }
     return new areaData(panelsCount, azimuth);
@@ -269,20 +268,19 @@ function calculatePixelSize(map, meters, latitude) {
     return pixelSize;
 }
 
-async function rotateImage(angle, slope, orientation) {
-    console.log('slope', slope);
-    await fetch(rotateImgUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify({
-            'angle': angle,
-            'slope': slope,
-            'orientation': orientation
-        })
-    });
+function rotateImage(angle, slope, orientation) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation, false);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Request successful
+            } else {
+                console.error("Request failed with status:", xhr.status);
+            }
+        }
+    };
+    xhr.send();
     return getPvImgUrl(angle);
 }
 

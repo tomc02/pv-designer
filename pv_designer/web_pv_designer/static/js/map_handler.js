@@ -70,7 +70,7 @@ function initMap() {
             refreshAllSlopes();
             setTimeout(function () {
                 shapesHandler.fillAllAreasWithPanels();
-            }, 1000);
+            }, 500);
         });
     }
 
