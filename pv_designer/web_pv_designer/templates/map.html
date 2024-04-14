@@ -18,7 +18,8 @@
         <div id="content">
             <div class="heading-section text-center page-heading-section">
                 <h1>Design Your PV Power Plant</h1>
-                <p class="lead">Here, you can draw potential areas on a satellite map and these areas will be filled with pv panels, and then you can configure them. Not sure where
+                <p class="lead">Here, you can draw potential areas on a satellite map and these areas will be filled
+                    with pv panels, and then you can configure them. Not sure where
                     to start? Click the help button <i class="bi bi-question-lg"></i> for guidance on how to use this
                     tool
                     effectively.</p>
@@ -74,7 +75,7 @@
                                         </select>
 
                                         <div class="input-group-append" id="newPanelInput" data-bs-toggle="tooltip"
-                           data-bs-placement="right" title="">
+                                             data-bs-placement="right" title="">
                                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                                                     data-bs-target="#newPanelModal" style="margin-left: 5px"
                                                     id="newPanelButton">
@@ -247,51 +248,69 @@
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
         let currentStep = 1;
         const totalSteps = 6;
-        window.onload = function () {
-            $(function () {
-                $('#addPanelBtn').tooltip();
-            });
-            if ("{{ user.is_authenticated }}" === "False") {
-                $('#newPanelInput').attr('title', 'You need to be logged in to add a new panel');
-                $('#newPanelButton').prop('disabled', true);
-
+        document.addEventListener('DOMContentLoaded', function () {
+            var addPanelBtn = document.getElementById('addPanelBtn');
+            if (addPanelBtn) {
+                addPanelBtn.setAttribute('title', '');
             }
+
+            var isAuthenticated = "{{ user.is_authenticated }}" === "True";
+            var newPanelInput = document.getElementById('newPanelInput');
+            var newPanelButton = document.getElementById('newPanelButton');
+            if (newPanelInput && newPanelButton) {
+                if (!isAuthenticated) {
+                    newPanelInput.setAttribute('title', 'You need to be logged in to add a new panel');
+                    newPanelButton.disabled = true;
+                }
+            }
+
             addBackButtonListener();
             initMap();
-            //showChoosePanel();
             addSelectListener();
             showStep(currentStep);
             if (panelId > 0) {
-                const panel = document.getElementById('solarPanelSelect');
-                panel.value = panelId;
-                solarPanelID = panelId;
-                panel.dispatchEvent(new Event('change'));
+                var panel = document.getElementById('solarPanelSelect');
+                if (panel) {
+                    panel.value = panelId;
+                    solarPanelID = panelId;
+                    panel.dispatchEvent(new Event('change'));
+                }
             }
             var currentTab = 1;
 
             // Function to show the current tab content
             function showTab() {
-                $('#myTabs a[href="#content' + currentTab + '"]').tab('show');
-                $('#currentTab').text(currentTab);
+                var tabAnchor = document.querySelector('#myTabs a[href="#content' + currentTab + '"]');
+                if (tabAnchor) {
+                    tabAnchor.click();
+                }
+                var currentTabText = document.getElementById('currentTab');
+                if (currentTabText) {
+                    currentTabText.textContent = currentTab;
+                }
             }
 
             // Event listener for previous button
-            $('#prevTab').on('click', function () {
-                if (currentTab > 1) {
-                    currentTab--;
-                    showTab();
-                }
-            });
-
+            var prevTabButton = document.getElementById('prevTab');
+            if (prevTabButton) {
+                prevTabButton.addEventListener('click', function () {
+                    if (currentTab > 1) {
+                        currentTab--;
+                        showTab();
+                    }
+                });
+            }
             // Event listener for next button
-            $('#nextTab').on('click', function () {
-                if (currentTab < 5) {
-                    currentTab++;
-                    showTab();
-                }
-            });
-        };
-
+            var nextTabButton = document.getElementById('nextTab');
+            if (nextTabButton) {
+                nextTabButton.addEventListener('click', function () {
+                    if (currentTab < 5) {
+                        currentTab++;
+                        showTab();
+                    }
+                });
+            }
+        });
     </script>
     </html>
 

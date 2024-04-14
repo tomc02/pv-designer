@@ -140,7 +140,6 @@ class ShapesHandler {
                 data = fillPolygon(this.selectedShapeIndex);
             }
             const area = google.maps.geometry.spherical.computeArea(this.selectedShape.getShape().getPath());
-            console.log('area: ' + this.selectedShapeIndex);
             const p = document.getElementById("panelCount" + (this.selectedShapeIndex));
             p.textContent = data.panelsCount;
             const a = document.getElementById("azimuth" + (this.selectedShapeIndex));

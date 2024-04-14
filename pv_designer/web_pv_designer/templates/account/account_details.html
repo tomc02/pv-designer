@@ -31,18 +31,20 @@
     </div>
     <script>
         user_location = "{{ user.home_location }}";
-        console.log(user_location);
         if (user_location !== "None") {
             var matches = user_location.match(/POINT \(([^ ]+) ([^ ]+)\)/);
             if (matches && matches.length === 3) {
                 var longitude = parseFloat(matches[1]);
                 var latitude = parseFloat(matches[2]);
+                updateMapMessage(true);
+                initSimpleMap(true, latitude, longitude);
             }
-            updateMapMessage(true);
-            initSimpleMap(true, latitude, longitude);
         } else {
             updateMapMessage(false);
-            $('#simple_map').hide();
+            var simpleMap = document.getElementById('simple_map');
+            if (simpleMap) {
+                simpleMap.style.display = 'none';
+            }
         }
 
     </script>

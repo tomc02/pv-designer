@@ -178,8 +178,8 @@ function setHomeLocationMarker(lat, lng) {
         position: {lat: lat, lng: lng}, map: simpleMap, draggable: true,
     });
 
-    $('#id_latitude').val(lat);
-    $('#id_longitude').val(lng);
+    document.getElementById('id_latitude').value = lat;
+    document.getElementById('id_longitude').value = lng;
 }
 
 function addInsertPointListener(shape) {

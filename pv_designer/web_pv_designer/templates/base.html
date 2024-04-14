@@ -107,20 +107,23 @@
 </footer>
 </body>
 <script>
-    $(document).ready(function () {
-        $('[data-bs-toggle="tooltip"]').tooltip();
-
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(function (tooltip) {
+            new bootstrap.Tooltip(tooltip);
+        });
 
         var isLightMode = localStorage.getItem('lightMode') === 'enabled';
+        var darkModeSwitch = document.getElementById('darkModeSwitch');
         if (isLightMode) {
             lightMode();
-            document.getElementById('darkModeSwitch').checked = false;
+            darkModeSwitch.checked = false;
         } else {
             darkMode();
-            document.getElementById('darkModeSwitch').checked = true;
+            darkModeSwitch.checked = true;
         }
 
-        document.getElementById('darkModeSwitch').addEventListener('change', function () {
+        darkModeSwitch.addEventListener('change', function () {
             if (this.checked) {
                 darkMode();
             } else {
@@ -128,15 +131,11 @@
             }
         });
 
-        const alerts = document.querySelectorAll('.alert');
-        // Loop through all alerts
-        alerts.forEach((alert) => {
-            // Set a timeout to remove the alert
-            setTimeout(() => {
-                // If you're using Bootstrap, you can use the 'hide' method. Otherwise, just remove the element.
-                $(alert).alert('close'); // If you're using Bootstrap's JS
-                // alert.style.display = 'none'; // Alternatively, hide it without Bootstrap
-            }, 3000); // Adjust time as needed, 5000ms = 5 seconds
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
+                alert.classList.add('d-none');
+            }, 3000);
         });
     });
 </script>
