@@ -270,7 +270,7 @@ function calculatePixelSize(map, meters, latitude) {
 
 function rotateImage(angle, slope, orientation) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation, false);
+    xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {

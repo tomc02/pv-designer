@@ -14,7 +14,7 @@
                                 potential. Each field comes with a helpful tooltip for further explanation.</p>
                         </div>
                     </div>
-                    <form method="post">
+                    <form method="post" id="pv_details_form">
                         {% csrf_token %}
                         {{ form.map_id }}
 
@@ -106,11 +106,10 @@
                                 {{ form.lifetime }}
                             </div>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary mt-3" type="submit" onclick="showProcessing()">Continue
-                            </button>
-                        </div>
                     </form>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-primary mt-3" onclick="checkMandatoryFields()">Continue</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,6 +122,33 @@
     </div>
 
     <script>
+        function checkMandatoryFields() {
+            const title = document.getElementById('{{ form.title.id_for_label }}').value;
+            const systemLoss = document.getElementById('{{ form.system_loss.id_for_label }}').value;
+            const consumptionPerYear = document.getElementById('{{ form.consumption_per_year.id_for_label }}').value;
+            const pvElectricityPrice = document.getElementById('{{ form.pv_electricity_price.id_for_label }}').checked;
+            const pvSystemCost = document.getElementById('{{ form.pv_system_cost.id_for_label }}').value;
+            const interest = document.getElementById('{{ form.interest.id_for_label }}').value;
+            const lifetime = document.getElementById('{{ form.lifetime.id_for_label }}').value;
+            const monthlyConsumptionInputs = document.querySelectorAll('#consumption-formset input[name$="consumption"]');
+            let monthlyFull = true;
+            for (let i = 0; i < monthlyConsumptionInputs.length; i++) {
+                if (monthlyConsumptionInputs[i].value === "") {
+                    monthlyFull = false;
+                    break;
+                }
+            }
+
+            if (title === "" || systemLoss === "" || (consumptionPerYear === "" && !monthlyFull) || (pvElectricityPrice && (pvSystemCost === "" || interest === "" || lifetime === ""))) {
+                alert("Please fill in all mandatory fields.");
+                return false;
+            }
+            showProcessing();
+            const form = document.getElementById('pv_details_form');
+            form.submit();
+            return true;
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             function toggleElementVisibility(checkbox, targetId) {
                 const target = document.getElementById(targetId);
