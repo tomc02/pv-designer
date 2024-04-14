@@ -131,19 +131,24 @@ def account_details(request):
 
 
 def rotate_img(request):
-    angle = request.GET.get('angle')
-    slope = request.GET.get('slope')
-    orientation = request.GET.get('orientation')
+    body = json.loads(request.body)
+    angle = body['angle']
+    slope = body['slope']
+    orientation = body['orientation']
+    print('slope: ' + str(slope))
     result = rotate_pv_img(angle, slope, 'pv_panel', 'pv_panel_rotated', orientation)
     result = rotate_pv_img(angle, slope, 'pv_panel_selected',
                            'pv_panel_selected_rotated', orientation)
-    return JsonResponse({'result': result})
+    if result:
+        return JsonResponse({'result': result})
+    else:
+        return JsonResponse({'error': 'Image rotation failed'})
 
 
 def ajax_endpoint(request):
     if request.method == "POST":
         custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
-        data_from_js = request.POST.get("data", "")
+        data_from_js = json.loads(request.body)
         response_msg = {"message": "Data received and processed in backend"}
         user_id = get_user_id(request)
         if custom_header_value == "Map-Data":

@@ -153,7 +153,6 @@ function refreshAllSlopes() {
         const slope = document.getElementById("slope" + (i));
         shapesHandler.shapesObjects[i].setSlope(slope.value);
     }
-
 }
 
 function updateMountingPosition(positionInput) {

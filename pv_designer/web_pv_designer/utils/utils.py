@@ -14,9 +14,8 @@ from ..models import PVPowerPlant, Area, CustomUser, SolarPanel
 matplotlib.use('Agg')
 
 
-def process_map_data(data, user_id):
+def process_map_data(parsed_data, user_id):
     try:
-        parsed_data = json.loads(data)
         if parsed_data['mapDataID'] != '':
             map_data = PVPowerPlant.objects.get(id=parsed_data['mapDataID'])
             map_data.location = Point(parsed_data['lng'], parsed_data['lat'])
@@ -44,6 +43,7 @@ def process_map_data(data, user_id):
             delete_rotated_images()
 
     except json.JSONDecodeError as e:
+        print(f"Invalid JSON format: {e}")
         return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
     return map_data.id
 

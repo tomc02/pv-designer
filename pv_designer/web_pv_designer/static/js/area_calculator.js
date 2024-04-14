@@ -115,7 +115,7 @@ function computeHypotenuse(heading1, heading2, panelHeight) {
     return panelHeight / Math.cos(angle * Math.PI / 180);
 }
 
-function fillPolygon(index) {
+async function fillPolygon(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
@@ -145,7 +145,8 @@ function fillPolygon(index) {
     const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    const pvPanelUrl = await rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    console.log('pvPanelUrl', pvPanelUrl);
     let azimuth = computeAzimuth(headingLTR);
 
     let topPoints = [];
@@ -175,11 +176,10 @@ function fillPolygon(index) {
 }
 
 
-function fillTriangle(index) {
+async function fillTriangle(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints = getCornerPoints(shapesHandler.getShape(index));
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
-
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.bottom]);
 
     const shape = shapesHandler.getShapeObject(index);
@@ -201,7 +201,7 @@ function fillTriangle(index) {
     const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
 
     let angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    const pvPanelUrl = await rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
     let azimuth = computeAzimuth(headingLTR);
 
     let topPoints = [];
@@ -269,15 +269,20 @@ function calculatePixelSize(map, meters, latitude) {
     return pixelSize;
 }
 
-function rotateImage(angle, slope, orientation) {
-    console.log(angle)
-    $.ajax({
-        url: rotateImgUrl,
-        data: {
+async function rotateImage(angle, slope, orientation) {
+    console.log('slope', slope);
+    await fetch(rotateImgUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
             'angle': angle,
             'slope': slope,
             'orientation': orientation
-        },
+        })
     });
     return getPvImgUrl(angle);
 }
+

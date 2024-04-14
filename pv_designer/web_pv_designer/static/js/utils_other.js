@@ -4,19 +4,21 @@ let processing = false;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
     showProcessing();
-    $.ajax({
-        url: url,
+    fetch(url, {
         method: "POST",
-        data: {data: dataToSend},
         headers: {
+            'Content-Type': 'application/json',
             'Custom-Header': customHeader,
-            'X-CSRFToken': csrf_token,
+            'X-CSRFToken': csrf_token
         },
-        success: function (response) {
+        body: dataToSend
+    })
+        .then(response => response.json())
+        .then(response => {
             console.log(response);
             window.location.href = resultUrl + '?id=' + response.id;
-        }
-    });
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 function moveToForm() {
@@ -128,13 +130,16 @@ function darkMode() {
     const navbar = document.getElementById('main_nav');
     const mapContainer = document.getElementById('mapContainer');
     document.documentElement.setAttribute('data-bs-theme', 'dark');
-    navbar.classList.remove('bg-light', 'navbar-light');
-    navbar.classList.add('bg-dark', 'navbar-dark');
+    if (navbar !== null) {
+        navbar.classList.remove('bg-light', 'navbar-light');
+        navbar.classList.add('bg-dark', 'navbar-dark');
+    }
     if (mapContainer !== null) {
         mapContainer.classList.remove('map-container');
         mapContainer.classList.add('map-container-dark');
     }
-    document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-moon"></i>';
+    if (document.getElementById('darkModeSwitchLabel') !== null)
+        document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-moon"></i>';
 
     var helpGifs = document.querySelectorAll('.help-gif');
     helpGifs.forEach(function (gif) {
@@ -152,13 +157,16 @@ function lightMode() {
     const navbar = document.getElementById('main_nav');
     const mapContainer = document.getElementById('mapContainer');
     document.documentElement.setAttribute('data-bs-theme', 'light');
-    navbar.classList.remove('bg-dark', 'navbar-dark');
-    navbar.classList.add('bg-light', 'navbar-light');
+    if (navbar !== null) {
+        navbar.classList.remove('bg-dark', 'navbar-dark');
+        navbar.classList.add('bg-light', 'navbar-light');
+    }
     if (mapContainer !== null) {
         mapContainer.classList.remove('map-container-dark');
         mapContainer.classList.add('map-container');
     }
-    document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-sun"></i>';
+    if (document.getElementById('darkModeSwitchLabel') !== null)
+        document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-sun"></i>';
 
     var helpGifs = document.querySelectorAll('.help-gif');
     helpGifs.forEach(function (gif) {
@@ -172,24 +180,46 @@ function lightMode() {
 
 
 function updateSolarPanels() {
-    $.ajax({
-        url: '/get_solar_panels/',  // Update with your actual URL
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
+    fetch('/get_solar_panels/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
             // Update the content of the solar panel select
             const solarPanelSelect = document.getElementById('solarPanelSelect');
-            solarPanelSelect.empty();
-            solarPanelSelect.append('<option value="" selected disabled hidden>Select a solar panel</option>');
-            data.forEach(function (panel) {
-                solarPanelSelect.append(`<option value="${panel.id}" data-width="${panel.width}" data-height="${panel.height}" data-power="${panel.power}" data-img-src="${panel.image}">${panel.str}</option>`);
+            solarPanelSelect.innerHTML = ''; // Clear previous options
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select a solar panel';
+            defaultOption.selected = true;
+            defaultOption.disabled = true;
+            defaultOption.hidden = true;
+            solarPanelSelect.appendChild(defaultOption);
+
+            data.forEach(panel => {
+                const option = document.createElement('option');
+                option.value = panel.id;
+                option.dataset.width = panel.width;
+                option.dataset.height = panel.height;
+                option.dataset.power = panel.power;
+                option.dataset.imgSrc = panel.image;
+                option.textContent = panel.str;
+                solarPanelSelect.appendChild(option);
             });
-        },
-        error: function (error) {
-            console.log('Error fetching solar panels:', error);
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Error fetching solar panels:', error);
+        });
 }
+
 
 function showStep(step) {
     var stepContents = document.querySelectorAll('.step-content');

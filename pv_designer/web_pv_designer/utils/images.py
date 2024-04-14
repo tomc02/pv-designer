@@ -47,6 +47,11 @@ def rotate_pv_img(angle, slope, original_image_name, rotated_image_name, orienta
     angle = str(round(rotation_angle))
     rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
 
+    rotated_image.close()
+    original_image.close()
+    return rotated_image_name + angle
+
+
 
 def delete_rotated_images():
     static_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'images')

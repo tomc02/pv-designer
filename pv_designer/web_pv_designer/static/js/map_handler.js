@@ -67,10 +67,10 @@ function initMap() {
                 shapesHandler.rotateShapeByIndex(index, areaData.rotations);
                 index++;
             });
+            refreshAllSlopes();
             setTimeout(function () {
-                refreshAllSlopes();
                 shapesHandler.fillAllAreasWithPanels();
-            }, 100);
+            }, 1000);
         });
     }
 
