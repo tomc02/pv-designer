@@ -14,7 +14,7 @@ def save_map_img(image_url, user_id, db_id=None):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    with open(os.path.join(save_path, 'pv_image.png'), "wb") as fh:
+    with open(os.path.join(save_path, 'pv_image.png'), 'wb') as fh:
         fh.write(base64.decodebytes(image_url.encode()))
 
     im = Image.open(os.path.join(save_path, 'pv_image.png'))
@@ -31,7 +31,7 @@ def save_map_img(image_url, user_id, db_id=None):
 
 def rotate_pv_img(angle, slope, original_image_name, rotated_image_name, orientation):
     static_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'images')
-    original_image = Image.open(os.path.join(static_path, original_image_name + '.png')).convert("RGBA")
+    original_image = Image.open(os.path.join(static_path, original_image_name + '.png')).convert('RGBA')
     if orientation == '1':
         print('orientation 1')
         original_image = original_image.rotate(90, expand=True, resample=Image.BICUBIC)

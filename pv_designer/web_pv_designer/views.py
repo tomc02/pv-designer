@@ -80,7 +80,7 @@ def map_view(request):
          'height': 2})
 
     if record_id:
-        print("record_id: " + record_id)
+        print('record_id: ' + record_id)
         map_data = get_object_or_404(PVPowerPlant, id=record_id)
         if map_data.user != request.user:
             return redirect('home')
@@ -145,12 +145,12 @@ def rotate_img(request):
 
 
 def ajax_endpoint(request):
-    if request.method == "POST":
-        custom_header_value = request.META.get("HTTP_CUSTOM_HEADER", "")
+    if request.method == 'POST':
+        custom_header_value = request.META.get('HTTP_CUSTOM_HEADER', '')
         data_from_js = json.loads(request.body)
-        response_msg = {"message": "Data received and processed in backend"}
+        response_msg = {'message': 'Data received and processed in backend'}
         user_id = get_user_id(request)
-        if custom_header_value == "Map-Data":
+        if custom_header_value == 'Map-Data':
             result = process_map_data(data_from_js, str(user_id))
             if result is not JsonResponse:
                 return JsonResponse({'message': 'Data saved', 'id': result})
@@ -158,7 +158,7 @@ def ajax_endpoint(request):
                 return result
         else:
             return JsonResponse(response_msg)
-    return JsonResponse({"error": "Invalid request method"})
+    return JsonResponse({'error': 'Invalid request method'})
 
  
 def calculation_result(request, id):
@@ -242,14 +242,14 @@ def get_solar_panels(request):
 
 @ratelimit(key='ip', rate=GOOGLE_MAPS_API_RATE_LIMIT, block=True)
 def google_maps_js(request):
-    google_maps_js_url = f"https://maps.googleapis.com/maps/api/js?key={GOOGLE_MAPS_API_KEY}&libraries=drawing,places"
+    google_maps_js_url = f'https://maps.googleapis.com/maps/api/js?key={GOOGLE_MAPS_API_KEY}&libraries=drawing,places'
     response = requests.get(google_maps_js_url)
-    return HttpResponse(response.content, content_type="application/javascript")
+    return HttpResponse(response.content, content_type='application/javascript')
 
 
 @ratelimit(key='ip', rate=MAPY_CZ_API_RATE_LIMIT, block=True)
 def mapy_cz_tiles(request, zoom, x, y):
-    url = f"https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={MAPY_CZ_API_KEY}"
+    url = f'https://api.mapy.cz/v1/maptiles/aerial/256/{zoom}/{x}/{y}?apikey={MAPY_CZ_API_KEY}'
     response = requests.get(url)
     content_type = response.headers['Content-Type']
     return HttpResponse(response.content, content_type=content_type)

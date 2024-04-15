@@ -37,7 +37,7 @@ def create_pdf_report(user_id, areas, pv_data):
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
     page_content_width = doc.width
-    print(f"page_content_width: {page_content_width}")
+    print(f'page_content_width: {page_content_width}')
     # load the image and find its dimensions
     image = ImagePlatypus(pv_panel_img_path)
     img_width, img_height = image.wrap(doc.width, doc.height)
@@ -68,9 +68,9 @@ def create_pdf_report(user_id, areas, pv_data):
     for area in areas:
         total_peak_power += area.installed_peak_power
     total_peak_power = round(total_peak_power / 1000, 2)
-    year_production = round(float(data["outputs"]["totals"]["fixed"]["E_y"]) / 1000, 2)
+    year_production = round(float(data['outputs']['totals']['fixed']['E_y']) / 1000, 2)
     table_data = [
-        ["PV Panel Type", "Location Information", "Totals"],
+        ['PV Panel Type', 'Location Information', 'Totals'],
         [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {year_production} MWh'],
         [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
         [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {yearly_consumption} MWh'],
@@ -95,7 +95,7 @@ def create_pdf_report(user_id, areas, pv_data):
     optimized_areas = []
     for response in response_file_paths:
         with open(response, 'r') as json_file:
-            print(f"Reading response file: {response}")
+            print(f'Reading response file: {response}')
             data_response = json.load(json_file)
             azimuth = data_response['inputs']['mounting_system']['fixed']['azimuth']
             slope = data_response['inputs']['mounting_system']['fixed']['slope']
@@ -150,7 +150,7 @@ def create_pdf_report(user_id, areas, pv_data):
 
     doc.build(elements)
 
-    print(f"Report generated and saved as {pdf_file}")
+    print(f'Report generated and saved as {pdf_file}')
 
     return True
 
@@ -170,9 +170,9 @@ def create_energy_balance_chart(totals):
                                        autopct='%1.1f%%', shadow=True, startangle=90)
 
     ax1.axis('equal')
-    #plt.legend(wedges, labels_with_values, title="Energy Distribution", loc="upper center", bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, fontsize=12, title_fontsize=14)
+    #plt.legend(wedges, labels_with_values, title='Energy Distribution', loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, fontsize=12, title_fontsize=14)
 
-    plt.legend(labels_with_values, fontsize=12, loc="upper left", bbox_to_anchor=(0.81, 0.0, 0.0, 1.0), title="Energy Distribution", title_fontsize=14)
+    plt.legend(labels_with_values, fontsize=12, loc='upper left', bbox_to_anchor=(0.81, 0.0, 0.0, 1.0), title='Energy Distribution', title_fontsize=14)
     plt.title('Overall Energy Balance', fontsize=16, x=0.65, pad=20)
 
     plt.setp(autotexts, size=12)
@@ -321,59 +321,59 @@ def add_graph_to_report(plt, elements, width=500, height=300):
 def sum_responses(file_paths, path_to_source):
     # Initialize variables to store the sum
     sum_response = {
-        "inputs": {},
-        "meta": {},
-        "outputs": {
-            "monthly": {"fixed": []},
-            "totals": {"fixed": {}}
+        'inputs': {},
+        'meta': {},
+        'outputs': {
+            'monthly': {'fixed': []},
+            'totals': {'fixed': {}}
         }
     }
 
     # Copy inputs and meta from the first file
     with open(file_paths[0], 'r') as file:
         response = json.load(file)
-        sum_response["inputs"] = copy.deepcopy(response["inputs"])
-        sum_response["meta"] = copy.deepcopy(response["meta"])
+        sum_response['inputs'] = copy.deepcopy(response['inputs'])
+        sum_response['meta'] = copy.deepcopy(response['meta'])
 
     for file_path in file_paths:
         with open(file_path, 'r') as file:
             response = json.load(file)
 
         # Summing values for monthly output
-        for i, month_data in enumerate(response["outputs"]["monthly"]["fixed"]):
-            if len(sum_response["outputs"]["monthly"]["fixed"]) <= i:
-                sum_response["outputs"]["monthly"]["fixed"].append(month_data)
+        for i, month_data in enumerate(response['outputs']['monthly']['fixed']):
+            if len(sum_response['outputs']['monthly']['fixed']) <= i:
+                sum_response['outputs']['monthly']['fixed'].append(month_data)
             else:
                 for key in month_data.keys():
-                    if key not in ["month"]:
-                        sum_response["outputs"]["monthly"]["fixed"][i][key] += month_data[key]
+                    if key not in ['month']:
+                        sum_response['outputs']['monthly']['fixed'][i][key] += month_data[key]
 
         # Summing values for totals output
-        for key in response["outputs"]["totals"]["fixed"].keys():
-            if key not in ["l_total", "l_aoi", "l_spec", "l_tg"]:
-                sum_response["outputs"]["totals"]["fixed"][key] = sum_response["outputs"]["totals"]["fixed"].get(key,
+        for key in response['outputs']['totals']['fixed'].keys():
+            if key not in ['l_total', 'l_aoi', 'l_spec', 'l_tg']:
+                sum_response['outputs']['totals']['fixed'][key] = sum_response['outputs']['totals']['fixed'].get(key,
                                                                                                                  0) + float(
-                    response["outputs"]["totals"]["fixed"][key])
+                    response['outputs']['totals']['fixed'][key])
 
         # Summing values for losses by average because they are percentages
-        for key in ["l_aoi", "l_spec", "l_tg"]:
-            sum_response["outputs"]["totals"]["fixed"][key] = (
-                    sum_response["outputs"]["totals"]["fixed"].get(key, 0) + float(
-                response["outputs"]["totals"]["fixed"][key]))
+        for key in ['l_aoi', 'l_spec', 'l_tg']:
+            sum_response['outputs']['totals']['fixed'][key] = (
+                    sum_response['outputs']['totals']['fixed'].get(key, 0) + float(
+                response['outputs']['totals']['fixed'][key]))
 
-        print("Costs:" + str(response["outputs"]["totals"]["fixed"].get("LCOE_pv", 0)))
+        print('Costs:' + str(response['outputs']['totals']['fixed'].get('LCOE_pv', 0)))
 
-    for key in ["l_aoi", "l_spec", "l_tg"]:
-        sum_response["outputs"]["totals"]["fixed"][key] = (
-                sum_response["outputs"]["totals"]["fixed"][key] / len(file_paths))
+    for key in ['l_aoi', 'l_spec', 'l_tg']:
+        sum_response['outputs']['totals']['fixed'][key] = (
+                sum_response['outputs']['totals']['fixed'][key] / len(file_paths))
     # Summing all losses to get the total loss
-    sum_response["outputs"]["totals"]["fixed"]["l_total"] = sum_response["outputs"]["totals"]["fixed"]["l_aoi"] + \
-                                                            sum_response["outputs"]["totals"]["fixed"]["l_spec"] + \
-                                                            sum_response["outputs"]["totals"]["fixed"]["l_tg"] - \
-                                                            sum_response["inputs"]["pv_module"]["system_loss"]
+    sum_response['outputs']['totals']['fixed']['l_total'] = sum_response['outputs']['totals']['fixed']['l_aoi'] + \
+                                                            sum_response['outputs']['totals']['fixed']['l_spec'] + \
+                                                            sum_response['outputs']['totals']['fixed']['l_tg'] - \
+                                                            sum_response['inputs']['pv_module']['system_loss']
     # Average the LCOE_pv value
-    if "LCOE_pv" in sum_response["outputs"]["totals"]["fixed"]:
-        sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] = sum_response["outputs"]["totals"]["fixed"]["LCOE_pv"] / len(file_paths)
+    if 'LCOE_pv' in sum_response['outputs']['totals']['fixed']:
+        sum_response['outputs']['totals']['fixed']['LCOE_pv'] = sum_response['outputs']['totals']['fixed']['LCOE_pv'] / len(file_paths)
 
 
     # Save the sum to a new file

@@ -19,7 +19,7 @@ class PVPowerPlant(models.Model):
     solar_panel = models.ForeignKey('SolarPanel', on_delete=models.PROTECT, null=True)
 
     def __str__(self):
-        return f"PVPowerPlant - ID: {self.id}"
+        return f'PVPowerPlant - ID: {self.id}'
 
     def areas_objects_to_JSON(self):
         return [area.to_JSON() for area in self.areas.all()]
@@ -62,7 +62,7 @@ class Area(models.Model):
     polygon = models.PolygonField(blank=True, null=True)
 
     def __str__(self):
-        return f"Area - ID: {self.id}"
+        return f'Area - ID: {self.id}'
 
     def get_polygon_coords(self):
         dict_coords = {}
@@ -101,7 +101,7 @@ class SolarPanel(models.Model):
     def __str__(self):
         pv_technology_display = dict(self._meta.get_field('pv_technology').flatchoices).get(self.pv_technology,
                                                                                             self.pv_technology)
-        return f"{self.manufacturer} - {self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}"
+        return f'{self.manufacturer} - {self.model} - {self.width}m - {self.height}m - {self.power}W - {pv_technology_display}'
 
 
 class MonthlyConsumption(models.Model):

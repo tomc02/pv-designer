@@ -43,8 +43,8 @@ def process_map_data(parsed_data, user_id):
             delete_rotated_images()
 
     except json.JSONDecodeError as e:
-        print(f"Invalid JSON format: {e}")
-        return JsonResponse({"error": f"Invalid JSON format: {e}"}, status=400)
+        print(f'Invalid JSON format: {e}')
+        return JsonResponse({'error': f'Invalid JSON format: {e}'}, status=400)
     return map_data.id
 
 
@@ -130,7 +130,7 @@ def make_api_calling(data_id, user_id):
     with ThreadPoolExecutor() as executor:
         results = list(executor.map(get_pvgis_response, params))
     for i, response in enumerate(results):
-        save_response("response", response, user_id, i)
+        save_response('response', response, user_id, i)
 
 
 def get_user_id(request):
