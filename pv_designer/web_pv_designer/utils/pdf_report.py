@@ -70,10 +70,10 @@ def create_pdf_report(user_id, areas, pv_data):
     total_peak_power = round(total_peak_power / 1000, 2)
     year_production = round(float(data['outputs']['totals']['fixed']['E_y']) / 1000, 2)
     table_data = [
-        ['PV Panel Type', 'Location Information', 'Totals'],
-        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Energy Production: {year_production} MWh'],
+        ['PV Module Type', 'Location Information', 'Totals'],
+        [f'Model: {pv_data.solar_panel.model}', f'Latitude: {lat}', f'Yearly Production: {year_production} MWh'],
         [f'Width: {pv_data.solar_panel.width} m', f'Longitude: {long}', f'Peak Power: {total_peak_power} kW'],
-        [f'Height: {pv_data.solar_panel.height} m', '', f'Consumption: {yearly_consumption} MWh'],
+        [f'Height: {pv_data.solar_panel.height} m', '', f'Yearly Consumption: {yearly_consumption} MWh'],
         [f'Power: {pv_data.solar_panel.power} W', ''],
     ]
 

@@ -232,31 +232,29 @@
     </div>
     </body>
     <script>
-        var pvPanelImg = '{% static "images/pv_panel_rotated" %}';
-        var pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
-        var rotateImgUrl = '{% url "rotate_img" %}';
-        var ajaxUrl = '{% url "ajax_endpoint" %}';
-        var resultUrl = "{% url 'data_page' %}";
-        var csrfToken = "{{ csrf_token  }}";
-        var latitude = parseFloat("{{ latitude }}");
-        var longitude = parseFloat("{{ longitude }}");
-        var mapData = JSON.parse('{{ map_data|escapejs|safe }}');
+        const pvPanelImg = '{% static "images/pv_panel_rotated" %}';
+        const pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';
+        const rotateImgUrl = '{% url "rotate_img" %}';
+        const saveDataUrl = '{% url "save_data" %}';
+        const resultUrl = '{% url "data_page" %}';
+        const csrfToken = '{{ csrf_token  }}';
+        const latitude = parseFloat('{{ latitude }}');
+        const longitude = parseFloat('{{ longitude }}');
+        const mapData = JSON.parse('{{ map_data|escapejs|safe }}');
         const panelId = mapData['solar_panel_id'];
-        var areasObjects = {{ areas_objects|safe }}
-        var solarPanelID = 0;
-        var panelSize = {{ panel_size|safe }};
+        const areasObjects = {{ areas_objects|safe }};
+        let solarPanelID = 0;
+        const panelSize = {{ panel_size|safe }};
         const shapesHandler = new ShapesHandler(panelSize['height'], panelSize['width']);
-        let currentStep = 1;
-        const totalSteps = 6;
         document.addEventListener('DOMContentLoaded', function () {
-            var addPanelBtn = document.getElementById('addPanelBtn');
+            const addPanelBtn = document.getElementById('addPanelBtn');
             if (addPanelBtn) {
                 addPanelBtn.setAttribute('title', '');
             }
 
-            var isAuthenticated = "{{ user.is_authenticated }}" === "True";
-            var newPanelInput = document.getElementById('newPanelInput');
-            var newPanelButton = document.getElementById('newPanelButton');
+            const isAuthenticated = '{{ user.is_authenticated }}' === 'True';
+            const newPanelInput = document.getElementById('newPanelInput');
+            const newPanelButton = document.getElementById('newPanelButton');
             if (newPanelInput && newPanelButton) {
                 if (!isAuthenticated) {
                     newPanelInput.setAttribute('title', 'You need to be logged in to add a new panel');
@@ -269,29 +267,29 @@
             addSelectListener();
             showStep(currentStep);
             if (panelId > 0) {
-                var panel = document.getElementById('solarPanelSelect');
+                const panel = document.getElementById('solarPanelSelect');
                 if (panel) {
                     panel.value = panelId;
                     solarPanelID = panelId;
                     panel.dispatchEvent(new Event('change'));
                 }
             }
-            var currentTab = 1;
+            let currentTab = 1;
 
             // Function to show the current tab content
             function showTab() {
-                var tabAnchor = document.querySelector('#myTabs a[href="#content' + currentTab + '"]');
+                const tabAnchor = document.querySelector('#myTabs a[href="#content' + currentTab + '"]');
                 if (tabAnchor) {
                     tabAnchor.click();
                 }
-                var currentTabText = document.getElementById('currentTab');
+                const currentTabText = document.getElementById('currentTab');
                 if (currentTabText) {
                     currentTabText.textContent = currentTab;
                 }
             }
 
             // Event listener for previous button
-            var prevTabButton = document.getElementById('prevTab');
+            const prevTabButton = document.getElementById('prevTab');
             if (prevTabButton) {
                 prevTabButton.addEventListener('click', function () {
                     if (currentTab > 1) {
@@ -301,7 +299,7 @@
                 });
             }
             // Event listener for next button
-            var nextTabButton = document.getElementById('nextTab');
+            const nextTabButton = document.getElementById('nextTab');
             if (nextTabButton) {
                 nextTabButton.addEventListener('click', function () {
                     if (currentTab < 5) {
@@ -312,6 +310,4 @@
             }
         });
     </script>
-    </html>
-
 {% endblock %}

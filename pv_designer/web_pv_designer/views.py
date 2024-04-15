@@ -21,13 +21,13 @@ from .maps_config import GOOGLE_MAPS_API_KEY, MAPY_CZ_API_KEY, INITIAL_LATITUDE,
 def data_page(request):
     MonthlyConsumptionFormSet = modelformset_factory(MonthlyConsumption, form=MonthlyConsumptionForm, extra=12)
     if request.method == 'POST':
-        map_data_id = request.POST.get('map_id')
-        map_data = None
+        pv_power_plant_id = request.POST.get('map_id')
+        pv_power_plant = None
         instance = None
-        if map_data_id:
-            map_data = get_object_or_404(PVPowerPlant, id=map_data_id)
-            if map_data.system_details:
-                instance = map_data.system_details
+        if pv_power_plant_id:
+            pv_power_plant = get_object_or_404(PVPowerPlant, id=pv_power_plant_id)
+            if pv_power_plant.system_details:
+                instance = pv_power_plant.system_details
         form = SolarPanelForm(request.POST, instance=instance)
         if form.is_valid():
             form.instance.user = request.user
@@ -40,17 +40,17 @@ def data_page(request):
                 elif consumption:
                     month_obj = MonthlyConsumption(power_plant=saved_instance, month=i + 1, consumption=consumption)
                     month_obj.save()
-            if map_data:
-                map_data.system_details = saved_instance
-                map_data.save()
-                return redirect('calculation_result', id=map_data_id)
+            if pv_power_plant:
+                pv_power_plant.system_details = saved_instance
+                pv_power_plant.save()
+                return redirect('calculation_result', id=pv_power_plant_id)
         else:
             print(form.errors)
     else:
         req_id = request.GET.get('id')
         if req_id:
-            map_data = get_object_or_404(PVPowerPlant, id=req_id)
-            instance = map_data.system_details if map_data.system_details else None
+            pv_power_plant = get_object_or_404(PVPowerPlant, id=req_id)
+            instance = pv_power_plant.system_details if pv_power_plant.system_details else None
             form = SolarPanelForm()
             initial_values = [{'month': i + 1} for i in range(12)]
             if instance:
@@ -81,17 +81,17 @@ def map_view(request):
 
     if record_id:
         print('record_id: ' + record_id)
-        map_data = get_object_or_404(PVPowerPlant, id=record_id)
-        if map_data.user != request.user:
+        pv_power_plant = get_object_or_404(PVPowerPlant, id=record_id)
+        if pv_power_plant.user != request.user:
             return redirect('home')
-        map_data = map_data.to_JSON()
+        pv_power_plant = pv_power_plant.to_JSON()
         areas_objects = PVPowerPlant.objects.get(id=record_id).areas.all()
         areas_objects = [area.to_JSON() for area in areas_objects]
 
         context = {
-            'latitude': map_data['latitude'],
-            'longitude': map_data['longitude'],
-            'map_data': json.dumps(map_data),
+            'latitude': pv_power_plant['latitude'],
+            'longitude': pv_power_plant['longitude'],
+            'map_data': json.dumps(pv_power_plant),
             'areas_objects': areas_objects,
             'instance_id': 0,
             'panel_size': panel_size,
@@ -144,7 +144,7 @@ def rotate_img(request):
         return JsonResponse({'error': 'Image rotation failed'})
 
 
-def ajax_endpoint(request):
+def save_data(request):
     if request.method == 'POST':
         custom_header_value = request.META.get('HTTP_CUSTOM_HEADER', '')
         data_from_js = json.loads(request.body)
@@ -162,14 +162,14 @@ def ajax_endpoint(request):
 
  
 def calculation_result(request, id):
-    map_data = PVPowerPlant.objects.get(id=id)
+    pv_power_plant = PVPowerPlant.objects.get(id=id)
     user_id = get_user_id(request)
-    if map_data.user.id != user_id:
+    if pv_power_plant.user.id != user_id:
         return redirect('home')
-    load_image_from_db(user_id, map_data)
+    load_image_from_db(user_id, pv_power_plant)
     make_api_calling(id, user_id)
-    areas = map_data.areas.all()
-    pdf_created = create_pdf_report(user_id, areas, map_data)
+    areas = pv_power_plant.areas.all()
+    pdf_created = create_pdf_report(user_id, areas, pv_power_plant)
     if pdf_created:
         return render(request, 'calculation_result.html')
 
@@ -193,7 +193,7 @@ def calculations_list(request):
 def get_pdf_result(request):
     if request.method == 'GET':
         calculation_id = request.GET.get('id')
-        map_data = PVPowerPlant.objects.get(id=calculation_id)
+        pv_power_plant = PVPowerPlant.objects.get(id=calculation_id)
         return redirect('calculation_result', id=calculation_id)
 
 

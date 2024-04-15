@@ -1,6 +1,8 @@
 let imageUrl = null;
 let mapDataLoaded = false;
 let processing = false;
+let currentStep = 1;
+const totalSteps = 6;
 
 function sendData(dataToSend, url, customHeader, csrf_token) {
     showProcessing();
@@ -36,38 +38,22 @@ function moveToForm() {
         'mapDataID': mapDataID,
         'solarPanelID': solarPanelID,
     };
-    sendData(JSON.stringify(dataToSave), ajaxUrl, 'Map-Data', csrfToken);
-}
-
-function convertShapesToJSON(shapes) {
-    let shapesJSON = [];
-    shapes.forEach(function (shape) {
-        shapesJSON.push(shape.getShape().getPath().getArray());
-    });
-    return shapesJSON;
-}
-
-function getPower(shapes, kwPerPanel) {
-    let panelsCount = 0;
-    shapes.forEach(function (shape) {
-        panelsCount += shape.panelsCount;
-    });
-    return Math.round(panelsCount * kwPerPanel, 2);
+    sendData(JSON.stringify(dataToSave), saveDataUrl, 'Map-Data', csrfToken);
 }
 
 function showProcessing(controlPanelOnly = false) {
     if (controlPanelOnly) {
-        var hideableContent = document.querySelectorAll('.hide-able-content');
-        hideableContent.forEach(function (content) {
+        const hideAbleContent = document.querySelectorAll('.hide-able-content');
+        hideAbleContent.forEach(function (content) {
             content.style.display = 'none';
         });
     } else {
-        var content = document.getElementById('content');
+        const content = document.getElementById('content');
         if (content) {
             content.style.display = 'none';
         }
     }
-    var loading = document.getElementById('loading');
+    const loading = document.getElementById('loading');
     if (loading) {
         loading.style.display = 'block';
     }
@@ -77,11 +63,11 @@ function showProcessing(controlPanelOnly = false) {
 
 function hideProcessing() {
     if (processing) {
-        var content = document.getElementById('content');
+        const content = document.getElementById('content');
         if (content) {
             content.style.display = 'block';
         }
-        var loading = document.getElementById('loading');
+        const loading = document.getElementById('loading');
         if (loading) {
             loading.style.display = 'none';
         }
@@ -105,16 +91,15 @@ function showCalculationResult(id) {
 }
 
 function addSelectListener() {
-    var solarPanelSelect = document.getElementById('solarPanelSelect');
+    const solarPanelSelect = document.getElementById('solarPanelSelect');
     solarPanelSelect.addEventListener('change', function () {
         //hideChoosePanel();
-        var selectedOption = this.options[this.selectedIndex];
-        var selectedPanelId = selectedOption.value;
-        solarPanelID = selectedPanelId;
-        var selectedPanelWidth = selectedOption.getAttribute('data-width');
-        var selectedPanelHeight = selectedOption.getAttribute('data-height');
-        var selectedPanelPower = selectedOption.getAttribute('data-power');
-        var selectedPanelImgSrc = selectedOption.getAttribute('data-img-src');
+        const selectedOption = this.options[this.selectedIndex];
+        solarPanelID = selectedOption.value;
+        const selectedPanelWidth = selectedOption.getAttribute('data-width');
+        const selectedPanelHeight = selectedOption.getAttribute('data-height');
+        const selectedPanelPower = selectedOption.getAttribute('data-power');
+        const selectedPanelImgSrc = selectedOption.getAttribute('data-img-src');
 
         shapesHandler.panelW = selectedPanelWidth;
         shapesHandler.panelH = selectedPanelHeight;
@@ -141,12 +126,12 @@ function darkMode() {
     if (document.getElementById('darkModeSwitchLabel') !== null)
         document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-moon"></i>';
 
-    var helpGifs = document.querySelectorAll('.help-gif');
+    const helpGifs = document.querySelectorAll('.help-gif');
     helpGifs.forEach(function (gif) {
-        var src = gif.getAttribute('src');
-        var index = src.lastIndexOf('/');
-        var filename = src.substring(index + 1);
-        var newSrc = src.replace(filename, filename.replace('.webp', '-dark.webp'));
+        const src = gif.getAttribute('src');
+        const index = src.lastIndexOf('/');
+        const filename = src.substring(index + 1);
+        const newSrc = src.replace(filename, filename.replace('.webp', '-dark.webp'));
         gif.setAttribute('src', newSrc);
     });
 }
@@ -168,16 +153,15 @@ function lightMode() {
     if (document.getElementById('darkModeSwitchLabel') !== null)
         document.getElementById('darkModeSwitchLabel').innerHTML = '<i class="bi bi-sun"></i>';
 
-    var helpGifs = document.querySelectorAll('.help-gif');
+    const helpGifs = document.querySelectorAll('.help-gif');
     helpGifs.forEach(function (gif) {
-        var src = gif.getAttribute('src');
-        var index = src.lastIndexOf('/');
-        var filename = src.substring(index + 1);
-        var newSrc = src.replace(filename, filename.replace('-dark.webp', '.webp'));
+        const src = gif.getAttribute('src');
+        const index = src.lastIndexOf('/');
+        const filename = src.substring(index + 1);
+        const newSrc = src.replace(filename, filename.replace('-dark.webp', '.webp'));
         gif.setAttribute('src', newSrc);
     });
 }
-
 
 function updateSolarPanels() {
     fetch('/get_solar_panels/', {
@@ -222,17 +206,17 @@ function updateSolarPanels() {
 
 
 function showStep(step) {
-    var stepContents = document.querySelectorAll('.step-content');
+    const stepContents = document.querySelectorAll('.step-content');
     stepContents.forEach(function (content) {
         content.classList.remove('active');
         content.style.display = 'none';
     });
-    var stepContent = document.querySelector(`[data-step="${step}"]`);
+    const stepContent = document.querySelector(`[data-step="${step}"]`);
     if (stepContent) {
         stepContent.classList.add('active');
         stepContent.style.display = 'block';
     }
-    var currentStep = document.getElementById('currentStep');
+    const currentStep = document.getElementById('currentStep');
     if (currentStep) {
         currentStep.textContent = step;
     }
