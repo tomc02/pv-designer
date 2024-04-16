@@ -237,7 +237,6 @@
         const rotateImgUrl = '{% url "rotate_img" %}';
         const saveDataUrl = '{% url "save_data" %}';
         const resultUrl = '{% url "data_page" %}';
-        const csrfToken = '{{ csrf_token  }}';
         const latitude = parseFloat('{{ latitude }}');
         const longitude = parseFloat('{{ longitude }}');
         const mapData = JSON.parse('{{ map_data|escapejs|safe }}');

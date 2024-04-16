@@ -4,7 +4,8 @@ let processing = false;
 let currentStep = 1;
 const totalSteps = 6;
 
-function sendData(dataToSend, url, customHeader, csrf_token) {
+function sendData(dataToSend, url, customHeader) {
+    const csrf_token = getCSRFToken();
     showProcessing();
     fetch(url, {
         method: "POST",
@@ -38,7 +39,7 @@ function moveToForm() {
         'mapDataID': mapDataID,
         'solarPanelID': solarPanelID,
     };
-    sendData(JSON.stringify(dataToSave), saveDataUrl, 'Map-Data', csrfToken);
+    sendData(JSON.stringify(dataToSave), saveDataUrl, 'Map-Data');
 }
 
 function showProcessing(controlPanelOnly = false) {
@@ -231,4 +232,8 @@ function changeStep(direction) {
         currentStep = totalSteps;
     }
     showStep(currentStep);
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
 }
