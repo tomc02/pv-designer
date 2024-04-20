@@ -99,13 +99,7 @@ function getHeadings(corners) {
 }
 
 function computeAzimuth(headingLTR) {
-    // Normalize the heading to a 360° system and adjust by -90° to align with azimuth definitions
-    let azimuth = (headingLTR + 270) % 360;
-
-    // Convert azimuth to the -180° to 180° system
-    if (azimuth > 180) {
-        azimuth -= 360;
-    }
+    let azimuth = ((headingLTR - 90 + 180) % 360) - 180;
     return Math.round(azimuth);
 }
 
@@ -233,12 +227,12 @@ function generatePanels(startPoint, endPoint, panelWidth, heading) {
     const panels = [];
     let position = startPoint;
     let index = 0;
-    while (google.maps.geometry.spherical.computeDistanceBetween(position, endPoint) >= panelWidth) {
+    const gMaps = google.maps.geometry.spherical;
+    while (gMaps.computeDistanceBetween(position, endPoint) >= panelWidth) {
         panels.push(position);
-        position = google.maps.geometry.spherical.computeOffset(position, panelWidth, heading);
+        position = gMaps.computeOffset(position, panelWidth, heading);
         index++;
-        if (index > 100) {
-            console.error('Infinite loop');
+        if (index > 100) { // maximum panels in one row
             break;
         }
     }

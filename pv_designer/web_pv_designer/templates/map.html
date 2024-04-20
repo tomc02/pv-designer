@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <head>
-        <script src="/api/google-maps-js"></script>
+        <script async src="/api/google-maps-js"></script>
         <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="{% static '/js/map_handler.js' %}"></script>
@@ -262,7 +262,6 @@
             }
 
             addBackButtonListener();
-            initMap();
             addSelectListener();
             showStep(currentStep);
             if (panelId > 0) {
