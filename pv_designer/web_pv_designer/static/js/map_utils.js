@@ -181,6 +181,12 @@ function loadMapData() {
         drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
     });
 
+    createMapTypeSelect(map);
+    clearHighlight();
+    return map;
+}
+
+function createMapTypeSelect(map, googleOnly = false) {
     const mapTypeSelect = document.createElement('select');
     mapTypeSelect.id = 'mapTypeSelect';
     mapTypeSelect.classList.add('map-type-select', 'form-select', 'form-select-sm');
@@ -197,10 +203,12 @@ function loadMapData() {
     satelliteOption.textContent = 'Satellite';
     mapTypeSelect.appendChild(satelliteOption);
 
-    const mapyCzOption = document.createElement('option');
-    mapyCzOption.value = 'mapyCz';
-    mapyCzOption.textContent = 'Mapy.cz';
-    mapTypeSelect.appendChild(mapyCzOption);
+    if (!googleOnly) {
+        const mapyCzOption = document.createElement('option');
+        mapyCzOption.value = 'mapyCz';
+        mapyCzOption.textContent = 'Mapy.cz';
+        mapTypeSelect.appendChild(mapyCzOption);
+    }
 
     const classicMapOption = document.createElement('option');
     classicMapOption.value = 'roadmap';
@@ -210,18 +218,20 @@ function loadMapData() {
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapTypeSelect);
     mapTypeSelect.style.width = '77px';
     mapTypeSelect.style.marginLeft = '10px';
+    if (googleOnly) {
+        mapTypeSelect.style.marginTop = '10px';
+    }
 
     mapTypeSelect.addEventListener('change', function () {
         const selectedMapType = this.value;
         map.setMapTypeId(selectedMapType);
-        if (selectedMapType === 'mapyCz') {
-            addMapyCzAttribution();
-        } else {
-            removeMapyCzAttribution();
+        if (!googleOnly) {
+            if (selectedMapType === 'mapyCz') {
+                addMapyCzAttribution();
+            } else {
+                removeMapyCzAttribution();
+            }
         }
         this.selectedIndex = 0;
     });
-
-    clearHighlight();
-    return map;
 }

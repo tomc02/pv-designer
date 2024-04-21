@@ -202,11 +202,13 @@ function initSimpleMap(locked = false, lat, lng) {
         disableDoubleClickZoom: locked,
         streetViewControl: false,
         fullscreenControl: false,
-        mapTypeControl: !locked,
+        mapTypeControl: false,
         tilt: 0,
         rotateControl: false,
     });
-
+    if (!locked) {
+        createMapTypeSelect(simpleMap,true);
+    }
     // place home location marker to the center of the map
     homeLocationMarker = new google.maps.Marker({
         position: {lat: lat, lng: lng}, map: simpleMap, draggable: !locked,
