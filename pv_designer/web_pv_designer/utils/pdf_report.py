@@ -95,7 +95,6 @@ def create_pdf_report(user_id, areas, pv_data):
     optimized_areas = []
     for response in response_file_paths:
         with open(response, 'r') as json_file:
-            print(f'Reading response file: {response}')
             data_response = json.load(json_file)
             azimuth = data_response['inputs']['mounting_system']['fixed']['azimuth']
             slope = data_response['inputs']['mounting_system']['fixed']['slope']
@@ -136,6 +135,7 @@ def create_pdf_report(user_id, areas, pv_data):
     add_graph_to_report(chart, elements, page_content_width)
 
     totals = {'consumed': 0, 'unused': 0, 'deficit': 0}
+    totaly_produced = 0
     for i in range(0, 12):
         production = monthly_energy_data[i]['E_m']
         if monthly_consumption_array[i] >= production:
@@ -143,7 +143,13 @@ def create_pdf_report(user_id, areas, pv_data):
             totals['deficit'] += monthly_consumption_array[i] - production
         else:
             totals['consumed'] += monthly_consumption_array[i]
+            print(f'Unused: {production - monthly_consumption_array[i]} - production: {production} - consumption: {monthly_consumption_array[i]}')
             totals['unused'] += production - monthly_consumption_array[i]
+        totaly_produced += production
+    totals_sum = totals['consumed'] + totals['unused'] + totals['deficit']
+    print(f'Totals summary: {totals["consumed"] + totals["unused"] + totals["deficit"]}')
+    print(f'Totals withpout deficit: {totals["consumed"] + totals["unused"]}')
+    print(f'Totaly produced: {totaly_produced}')
 
     chart = create_energy_balance_chart(totals)
     add_graph_to_report(chart, elements, page_content_width)
