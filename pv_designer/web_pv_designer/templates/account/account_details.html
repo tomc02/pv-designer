@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <script src="/api/google-maps-js"></script>
+    <script async src="/api/google-maps-js/accountDetailsInit"></script>
     <script src="{% static 'js/map_handler.js' %}"></script>
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -30,22 +30,6 @@
         </div>
     </div>
     <script>
-        user_location = "{{ user.home_location }}";
-        if (user_location !== "None") {
-            var matches = user_location.match(/POINT \(([^ ]+) ([^ ]+)\)/);
-            if (matches && matches.length === 3) {
-                var longitude = parseFloat(matches[1]);
-                var latitude = parseFloat(matches[2]);
-                updateMapMessage(true);
-                initSimpleMap(true, latitude, longitude);
-            }
-        } else {
-            updateMapMessage(false);
-            var simpleMap = document.getElementById('simple_map');
-            if (simpleMap) {
-                simpleMap.style.display = 'none';
-            }
-        }
-
+        var user_location = "{{ user.home_location }}";
     </script>
 {% endblock %}

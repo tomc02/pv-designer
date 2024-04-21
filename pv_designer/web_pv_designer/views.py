@@ -241,8 +241,8 @@ def get_solar_panels(request):
 
 
 @ratelimit(key='ip', rate=GOOGLE_MAPS_API_RATE_LIMIT, block=True)
-def google_maps_js(request):
-    google_maps_js_url = f'https://maps.googleapis.com/maps/api/js?key={GOOGLE_MAPS_API_KEY}&libraries=drawing,places&callback=initMap&loading=async'
+def google_maps_js(request, callback):
+    google_maps_js_url = f'https://maps.googleapis.com/maps/api/js?key={GOOGLE_MAPS_API_KEY}&libraries=drawing,places&callback={callback}&loading=async'
     response = requests.get(google_maps_js_url)
     return HttpResponse(response.content, content_type='application/javascript')
 

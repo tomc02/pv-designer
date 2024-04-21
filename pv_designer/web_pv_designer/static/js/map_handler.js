@@ -3,7 +3,7 @@ var simpleMap;
 var homeLocationMarker;
 var drawingManager;
 
-function initMap() {
+function initMap() { // Called by Google Maps api callback
     map = loadMapData();
     drawingManager = new google.maps.drawing.DrawingManager({
         drawingControl: true, drawingControlOptions: {
@@ -228,5 +228,28 @@ function updateMapMessage(hasLocation) {
         messageElement.innerHTML = '';
     } else {
         messageElement.innerHTML = '<p class="text-warning">Update your account to set your home location.</p>';
+    }
+}
+
+function updateAccountInit(){ // Called by Google Maps api callback
+    initSimpleMap(false, lat, lng);
+    searchBoxInit(simpleMap, true);
+}
+
+function accountDetailsInit() { // Called by Google Maps api callback
+    if (user_location !== "None") {
+        const matches = user_location.match(/POINT \(([^ ]+) ([^ ]+)\)/);
+        if (matches && matches.length === 3) {
+            const longitude = parseFloat(matches[1]);
+            const latitude = parseFloat(matches[2]);
+            updateMapMessage(true);
+            initSimpleMap(true, latitude, longitude);
+        }
+    } else {
+        updateMapMessage(false);
+        const simpleMap = document.getElementById('simple_map');
+        if (simpleMap) {
+            simpleMap.style.display = 'none';
+        }
     }
 }

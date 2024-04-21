@@ -35,7 +35,7 @@ urlpatterns = [
     path('delete_record/', views.delete_record, name='delete_record'),
     path('add_solar_panel/', views.add_solar_panel, name='add_solar_panel'),
     path('get_solar_panels/', views.get_solar_panels, name='get_solar_panels'),
-    path('api/google-maps-js', views.google_maps_js, name='google-maps-js'),
+    path('api/google-maps-js/<str:callback>/', views.google_maps_js, name='google-maps-js'),
     path('mapy-cz-tiles/<int:zoom>/<int:x>/<int:y>/', views.mapy_cz_tiles, name='mapy_cz_tiles'),
     path('pdf/', views.serve_pdf, name='serve_pdf'),
 ]

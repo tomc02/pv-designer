@@ -2,10 +2,9 @@
 {% load static %}
 {% load form_tags %}
 {% block content %}
-    <script src="/api/google-maps-js"></script>
+    <script async src="/api/google-maps-js/updateAccountInit"></script>
     <script src="{% static 'js/map_handler.js' %}"></script>
     <script src="{% static 'js/map_utils.js' %}"></script>
-
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -49,7 +48,5 @@
     <script>
         let lat = parseFloat("{{ form.latitude.value }}");
         let lng = parseFloat("{{ form.longitude.value}}");
-        initSimpleMap(false, lat, lng);
-        searchBoxInit(simpleMap, true);
     </script>
 {% endblock %}
