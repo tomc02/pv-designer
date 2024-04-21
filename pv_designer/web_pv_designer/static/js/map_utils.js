@@ -1,3 +1,5 @@
+let mapAttribution = false;
+
 function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD) {
     let panelLeftTop = leftTop;
     let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, shapesHandler.getPanelWidth(), headingLTR);
@@ -227,9 +229,13 @@ function createMapTypeSelect(map, googleOnly = false) {
         map.setMapTypeId(selectedMapType);
         if (!googleOnly) {
             if (selectedMapType === 'mapyCz') {
-                addMapyCzAttribution();
+                if (!mapAttribution) {
+                    addMapyCzAttribution();
+                    mapAttribution = true;
+                }
             } else {
                 removeMapyCzAttribution();
+                mapAttribution = false;
             }
         }
         this.selectedIndex = 0;
