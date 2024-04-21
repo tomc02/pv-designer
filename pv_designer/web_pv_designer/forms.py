@@ -24,12 +24,8 @@ class CustomLoginForm(LoginForm):
         self.fields['password'].widget.attrs['class'] = 'form-control mb-3'
         self.fields['remember'].widget.attrs['class'] = 'form-check-input'
 
-        # Add custom placeholder text for form fields
-        self.fields['login'].widget.attrs['placeholder'] = 'Username or Email'
-        self.fields['password'].widget.attrs['placeholder'] = 'Password'
 
-
-class SolarPanelForm(forms.ModelForm):
+class PVSystemDetailsForm(forms.ModelForm):
     map_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
@@ -46,10 +42,11 @@ class SolarPanelForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(SolarPanelForm, self).__init__(*args, **kwargs)
+        super(PVSystemDetailsForm, self).__init__(*args, **kwargs)
         self.fields['map_id'].label = 'Map ID'
 
-class AddSolarPanelForm(forms.ModelForm):
+
+class SolarPanelForm(forms.ModelForm):
     class Meta:
         model = SolarPanel
         fields = ['manufacturer', 'model', 'width', 'height', 'power', 'pv_technology']
@@ -62,6 +59,7 @@ class AddSolarPanelForm(forms.ModelForm):
             'power': forms.NumberInput(attrs={'class': 'form-control'}),
             'pv_technology': forms.Select(attrs={'class': 'form-control'}),
         }
+
 
 class UserAccountForm(forms.ModelForm):
     latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)

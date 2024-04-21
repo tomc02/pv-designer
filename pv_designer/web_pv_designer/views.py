@@ -8,7 +8,7 @@ from django.http import JsonResponse, HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django_ratelimit.decorators import ratelimit
 
-from .forms import SolarPanelForm, AddSolarPanelForm, UserAccountForm, MonthlyConsumptionForm
+from .forms import PVSystemDetailsForm, SolarPanelForm, UserAccountForm, MonthlyConsumptionForm
 from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
@@ -28,7 +28,7 @@ def data_page(request):
             pv_power_plant = get_object_or_404(PVPowerPlant, id=pv_power_plant_id)
             if pv_power_plant.system_details:
                 instance = pv_power_plant.system_details
-        form = SolarPanelForm(request.POST, instance=instance)
+        form = PVSystemDetailsForm(request.POST, instance=instance)
         if form.is_valid():
             form.instance.user = request.user
             saved_instance = form.save()
@@ -51,10 +51,10 @@ def data_page(request):
         if req_id:
             pv_power_plant = get_object_or_404(PVPowerPlant, id=req_id)
             instance = pv_power_plant.system_details if pv_power_plant.system_details else None
-            form = SolarPanelForm()
+            form = PVSystemDetailsForm()
             initial_values = [{'month': i + 1} for i in range(12)]
             if instance:
-                form = SolarPanelForm(instance=instance)
+                form = PVSystemDetailsForm(instance=instance)
                 form.fields['map_id'].initial = req_id
                 consumption_objects = MonthlyConsumption.objects.filter(power_plant=instance)
                 print(str(consumption_objects.count()) + 'consumption_objects')
@@ -217,7 +217,7 @@ def delete_record(request):
 @login_required
 def add_solar_panel(request):
     if request.method == 'POST':
-        form = AddSolarPanelForm(request.POST)
+        form = SolarPanelForm(request.POST)
         if form.is_valid():
             solar_panel = form.save()
             solar_panel.user = request.user
@@ -225,7 +225,7 @@ def add_solar_panel(request):
             solar_panel_added.send(sender=solar_panel.__class__, instance=solar_panel, request=request)
             return redirect('add_solar_panel')
     else:
-        form = AddSolarPanelForm()
+        form = SolarPanelForm()
 
     return render(request, 'add_solar_panel.html', {'form': form})
 
