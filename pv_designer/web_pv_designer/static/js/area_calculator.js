@@ -99,7 +99,10 @@ function getHeadings(corners) {
 }
 
 function computeAzimuth(headingLTR) {
-    let azimuth = ((headingLTR - 90 + 180) % 360) - 180;
+    function modulo(n, m) {
+        return ((n % m) + m) % m;
+    }
+    let azimuth = modulo(headingLTR - 90 + 180, 360) - 180;
     return Math.round(azimuth);
 }
 

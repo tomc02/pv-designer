@@ -332,6 +332,7 @@ def sum_responses(file_paths, path_to_source):
     # Copy inputs and meta from the first file
     with open(file_paths[0], 'r') as file:
         response = json.load(file)
+        print('File: ' + file_paths[0] + ' Response: ' + str(response))
         sum_response['inputs'] = copy.deepcopy(response['inputs'])
         sum_response['meta'] = copy.deepcopy(response['meta'])
 
