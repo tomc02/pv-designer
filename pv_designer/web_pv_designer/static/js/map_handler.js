@@ -33,7 +33,7 @@ function initMap() { // Called by Google Maps api callback
             }
         } else {
             shape.setMap(null);
-            alert('Area must have only 4 points');
+            alert('Area must have only 3 or 4 points');
         }
     });
 

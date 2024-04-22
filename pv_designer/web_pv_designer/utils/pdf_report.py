@@ -143,10 +143,8 @@ def create_pdf_report(user_id, areas, pv_data):
             totals['deficit'] += monthly_consumption_array[i] - production
         else:
             totals['consumed'] += monthly_consumption_array[i]
-            print(f'Unused: {production - monthly_consumption_array[i]} - production: {production} - consumption: {monthly_consumption_array[i]}')
             totals['unused'] += production - monthly_consumption_array[i]
         totaly_produced += production
-    totals_sum = totals['consumed'] + totals['unused'] + totals['deficit']
     print(f'Totals summary: {totals["consumed"] + totals["unused"] + totals["deficit"]}')
     print(f'Totals withpout deficit: {totals["consumed"] + totals["unused"]}')
     print(f'Totaly produced: {totaly_produced}')

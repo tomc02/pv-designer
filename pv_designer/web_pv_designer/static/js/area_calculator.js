@@ -151,8 +151,9 @@ function fillPolygon(index) {
     let iteration = 0;
     let continuePlacingPanels = true;
 
+    console.log('HeadingLTR:', headingLTR);
     while (continuePlacingPanels && iteration < 100) {
-        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
             topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
         } else {
             topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
