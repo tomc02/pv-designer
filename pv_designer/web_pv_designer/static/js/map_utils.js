@@ -15,7 +15,6 @@ function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD
 
 function getPvImgUrl(angle) {
     const currentTime = new Date().getTime();
-    // floor the angle to 2 decimal places
     angle = Math.round(angle * 100) / 100;
     return pvPanelImg + angle + '.png' + '?v=' + currentTime;
 }
