@@ -56,7 +56,7 @@ def rotate_pv_img(angle: float, slope: float, original_image_name: str, rotated_
     # rotate image to the desired angle
     rotated_image = original_image.rotate(angle, expand=True, resample=Image.BICUBIC)
 
-    angle = str(round(angle))
+    angle = str(round(angle*100)/100)  # Using this way of rounding to make it consistent with the frontend
     rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
 
     rotated_image.close()

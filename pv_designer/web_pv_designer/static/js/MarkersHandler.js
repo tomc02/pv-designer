@@ -21,7 +21,7 @@ class MarkersHandler {
     }
 
     putMarker(markerPosition, markerIcon, angle, areaIndex) {
-        angle = Math.round(angle);
+        angle = Math.round(angle*100)/100;
         angle = angle + '';
         setTimeout(() => {
             const marker = new google.maps.Marker({
