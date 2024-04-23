@@ -258,17 +258,18 @@ function drawPoints(points, polygon, angle, pvPanelUrl, polygonIndex) {
 }
 
 function calculatePixelSize(map, meters, latitude) {
-    zoom = map.getZoom();
-    var earthRadius = 6378137;
-    var latRadians = latitude * (Math.PI / 180);
-    var metersPerPixel = (Math.cos(latRadians) * 2 * Math.PI * earthRadius) / (256 * Math.pow(2, zoom));
-    var pixelSize = meters / metersPerPixel;
-    return pixelSize;
+    const zoom = map.getZoom();
+    const earthRadius = 6378137;
+    const latRadians = latitude * (Math.PI / 180);
+    const metersPerPixel = (Math.cos(latRadians) * 2 * Math.PI * earthRadius) / (256 * Math.pow(2, zoom));
+    return meters / metersPerPixel;
 }
 
 function rotateImage(angle, slope, orientation) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation, true);
+    const xhr = new XMLHttpRequest();
+    const ratioWidthHeight = shapesHandler.getPanelWidth() / shapesHandler.getPanelHeight();
+    console.log('ratioWidthHeight', ratioWidthHeight);
+    xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation + "&ratio=" + ratioWidthHeight, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {

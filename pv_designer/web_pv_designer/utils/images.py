@@ -29,28 +29,39 @@ def save_map_img(image_url, user_id, db_id=None):
         return os.path.relpath(db_path, settings.MEDIA_ROOT)
 
 
-def rotate_pv_img(angle, slope, original_image_name, rotated_image_name, orientation):
+def rotate_pv_img(angle: float, slope: float, original_image_name: str, rotated_image_name: str, orientation: str,
+                  ratio: float):
     static_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'static', 'images')
     original_image = Image.open(os.path.join(static_path, original_image_name + '.png')).convert('RGBA')
+
+    # rotate image according to the orientation
     if orientation == '1':
-        print('orientation 1')
         original_image = original_image.rotate(90, expand=True, resample=Image.BICUBIC)
+
+    # resize original image to match the ratio
     width, height = original_image.size
-    slope = 90 - float(slope)
+    if width / height > ratio:
+        new_width = height * ratio
+        original_image = original_image.resize((int(new_width), height))
+    else:
+        new_height = width / ratio
+        original_image = original_image.resize((width, int(new_height)))
+
+    # resize image according to the slope
+    width, height = original_image.size
+    slope = 90 - slope
     new_height = height * math.sin(math.radians(slope))
     original_image = original_image.resize((width, int(new_height)))
-    print(height, new_height)
 
-    rotation_angle = float(angle)
-    rotated_image = original_image.rotate(rotation_angle, expand=True, resample=Image.BICUBIC)
+    # rotate image to the desired angle
+    rotated_image = original_image.rotate(angle, expand=True, resample=Image.BICUBIC)
 
-    angle = str(round(rotation_angle))
+    angle = str(round(angle))
     rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
 
     rotated_image.close()
     original_image.close()
     return rotated_image_name + angle
-
 
 
 def delete_rotated_images():

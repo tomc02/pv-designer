@@ -131,13 +131,14 @@ def account_details(request):
 
 
 def rotate_img(request):
-    angle = request.GET.get('angle')
-    slope = request.GET.get('slope')
+    angle = float(request.GET.get('angle'))
+    slope = float(request.GET.get('slope'))
     orientation = request.GET.get('orientation')
+    ratio = float(request.GET.get('ratio'))
     print('slope: ' + str(slope))
-    result = rotate_pv_img(angle, slope, 'pv_panel', 'pv_panel_rotated', orientation)
+    result = rotate_pv_img(angle, slope, 'pv_panel', 'pv_panel_rotated', orientation, ratio)
     result = rotate_pv_img(angle, slope, 'pv_panel_selected',
-                           'pv_panel_selected_rotated', orientation)
+                           'pv_panel_selected_rotated', orientation, ratio)
     if result:
         return JsonResponse({'result': result})
     else:
