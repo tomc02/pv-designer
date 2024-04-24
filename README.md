@@ -1,6 +1,6 @@
 # Photovoltaic calculator
 
-Short description of your project.
+Useful tool for PV plant optimization and planning.
 
 ## Table of Contents
 
@@ -11,7 +11,7 @@ Short description of your project.
 - [Usage](#usage)
 
 ## About
-A brief description of your project.
+
 
 ## Getting Started
 
@@ -21,6 +21,7 @@ Before you begin, ensure you have met the following requirements:
 
 - You have installed Python 3.x.
 - You have installed pip.
+- You have installed sqlite3 with the spatialite extension.
 
 ### Installation
 
