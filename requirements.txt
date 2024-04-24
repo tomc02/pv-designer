@@ -1,8 +1,9 @@
-Django
-requests
-django-allauth
-django-environ
-matplotlib
-reportlab
-django-extensions
-django-ratelimit
+Django==5.0.4
+requests==2.31.0
+django-allauth==0.62.1
+django-environ==0.11.2
+matplotlib==3.8.4
+reportlab==4.2.0
+django-extensions==3.2.3
+django-ratelimit==4.1.0
+
