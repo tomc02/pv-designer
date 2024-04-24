@@ -40,7 +40,7 @@ Before you begin, ensure you have met the following requirements:
 4. Put your API keys into config.env file
 5. Make migrations:
     ```bash
-    ./manage.py makemigrations
+    ./manage.py makemigrations web_pv_designer
     ```
 6. Apply database migrations(You will be prompted to enter the name of the file containing the list of panels. You can use the file `solar_panels.csv` provided in the repository as an example.):
     ```bash
