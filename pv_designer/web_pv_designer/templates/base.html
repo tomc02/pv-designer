@@ -12,8 +12,13 @@
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     {% csrf_token %}
     <script src="{% static '/js/utils_other.js' %}"></script>
+    <!–– jQuery is included only for the Bootstrap JS components ––>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
     <script src="{% static '/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    {% block extra_head %}
+    {% endblock %}
 </head>
 <body>
 <header>
@@ -140,4 +145,6 @@
         });
     });
 </script>
+{% block extra_js %}
+{% endblock %}
 </html>

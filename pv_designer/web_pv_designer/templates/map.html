@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_head %}
+    <script async src="/api/google-maps-js/initMap"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="{% static '/js/map_handler.js' %}"></script>
+    <script src="{% static '/js/map_utils.js' %}"></script>
+    <script src="{% static '/js/area_calculator.js' %}"></script>
+    <script src="{% static '/js/control_panel_handler.js' %}"></script>
+    <script src="{% static '/js/MarkersHandler.js' %}"></script>
+    <script src="{% static '/js/ShapesHandler.js' %}"></script>
+    <script src="{% static '/js/Shape.js' %}"></script>
+{% endblock %}
 {% block content %}
-    <head>
-        <script async src="/api/google-maps-js/initMap"></script>
-        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="{% static '/js/map_handler.js' %}"></script>
-        <script src="{% static '/js/map_utils.js' %}"></script>
-        <script src="{% static '/js/area_calculator.js' %}"></script>
-        <script src="{% static '/js/control_panel_handler.js' %}"></script>
-        <script src="{% static '/js/MarkersHandler.js' %}"></script>
-        <script src="{% static '/js/ShapesHandler.js' %}"></script>
-        <script src="{% static '/js/Shape.js' %}"></script>
-    </head>
-    <body>
     <div class="container mt-5">
         <div id="content">
             <div class="heading-section text-center page-heading-section">
@@ -230,7 +228,8 @@
             </div>
         </div>
     </div>
-    </body>
+{% endblock %}
+{% block extra_js %}
     <script>
         const pvPanelImg = '{% static "images/pv_panel_rotated" %}';
         const pvPanelSelectedImg = '{% static "images/pv_panel_selected_rotated" %}';

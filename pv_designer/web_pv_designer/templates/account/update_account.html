@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 {% load form_tags %}
-{% block content %}
+{% block extra_head %}
     <script async src="/api/google-maps-js/updateAccountInit"></script>
     <script src="{% static 'js/map_handler.js' %}"></script>
     <script src="{% static 'js/map_utils.js' %}"></script>
+{% endblock %}
+{% block content %}
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -45,6 +47,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block extra_js %}
     <script>
         let lat = parseFloat("{{ form.latitude.value }}");
         let lng = parseFloat("{{ form.longitude.value}}");

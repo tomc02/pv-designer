@@ -120,8 +120,9 @@
             </div>
         </div>
     </div>
-
-    <script>
+{% endblock %}
+{% block extra_js %}
+<script>
         function checkMandatoryFields() {
             const title = document.getElementById('{{ form.title.id_for_label }}').value;
             const systemLoss = document.getElementById('{{ form.system_loss.id_for_label }}').value;
