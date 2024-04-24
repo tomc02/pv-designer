@@ -1,8 +1,7 @@
 Django
 requests
 django-allauth
-plotly
-pandas
+django-environ
 matplotlib
 reportlab
 django-extensions
