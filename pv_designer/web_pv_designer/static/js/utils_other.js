@@ -18,7 +18,6 @@ function sendData(dataToSend, url, customHeader) {
     })
         .then(response => response.json())
         .then(response => {
-            console.log(response);
             window.location.href = resultUrl + '?id=' + response.id;
         })
         .catch(error => console.error('Error:', error));
@@ -59,7 +58,6 @@ function showProcessing(controlPanelOnly = false) {
         loading.style.display = 'block';
     }
     processing = true;
-    console.log('showProcessing');
 }
 
 function hideProcessing() {

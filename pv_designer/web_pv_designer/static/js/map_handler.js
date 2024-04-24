@@ -62,7 +62,6 @@ function initMap() { // Called by Google Maps api callback
         google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
             let index = 0;
             shapesHandler.fillAllAreasWithPanels();
-            console.log('mapData.areasObjects', mapData.areasObjects);
             mapData.areasData.forEach(function (areaData) {
                 shapesHandler.rotateShapeByIndex(index, areaData.rotations);
                 index++;
@@ -173,7 +172,6 @@ function setHomeLocationMarker(lat, lng) {
     if (homeLocationMarker) {
         homeLocationMarker.setMap(null);
     }
-    console.log('setting marker', lat, lng);
     homeLocationMarker = new google.maps.Marker({
         position: {lat: lat, lng: lng}, map: simpleMap, draggable: true,
     });

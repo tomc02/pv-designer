@@ -86,7 +86,6 @@ getMarkerPicture(position, imgUrl, theta) {
         const areaIndex = Object.keys(this.markers).find(key => this.markers[key].includes(marker));
         shapesHandler.selectShapeByIndex(areaIndex);
         marker.setDraggable(true);
-        console.log('title:' + marker.title);
         marker.setIcon(this.getMarkerPicture(marker.getPosition(), getPvImgSelectedUrl(this.clipAngle(marker.title)), marker.title));
         document.getElementById('markerDeleteButton').style.display = 'block';
     }

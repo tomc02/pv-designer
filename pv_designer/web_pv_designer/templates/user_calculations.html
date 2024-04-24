@@ -61,11 +61,8 @@
 
         function confirmDelete(recordId) {
             if (confirm("Are you sure you want to delete this record?")) {
-                // If the user confirms, submit the corresponding form
                 document.getElementById("deleteRecordForm_" + recordId).submit();
             } else {
-                // If the user cancels, do nothing or provide feedback
-                console.log("Deletion canceled.");
             }
         }
 

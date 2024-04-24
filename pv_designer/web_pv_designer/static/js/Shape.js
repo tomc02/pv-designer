@@ -61,7 +61,6 @@ class Shape {
 
     setPath(path) {
         this.shape.setPath(path);
-        console.log('setPath');
     }
 
     deleteShape() {

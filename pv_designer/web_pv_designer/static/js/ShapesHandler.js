@@ -88,7 +88,6 @@ class ShapesHandler {
 
     rotateSelectedShape(rotationsCount = 1) {
         if (this.selectedShape) {
-            console.log('rotateSelectedShape ' + rotationsCount + ' times');
             for (let i = 0; i < rotationsCount; i++) {
                 this.selectedShape.rotateShape();
             }
@@ -98,7 +97,6 @@ class ShapesHandler {
 
     rotateShapeByIndex(index, rotationsCount = 1) {
         if (this.shapes[index]) {
-            console.log('rotateShape ' + rotationsCount + ' times');
             for (let i = 0; i < rotationsCount; i++) {
                 this.shapesObjects[index].rotateShape();
             }
@@ -177,7 +175,6 @@ class ShapesHandler {
             let slope = document.getElementById("slope" + (i)).value;
             const title = document.getElementById("title" + (i)).textContent;
             const mountingPosition = document.getElementById("mountingPosition" + (i)).value;
-            console.log('slope: ' + title);
             if (slope === '') {
                 slope = 0;
             }
@@ -192,7 +189,6 @@ class ShapesHandler {
                 'rotations': shapeObject.rotations,
                 'polygon': shape.getPath().getArray(),
             };
-            console.log(shapeData);
             shapesData.push(shapeData);
         }
         return shapesData;

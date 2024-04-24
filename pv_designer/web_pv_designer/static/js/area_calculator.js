@@ -116,7 +116,6 @@ function fillPolygon(index) {
     const gMaps = google.maps.geometry;
     let cornerPoints;
     if (!shapesFiled.includes(index)) {
-        console.log('Sorting corners');
         cornerPoints = sortCorners(shapesHandler.getShape(index).getPath().getArray());
         shapesFiled.push(index);
     } else {
@@ -143,7 +142,6 @@ function fillPolygon(index) {
 
     let angle = 90 - headingLTR;
     const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
-    console.log('pvPanelUrl', pvPanelUrl);
     let azimuth = computeAzimuth(headingLTR);
 
     let topPoints = [];
@@ -151,7 +149,6 @@ function fillPolygon(index) {
     let iteration = 0;
     let continuePlacingPanels = true;
 
-    console.log('HeadingLTR:', headingLTR);
     while (continuePlacingPanels && iteration < 100) {
         if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
             topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
@@ -268,7 +265,6 @@ function calculatePixelSize(map, meters, latitude) {
 function rotateImage(angle, slope, orientation) {
     const xhr = new XMLHttpRequest();
     const ratioWidthHeight = shapesHandler.getPanelWidth() / shapesHandler.getPanelHeight();
-    console.log('ratioWidthHeight', ratioWidthHeight);
     xhr.open("GET", rotateImgUrl + "?angle=" + angle + "&slope=" + slope + "&orientation=" + orientation + "&ratio=" + ratioWidthHeight, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {

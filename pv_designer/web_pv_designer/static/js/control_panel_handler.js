@@ -59,7 +59,6 @@ function deleteControlPanel(index) {
 
         // Update the indices of the remaining subpanels
         for (let i = index + 1; i < subpanels.length; i++) {
-            console.log('i: ' + i);
             const titleElement = document.getElementById("title" + (i));
             titleElement.id = "title" + (i - 1);
             const panelCountElement = document.getElementById("panelCount" + (i));
@@ -73,7 +72,6 @@ function deleteControlPanel(index) {
         }
 
     }
-    console.log('len' + subpanels.length);
     if (subpanels.length === 1) {
         const confirmationButton = document.getElementById("confirmationButton");
         confirmationButton.style.display = "none";
@@ -107,7 +105,6 @@ function selectControlPanel(index) {
 }
 
 function clearHighlight() {
-    console.log('clearHighlight');
     const allPanels = document.querySelectorAll(".card");
     allPanels.forEach((p) => {
         p.classList.remove("highlight");
