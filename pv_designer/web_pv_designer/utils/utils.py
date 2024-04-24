@@ -72,7 +72,6 @@ def parse_areas_data(areas_data_list, map_data, pv_panel_power):
             polygon=polygon
         )
         area_instance.save()
-        print(area_instance)
         map_data.areas.add(area_instance)
     map_data.save()
 
@@ -124,7 +123,6 @@ def make_api_calling(data_id, user_id):
             'optimalangles': area.mounting_position == 'optimize' and '1' or '0',
         }
         params.append(param)
-        print(param)
         index += 1
 
     with ThreadPoolExecutor() as executor:

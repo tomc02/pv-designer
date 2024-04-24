@@ -37,7 +37,6 @@ def create_pdf_report(user_id, areas, pv_data):
     # Image with PV Panels
     pv_panel_img_path = path_to_source + 'pv_image.png'
     page_content_width = doc.width
-    print(f'page_content_width: {page_content_width}')
     # load the image and find its dimensions
     image = ImagePlatypus(pv_panel_img_path)
     img_width, img_height = image.wrap(doc.width, doc.height)
@@ -145,9 +144,6 @@ def create_pdf_report(user_id, areas, pv_data):
             totals['consumed'] += monthly_consumption_array[i]
             totals['unused'] += production - monthly_consumption_array[i]
         totaly_produced += production
-    print(f'Totals summary: {totals["consumed"] + totals["unused"] + totals["deficit"]}')
-    print(f'Totals withpout deficit: {totals["consumed"] + totals["unused"]}')
-    print(f'Totaly produced: {totaly_produced}')
 
     chart = create_energy_balance_chart(totals)
     add_graph_to_report(chart, elements, page_content_width)
@@ -336,7 +332,6 @@ def sum_responses(file_paths, path_to_source):
     # Copy inputs and meta from the first file
     with open(file_paths[0], 'r') as file:
         response = json.load(file)
-        print('File: ' + file_paths[0] + ' Response: ' + str(response))
         sum_response['inputs'] = copy.deepcopy(response['inputs'])
         sum_response['meta'] = copy.deepcopy(response['meta'])
 
@@ -365,8 +360,6 @@ def sum_responses(file_paths, path_to_source):
             sum_response['outputs']['totals']['fixed'][key] = (
                     sum_response['outputs']['totals']['fixed'].get(key, 0) + float(
                 response['outputs']['totals']['fixed'][key]))
-
-        print('Costs:' + str(response['outputs']['totals']['fixed'].get('LCOE_pv', 0)))
 
     for key in ['l_aoi', 'l_spec', 'l_tg']:
         sum_response['outputs']['totals']['fixed'][key] = (

@@ -57,7 +57,6 @@ def data_page(request):
                 form = PVSystemDetailsForm(instance=instance)
                 form.fields['map_id'].initial = req_id
                 consumption_objects = MonthlyConsumption.objects.filter(power_plant=instance)
-                print(str(consumption_objects.count()) + 'consumption_objects')
                 if consumption_objects.count() > 0:
                     initial_values = [{
                         'month': consumption.month,
@@ -80,7 +79,6 @@ def map_view(request):
          'height': 2})
 
     if record_id:
-        print('record_id: ' + record_id)
         pv_power_plant = get_object_or_404(PVPowerPlant, id=record_id)
         if pv_power_plant.user != request.user:
             return redirect('home')
@@ -135,7 +133,6 @@ def rotate_img(request):
     slope = float(request.GET.get('slope'))
     orientation = request.GET.get('orientation')
     ratio = float(request.GET.get('ratio'))
-    print('slope: ' + str(slope))
     result = rotate_pv_img(angle, slope, 'pv_panel', 'pv_panel_rotated', orientation, ratio)
     result = rotate_pv_img(angle, slope, 'pv_panel_selected',
                            'pv_panel_selected_rotated', orientation, ratio)
@@ -201,7 +198,6 @@ def get_pdf_result(request):
 @login_required
 def delete_record(request):
     if request.method == 'POST':
-        print('delete record' + str(request.GET.get('id')))
         record_id = request.GET.get('id')
         record = get_object_or_404(PVPowerPlant, id=record_id)
         os.remove(os.path.join(settings.MEDIA_ROOT, record.map_image.name))
