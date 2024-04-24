@@ -57,6 +57,9 @@ def rotate_pv_img(angle: float, slope: float, original_image_name: str, rotated_
     rotated_image = original_image.rotate(angle, expand=True, resample=Image.BICUBIC)
 
     angle = str(round(angle*100)/100)  # Using this way of rounding to make it consistent with the frontend
+    # If there is 0 after the decimal point, remove it (Consistency with the frontend again)
+    if angle.endswith('.0'):
+        angle = angle[:-2]
     rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
 
     rotated_image.close()
