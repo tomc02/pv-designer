@@ -201,3 +201,7 @@
     background-size: 16px;
 
 }
+
+.tooltip-inner {
+    max-width: 600px;
+}

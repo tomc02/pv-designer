@@ -13,6 +13,13 @@ class CustomSignupForm(SignupForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
+        # Put the password requirments into tooltip(title)
+        self.fields['password1'].widget.attrs['title'] = self.fields['password1'].help_text
+        self.fields['password1'].widget.attrs['data-bs-toggle'] = 'tooltip'
+        self.fields['password1'].widget.attrs['data-bs-html'] = 'true'
+
+        self.fields['password1'].help_text = ''
+
     pass
 
 
@@ -23,6 +30,7 @@ class CustomLoginForm(LoginForm):
         self.fields['login'].widget.attrs['class'] = 'form-control mb-3'
         self.fields['password'].widget.attrs['class'] = 'form-control mb-3'
         self.fields['remember'].widget.attrs['class'] = 'form-check-input'
+        self.fields['password'].help_text = ''
 
 
 class PVSystemDetailsForm(forms.ModelForm):
