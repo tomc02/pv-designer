@@ -12,7 +12,7 @@ from .forms import PVSystemDetailsForm, SolarPanelForm, UserAccountForm, Monthly
 from .models import PVPowerPlant, SolarPanel, CustomUser, MonthlyConsumption
 from .utils.images import rotate_pv_img
 from .utils.pdf_report import create_pdf_report
-from .utils.utils import process_map_data, make_api_calling, get_user_id, load_image_from_db
+from .utils.utils import process_map_data, pvgis_api_calling, get_user_id, load_image_from_db
 from .signals import solar_panel_added
 import requests
 from .maps_config import GOOGLE_MAPS_API_KEY, MAPY_CZ_API_KEY, INITIAL_LATITUDE, INITIAL_LONGITUDE, GOOGLE_MAPS_API_RATE_LIMIT, MAPY_CZ_API_RATE_LIMIT
@@ -165,7 +165,7 @@ def calculation_result(request, id):
     if pv_power_plant.user.id != user_id:
         return redirect('home')
     load_image_from_db(user_id, pv_power_plant)
-    make_api_calling(id, user_id)
+    pvgis_api_calling(id, user_id)
     areas = pv_power_plant.areas.all()
     pdf_created = create_pdf_report(user_id, areas, pv_power_plant)
     if pdf_created:

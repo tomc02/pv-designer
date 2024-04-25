@@ -11,8 +11,6 @@ from django.http import JsonResponse
 from .images import save_map_img, delete_rotated_images
 from ..models import PVPowerPlant, Area, CustomUser, SolarPanel
 
-matplotlib.use('Agg')
-
 
 def process_map_data(parsed_data, user_id):
     try:
@@ -88,7 +86,7 @@ def save_response(file_name, response, user_id, index=0):
         f.write(response.text.encode('utf-8'))
 
 
-def make_api_calling(data_id, user_id):
+def pvgis_api_calling(data_id, user_id):
     map_data = PVPowerPlant.objects.get(id=data_id)
     areas = map_data.areas.all()
     pv_power_plant = map_data.system_details
@@ -98,7 +96,6 @@ def make_api_calling(data_id, user_id):
     areas_pv_system_costs = []
     if pv_power_plant.pv_system_cost:
         for area in areas:
-            weight = area.installed_peak_power / sum_power
             area_pv_system_cost = pv_power_plant.pv_system_cost * area.installed_peak_power / sum_power
             areas_pv_system_costs.append(area_pv_system_cost)
     else:
@@ -115,7 +112,7 @@ def make_api_calling(data_id, user_id):
             'angle': area.slope,
             'aspect': area.azimuth,
             'pvprice': pv_power_plant.pv_electricity_price and '1' or '0',
-            'systemcost': areas_pv_system_costs[index] * 1000,
+            'systemcost': areas_pv_system_costs[index] * 1000,  # Better resolution
             'interest': pv_power_plant.interest if pv_power_plant.interest else 0,
             'lifetime': pv_power_plant.lifetime if pv_power_plant.lifetime else 25,
             'outputformat': 'json',

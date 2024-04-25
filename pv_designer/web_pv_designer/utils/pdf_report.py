@@ -134,7 +134,6 @@ def create_pdf_report(user_id, areas, pv_data):
     add_graph_to_report(chart, elements, page_content_width)
 
     totals = {'consumed': 0, 'unused': 0, 'deficit': 0}
-    totaly_produced = 0
     for i in range(0, 12):
         production = monthly_energy_data[i]['E_m']
         if monthly_consumption_array[i] >= production:
@@ -143,7 +142,6 @@ def create_pdf_report(user_id, areas, pv_data):
         else:
             totals['consumed'] += monthly_consumption_array[i]
             totals['unused'] += production - monthly_consumption_array[i]
-        totaly_produced += production
 
     chart = create_energy_balance_chart(totals)
     add_graph_to_report(chart, elements, page_content_width)
@@ -153,9 +151,6 @@ def create_pdf_report(user_id, areas, pv_data):
     print(f'Report generated and saved as {pdf_file}')
 
     return True
-
-
-import matplotlib.pyplot as plt
 
 
 def create_energy_balance_chart(totals):
@@ -203,23 +198,6 @@ def create_looses_chart(year_energy_data, input_values):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2, f'{value:.2f}%', ha='center', va='center',
                  color='black', fontweight='bold', fontsize=10)
 
-    return plt
-
-
-def create_consumption_chart(year_consumption, year_production):
-    categories = ['Production', 'Consumption']
-    values = [year_production, year_consumption]
-
-    plt.figure(figsize=(10, 6))
-    bars = plt.barh(categories, values, color=['#4285F4', '#EA4335'], edgecolor='black', linewidth=1.2)
-    plt.xlabel('Energy (MWh)')
-    plt.title('Yearly Energy Production vs Consumption')
-
-    for bar, value in zip(bars, [year_production, year_consumption]):
-        plt.text(bar.get_width(), bar.get_y() + bar.get_height() / 2, f'{value:.2f} MWh',
-                 va='center', ha='right', fontweight='bold', color='black', fontsize=10)
-
-    plt.tight_layout()
     return plt
 
 

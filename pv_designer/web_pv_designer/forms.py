@@ -13,11 +13,9 @@ class CustomSignupForm(SignupForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
-        # Put the password requirments into tooltip(title)
         self.fields['password1'].widget.attrs['title'] = self.fields['password1'].help_text
         self.fields['password1'].widget.attrs['data-bs-toggle'] = 'tooltip'
         self.fields['password1'].widget.attrs['data-bs-html'] = 'true'
-
         self.fields['password1'].help_text = ''
 
     pass
@@ -38,7 +36,8 @@ class PVSystemDetailsForm(forms.ModelForm):
 
     class Meta:
         model = PVSystemDetails
-        fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime', 'consumption_per_year']
+        fields = ['title', 'system_loss', 'pv_electricity_price', 'pv_system_cost', 'interest', 'lifetime',
+                  'consumption_per_year']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'system_loss': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -76,6 +75,7 @@ class UserAccountForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'latitude', 'longitude']
+
     def __init__(self, *args, **kwargs):
         super(UserAccountForm, self).__init__(*args, **kwargs)
         if self.instance.home_location:
@@ -87,7 +87,6 @@ class UserAccountForm(forms.ModelForm):
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs['class'] = 'form-control'
         self.fields['username'].help_text = ''
-
 
     def save(self, commit=True):
         user = super().save(commit=False)
