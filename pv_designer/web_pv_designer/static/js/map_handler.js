@@ -46,10 +46,14 @@ function initMap() { // Called by Google Maps api callback
 
 
     searchBoxInit(map);
-    google.maps.event.addDomListener(document, 'keyup', function (e) {
+    document.addEventListener('keyup', function (e) {
         const code = (e.keyCode ? e.keyCode : e.which);
         if (code === 46) {
-            shapesHandler.deleteShape();
+            if (markerHandler.selectedMarker) {
+                document.getElementById('markerDeleteButton').click();
+            } else {
+                shapesHandler.deleteShape();
+            }
         }
     });
 
@@ -205,7 +209,7 @@ function initSimpleMap(locked = false, lat, lng) {
         rotateControl: false,
     });
     if (!locked) {
-        createMapTypeSelect(simpleMap,true);
+        createMapTypeSelect(simpleMap, true);
     }
     // place home location marker to the center of the map
     homeLocationMarker = new google.maps.Marker({
@@ -229,7 +233,7 @@ function updateMapMessage(hasLocation) {
     }
 }
 
-function updateAccountInit(){ // Called by Google Maps api callback
+function updateAccountInit() { // Called by Google Maps api callback
     initSimpleMap(false, lat, lng);
     searchBoxInit(simpleMap, true);
 }
