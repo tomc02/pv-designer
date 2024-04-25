@@ -1,5 +1,7 @@
-var shapesData = [];
-var shapesFiled = [];
+let shapesData = [];
+let shapesFiled = [];
+const MAX_PANELS_COUNT = 100;
+
 
 class areaData {
     constructor(panelsCount, azimuth) {
@@ -43,6 +45,28 @@ function sortCorners(corners) {
         rightTop,
         leftBottom,
         rightBottom,
+    };
+}
+
+function sortCornersTriangle(corners) {
+    if (corners.length !== 3) {
+        console.error('Expected exactly 3 corners');
+        return;
+    }
+    let leftTop;
+    let rightTop;
+    let bottom;
+
+    corners.sort((a, b) => a.lat() - b.lat()); // Sort by latitude
+    const topCorners = corners.slice(1).sort((a, b) => a.lng() - b.lng());
+    leftTop = corners[0];
+    rightTop = topCorners[0];
+    bottom = topCorners[1];
+
+    return {
+        leftTop,
+        rightTop,
+        bottom,
     };
 }
 
@@ -102,6 +126,7 @@ function computeAzimuth(headingLTR) {
     function modulo(n, m) {
         return ((n % m) + m) % m;
     }
+
     let azimuth = modulo(headingLTR - 90 + 180, 360) - 180;
     return Math.round(azimuth);
 }
@@ -110,6 +135,46 @@ function computeHypotenuse(heading1, heading2, panelHeight) {
     let angle = calculateAngle(heading1, heading2);
     angle = Math.abs(angle - 90);
     return panelHeight / Math.cos(angle * Math.PI / 180);
+}
+
+function placePanels(index, cornerPoints, polygon, headings, shape) {
+    const headingLTR = headings.headingLTR;
+    const headingRTL = headings.headingRTL;
+    const headingLTD = headings.headingLTD;
+    const headingRTD = headings.headingRTD;
+    const gMaps = google.maps.geometry;
+
+    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
+    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
+
+    let angle = 90 - headingLTR;
+    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
+    let azimuth = computeAzimuth(headingLTR);
+
+    let topPoints = [];
+    let panelsCount = 0;
+    let iteration = 0;
+    let continuePlacingPanels = true;
+
+    while (continuePlacingPanels && iteration < MAX_PANELS_COUNT) {
+        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
+            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
+        } else {
+            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
+        }
+        // move corner points
+        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
+        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
+
+        continuePlacingPanels = gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) || gMaps.poly.containsLocation(cornerPoints.rightTop, polygon);
+
+        if (continuePlacingPanels) {
+            panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
+        }
+
+        iteration++;
+    }
+    return new areaData(panelsCount, azimuth);
 }
 
 function fillPolygon(index) {
@@ -137,43 +202,20 @@ function fillPolygon(index) {
     let polygon = shapesHandler.getShape(index);
     let {headingLTR, headingRTL, headingLTD, headingRTD} = getHeadings(cornerPoints);
 
-    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
-    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
-
-    let angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
-    let azimuth = computeAzimuth(headingLTR);
-
-    let topPoints = [];
-    let panelsCount = 0;
-    let iteration = 0;
-    let continuePlacingPanels = true;
-
-    while (continuePlacingPanels && iteration < 100) {
-        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -120)) {
-            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
-        } else {
-            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
-        }
-        // move corner points
-        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
-        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
-
-        continuePlacingPanels = gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) || gMaps.poly.containsLocation(cornerPoints.rightTop, polygon);
-
-        if (continuePlacingPanels) {
-            panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
-        }
-
-        iteration++;
-    }
-    return new areaData(panelsCount, azimuth);
+    return placePanels(index, cornerPoints, polygon, {headingLTR, headingRTL, headingLTD, headingRTD}, shape);
 }
 
 
 function fillTriangle(index) {
     const gMaps = google.maps.geometry;
-    let cornerPoints = getCornerPoints(shapesHandler.getShape(index));
+    let cornerPoints = []
+    if (!shapesFiled.includes(index)) {
+        cornerPoints = sortCornersTriangle(shapesHandler.getShape(index).getPath().getArray());
+        shapesFiled.push(index);
+    } else {
+        cornerPoints = getCornerPoints(shapesHandler.getShape(index));
+    }
+
     shapesHandler.recalculatePanelHeight(index, shapesHandler.getShapeObject(index).getSlope());
     shapesHandler.setPath(index, [cornerPoints.leftTop, cornerPoints.rightTop, cornerPoints.bottom]);
 
@@ -192,36 +234,7 @@ function fillTriangle(index) {
     let headingRTL = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.leftTop);
     let headingRTD = gMaps.spherical.computeHeading(cornerPoints.rightTop, cornerPoints.bottom);
 
-    const hypotenuseLTR_LTD = computeHypotenuse(headingLTR, headingLTD, shapesHandler.getPanelHeight(index));
-    const hypotenuseRTL_RTD = computeHypotenuse(headingRTL, headingRTD, shapesHandler.getPanelHeight(index));
-
-    let angle = 90 - headingLTR;
-    const pvPanelUrl = rotateImage(angle, shapesHandler.getShapeObject(index).getSlope(), shape.orientation);
-    let azimuth = computeAzimuth(headingLTR);
-
-    let topPoints = [];
-    let panelsCount = 0;
-    let iteration = 0;
-    let continuePlacingPanels = true;
-
-    while (continuePlacingPanels && iteration < 100) {
-        if (headingLTR > 0 || (headingLTR < -90 && headingLTR > -160)) {
-            topPoints = generatePanels(cornerPoints.leftTop, cornerPoints.rightTop, shapesHandler.getPanelWidth(index), headingLTR);
-        } else {
-            topPoints = generatePanels(cornerPoints.rightTop, cornerPoints.leftTop, shapesHandler.getPanelWidth(index), headingRTL);
-        }
-        // move corner points
-        cornerPoints.leftTop = gMaps.spherical.computeOffset(cornerPoints.leftTop, hypotenuseLTR_LTD, headingLTD);
-        cornerPoints.rightTop = gMaps.spherical.computeOffset(cornerPoints.rightTop, hypotenuseRTL_RTD, headingRTD);
-
-        continuePlacingPanels = gMaps.poly.containsLocation(cornerPoints.leftTop, polygon) || gMaps.poly.containsLocation(cornerPoints.rightTop, polygon);
-
-        if (continuePlacingPanels) {
-            panelsCount += drawPoints(topPoints, polygon, angle, pvPanelUrl, index);
-        }
-        iteration++;
-    }
-    return new areaData(panelsCount, azimuth);
+    return placePanels(index, cornerPoints, polygon, {headingLTR, headingRTL, headingLTD, headingRTD}, shape);
 }
 
 function generatePanels(startPoint, endPoint, panelWidth, heading) {
@@ -233,7 +246,7 @@ function generatePanels(startPoint, endPoint, panelWidth, heading) {
         panels.push(position);
         position = gMaps.computeOffset(position, panelWidth, heading);
         index++;
-        if (index > 100) { // maximum panels in one row
+        if (index > MAX_PANELS_COUNT) { // maximum panels in one row
             break;
         }
     }
