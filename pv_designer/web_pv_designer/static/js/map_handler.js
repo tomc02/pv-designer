@@ -90,6 +90,7 @@ function initMap() { // Called by Google Maps api callback
 
 }
 
+// Slightly edited code sample form Google Maps api documentation https://developers.google.com/maps/documentation/javascript/overview
 function searchBoxInit(map, putMarker = false) {
     // Create the search box and link it to the UI element.
     const input = document.getElementById("searchInput");
