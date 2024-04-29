@@ -15,15 +15,15 @@ from ..models import MonthlyConsumption
 
 def create_pdf_report(user_id, areas, pv_data):
     pdf_file = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_data_report.pdf')
-    path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id)) + '/'
+    path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id))
     doc = SimpleDocTemplate(pdf_file, pagesize=letter)
     style_sheet = getSampleStyleSheet()
     elements = []
 
-    response_file_paths = [path_to_source + f'response{index}.json' for index in range(len(areas))]
+    response_file_paths = [os.path.join(path_to_source, f'response{index}.json') for index in range(len(areas))]
     sum_responses(response_file_paths, path_to_source)
 
-    with open(path_to_source + 'response_sum.json', 'r') as json_file:
+    with open(os.path.join(path_to_source, 'response_sum.json'), 'r') as json_file:
         data = json.load(json_file)
         location_data = data['inputs']['location']
         lat = round(location_data['latitude'], 4)
@@ -35,7 +35,7 @@ def create_pdf_report(user_id, areas, pv_data):
     elements.append(Paragraph('Photovoltaic System Performance Report', title_style))
 
     # Image with PV Panels
-    pv_panel_img_path = path_to_source + 'pv_image.png'
+    pv_panel_img_path = os.path.join(path_to_source, 'pv_image.png')
     page_content_width = doc.width
     # load the image and find its dimensions
     image = ImagePlatypus(pv_panel_img_path)
@@ -353,5 +353,5 @@ def sum_responses(file_paths, path_to_source):
 
 
     # Save the sum to a new file
-    with open(path_to_source + 'response_sum.json', 'w') as output_file:
+    with open(os.path.join(path_to_source, 'response_sum.json'), 'w') as output_file:
         json.dump(sum_response, output_file, indent=2)

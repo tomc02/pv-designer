@@ -1,18 +1,5 @@
 let mapAttribution = false;
 
-function isPanelInPolygon(leftTop, polygon, notFirstLine, headingLTR, headingRTD) {
-    let panelLeftTop = leftTop;
-    let panelRightTop = google.maps.geometry.spherical.computeOffset(panelLeftTop, shapesHandler.getPanelWidth(), headingLTR);
-    let panelRightBottom = google.maps.geometry.spherical.computeOffset(panelRightTop, shapesHandler.getPanelHeight(), headingRTD);
-    let isLeftTop = google.maps.geometry.poly.containsLocation(panelLeftTop, polygon);
-    let isRightBottom = google.maps.geometry.poly.containsLocation(panelRightBottom, polygon);
-    let isRightTop = true;
-    if (notFirstLine) {
-        isRightTop = google.maps.geometry.poly.containsLocation(panelRightTop, polygon);
-    }
-    return !!(isLeftTop && isRightBottom && isRightTop);
-}
-
 function getPvImgUrl(angle) {
     const currentTime = new Date().getTime();
     angle = Math.round(angle * 100) / 100;
@@ -49,6 +36,7 @@ function getMapPicture() {
 
         shapesHandler.clearSelection();
         markerHandler.clearMarkerSelection();
+        
         setTimeout(function () {
             html2canvas(document.querySelector('#map'), {
                 backgroundColor: null,

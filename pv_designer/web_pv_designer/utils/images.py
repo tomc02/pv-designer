@@ -60,7 +60,7 @@ def rotate_pv_img(angle: float, slope: float, original_image_name: str, rotated_
     # If there is 0 after the decimal point, remove it (Consistency with the frontend again)
     if angle.endswith('.0'):
         angle = angle[:-2]
-    rotated_image.save(static_path + '/' + rotated_image_name + angle + '.png')
+    rotated_image.save(os.path.join(static_path, f'{rotated_image_name}{angle}.png'))
 
     rotated_image.close()
     original_image.close()

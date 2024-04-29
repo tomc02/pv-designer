@@ -82,7 +82,7 @@ def get_pvgis_response(params):
 
 def save_response(file_name, response, user_id, index=0):
     path_to_source = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id))
-    with open(path_to_source + '/' + file_name + str(index) + '.json', 'wb') as f:
+    with open(os.path.join(path_to_source, f'{file_name}{index}.json'), 'wb') as f:
         f.write(response.text.encode('utf-8'))
 
 
@@ -136,6 +136,6 @@ def get_user_id(request):
 
 
 def load_image_from_db(user_id, map_data):
-    image_path = './web_pv_designer/pdf_sources/' + str(user_id) + '/' + 'pv_image.png'
+    image_path = os.path.join(settings.BASE_DIR, 'web_pv_designer', 'pdf_sources', str(user_id), 'pv_image.png')
     with open(image_path, 'wb') as f:
         f.write(map_data.map_image.file.read())
